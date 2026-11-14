@@ -155,7 +155,7 @@ function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0
   else if(c==='Q'){f.vx=f.face*CLOSE_SPECIALS.Q.speed}
   else if(c==='R'){f.vx=0} }
 function stepF(f,o,dt){
-  const I=f.inp,K=CH[BASE_CHARACTER[f.ch]];f.t+=dt;const gr=f.y<=0&&f.vy<=0;f.slip=Math.max(0,(f.slip||0)-dt);f.rev=Math.max(0,(f.rev||0)-dt);f.dizzy=Math.max(0,(f.dizzy||0)-dt);if(f.rev>0){const q=I.l;I.l=I.r;I.r=q}if(f.slip>0)I.down=0;
+  const I=f.inp,K=CH[BASE_CHARACTER[f.ch]];f.t+=dt;const gr=f.y<=0&&f.vy<=0;f.slip=Math.max(0,(f.slip||0)-dt);f.rev=Math.max(0,(f.rev||0)-dt);f.dizzy=Math.max(0,(f.dizzy||0)-dt);if(f.rev>0){const q=I.l;I.l=I.r;I.r=q}
   if(phase!=='fight'&&(f.st==='idle'||f.st==='walk'||f.st==='guard')){f.vx=0;if(f.st!=='idle')setSt(f,'idle')}
   else if((f.st==='idle'||f.st==='walk'||f.st==='guard')&&gr){
     if(f.st==='guard'&&f.stun>0){f.stun-=dt}
@@ -164,7 +164,10 @@ function stepF(f,o,dt){
       else if(I.p){setSt(f,'punch');f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
       else if(I.k){setSt(f,'kick');f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
       else if(I.up){f.vy=K.jump;f.y=.01;setSt(f,'jump');f.airAtk=false;f.vx=(I.r-I.l)*K.speed*.95;sfx.jump()}
-      else if(I.down){if(f.st!=='guard')setSt(f,'guard');f.vx=0}
+      else if(f.slip<=0&&(!net&&f.cpu?I.down:(f.face>0?I.l&&!I.r:I.r&&!I.l))){
+        if(f.st!=='guard')setSt(f,'guard');
+        f.vx=!net&&f.cpu?0:-f.face*K.speed*.78*(flood?.55:1);
+      }
       else{const d=I.r-I.l,tv=d*K.speed*(d*f.face<0?.78:1)*(flood?.55:1);f.vx=f.slip>0?f.vx+(tv*1.35-f.vx)*Math.min(1,dt*1.4):tv;if(d){if(f.st!=='walk')setSt(f,'walk');f.walkD+=Math.abs(f.vx)*dt}else if(f.st!=='idle')setSt(f,'idle')}}
   }
   else if(f.st==='jump'){ if((I.p||I.k)&&!f.airAtk&&f.t>.08){f.airAtk=true;f.atkT=0;f.hitDone=false;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0}

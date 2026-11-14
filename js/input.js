@@ -2,7 +2,7 @@
 'use strict';
 /* ---------- input ---------- */
 const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0};
-const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t'};
+const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t'};
 addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{
@@ -10,7 +10,7 @@ document.querySelectorAll('.pb[data-k]').forEach(b=>{
   b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up)});
 (function(){const d=$('dpad'),kn=$('knob');let pid=null;
   function upd(e){const r=d.getBoundingClientRect(),dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);
-    held.l=dx<-.24?1:0;held.r=dx>.24?1:0;held.up=dy<-.5?1:0;held.down=dy>.5&&Math.abs(dx)<.6?1:0;
+    held.l=dx<-.24?1:0;held.r=dx>.24?1:0;held.up=dy<-.5?1:0;
     const m=Math.min(1,Math.hypot(dx,dy))||1,a=Math.atan2(dy,dx);kn.style.transform=`translate(${Math.cos(a)*m*70}%,${Math.sin(a)*m*70}%)`}
   function end(e){if(e.pointerId!==pid)return;pid=null;held.l=held.r=held.up=held.down=0;kn.style.transform=''}
   d.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();pid=e.pointerId;try{d.setPointerCapture(pid)}catch(_){ }upd(e)});

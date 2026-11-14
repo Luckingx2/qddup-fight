@@ -18,14 +18,14 @@
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 가드 ↓ / S · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V</div></div>
+  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V</div></div>
   <div id="pad">
-    <div id="dpad" class="pb"><i class="u">점프</i><i class="dn">가드</i><i class="l">◀</i><i class="r">▶</i><div id="knob"></div></div>
+    <div id="dpad" class="pb"><i class="u">점프</i><i class="l">◀</i><i class="r">▶</i><div id="knob"></div></div>
     <div id="bP" class="pb" data-k="p">P</div>
     <div id="bK" class="pb" data-k="k">K</div>
     <div id="bS" class="pb" data-k="s">필살</div>
     <div id="bT" class="pb" data-k="t">태그</div>
-    <div id="hint">왼쪽 패드: 이동 · 위 점프 · 아래 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
+    <div id="hint">왼쪽 패드: 이동 · 위 점프 · 상대 반대 방향 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
   </div>
 </div>
 <button id="snd" type="button" aria-label="소리 설정" aria-haspopup="dialog" aria-controls="audioSettings">♪</button>
@@ -105,9 +105,9 @@
 <script src="js/screens.js?v=incheon-net-recovery"></script>
 <script src="js/online.js?v=incheon-net-recovery"></script>
 <script src="js/matchmaking.js?v=incheon-net-recovery"></script>
-<script src="js/input.js?v=incheon-net-recovery"></script>
+<script src="js/input.js?v=back-guard"></script>
 <script src="js/cutin.js?v=incheon-net-recovery"></script>
-<script src="js/fight.js?v=incheon-net-recovery"></script>
+<script src="js/fight.js?v=back-guard"></script>
 <script src="js/ai.js?v=incheon-net-recovery"></script>
 <script src="js/update.js?v=incheon-net-recovery"></script>
 <script src="js/render.js?v=incheon-net-recovery"></script>
