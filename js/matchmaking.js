@@ -159,7 +159,8 @@ async function showLeaderboard(){
 $('quickMatch').onclick=()=>startQueue('quick');
 $('rankedMatch').onclick=()=>startQueue('ranked');
 $('leaderboard').onclick=showLeaderboard;
-addEventListener('pagehide',()=>{
+addEventListener('pagehide',event=>{
+  if(event.persisted)return;
   if(queueSearch||net?.match)releaseQueue(net?.match?.id || queueSearch?.id || null);
 });
 

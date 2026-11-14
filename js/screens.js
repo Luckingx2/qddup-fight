@@ -95,7 +95,7 @@ function result(win){
   lastOnlineKind=net?.match?.kind || null;
   lastOnlineMatch=net?.match?.id || null;
   mode='menu';if(bgm)setMusicGain(.2);show('sRes');
-  if(net){if(net.host){if(net.match)netSnap();netSend({t:'res',w:win})}win?sfx.win():sfx.lose();$('resT').textContent=win?'YOU WIN':'YOU LOSE';$('resT').className='big '+(win?'win':'lose');$('resS').textContent=net.match?.kind==='ranked'?'랭킹전':net.match?'빠른 대전':'온라인 대전';$('resA').textContent=net.match?'다시 매칭':'한 판 더';$('resB').textContent='방 나가기';if(net.match)matchResult(net,win);return}
+  if(net){if(net.host){if(net.match)netSnap(true);netSend({t:'res',w:win})}win?sfx.win():sfx.lose();$('resT').textContent=win?'YOU WIN':'YOU LOSE';$('resT').className='big '+(win?'win':'lose');$('resS').textContent=net.match?.kind==='ranked'?'랭킹전':net.match?'빠른 대전':'온라인 대전';$('resA').textContent=net.match?'다시 매칭':'한 판 더';$('resB').textContent='방 나가기';if(net.match)matchResult(net,win);return}
   $('resB').textContent='캐릭터 변경';
   if(win){streak++; if(streak>best){best=streak;try{localStorage.setItem('wqre_best',best)}catch(e){}} sfx.win();
     $('resT').textContent='YOU WIN';$('resT').className='big win';$('resS').textContent=streak+'연승 중 · 다음 상대는 조금 더 강합니다';$('resA').textContent='다음 상대 뽑기'}
