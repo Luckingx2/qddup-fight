@@ -65,6 +65,40 @@ function stepCloseSpecial(f,o,move){
   if(f.spN===3||(f.spN===0&&f.t>.33)||(f.spN>0&&f.t>f.spT+.09))f.vx=0;
   if(f.t>.73){f.vx=0;setSt(f,'rec')}
 }
+const FIRE_FISTS={
+  E:{name:'불꽃 스트레이트',color:'#ff833e',speed:590,reach:140,damage:26,push:550,lift:250},
+  Eb:{name:'청염 어퍼컷',color:'#729dff',speed:430,reach:117,damage:25,push:270,lift:620},
+  Ec:{name:'홍염 더블 펀치',color:'#ff568c',speed:500,reach:134,damage:19,push:500,lift:320}
+};
+function fireFistBurst(f,move,last){
+  const x=f.x+f.face*101,y=GROUND-f.y-157;
+  fx.push({k:'specialArc',x,y,t:0,d:.28,dir:f.face,idx:f.ch==='Eb'?2:last?0:1,col:move.color});
+  spark(x,y,move.color,last?19:8,last?420:220);
+  if(last)ring(x,y,move.color,76);
+  sfx.whoosh(last?1.1:.7);
+}
+function stepFireFist(f,o,move){
+  const double=f.ch==='Ec',follow=f.spN===1;
+  const startup=follow?.26:.10,end=follow?.36:.20;
+  const last=!double||follow;
+  if(f.spN<2&&f.t<end)f.vx=f.face*(follow?250:move.speed);
+  else f.vx=0;
+  if(f.spN<2&&f.t>=startup&&f.t<end){
+    if(!f.spT){
+      f.spT=1;
+      if(f.ch==='Eb'){f.vy=510;f.y=.01}
+      fireFistBurst(f,move,last);
+    }
+    const guarding=o.st==='guard'&&o.y<=0&&o.face===-f.face;
+    if(tryHit(f,o,{reach:move.reach,dmg:last?move.damage:8,stun:last?.58:.37,
+      push:last?move.push:65,lift:last?move.lift:0,sp:1,vr:f.ch==='Eb'?210:125,hy:f.ch==='Eb'?175:147})){
+      f.spN=last||guarding?2:1;
+      f.spT=0;
+      f.hitDone=f.spN===2;
+    }
+  }
+  if(f.t>.58&&f.y<=0){f.vx=0;setSt(f,'rec')}
+}
 function stepBassGeyser(f,o){
   if(!f.hitDone&&f.t>=.22){
     f.hitDone=true;
@@ -102,6 +136,7 @@ function spAlt(f,o,dt){const c=f.ch,v=f.sv,end=T=>{if(f.t>T&&f.y<=0){f.vx=0;f.as
     else{if(f.t>.3){f.vx*=Math.pow(.001,dt);if(!f.spN){f.spN=1;proj.push({o:f,kind:'body',ch:'W',frame:'special2',heart:1,x:f.x+f.face*70,y:GROUND-150,vx:f.face*900,vy:160,g:500,t:0,hit:false,dmg:32,stun:.9,push:300,lift:0})}}end(.85)}
   }}
 function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0;f.trail=[];if(f.sv){fireAlt(f);return}
+  if(FIRE_FISTS[c]){f.vx=0;say(FIRE_FISTS[c].name,.75);return}
   if(c==='G'){f.vx=0;say('재뿌리기!!',1.0);for(let i=0;i<46;i++)fx.push({k:'p',x:f.x+f.face*70,y:GROUND-150+(Math.random()-.5)*40,vx:f.face*(160+Math.random()*560),vy:-180+Math.random()*260,t:0,d:.5+Math.random()*.5,col:'rgba(255,255,255,.9)',s:5+Math.random()*9});return}
   if(c==='B'){f.vx=f.face*460;return}
   if(c.length===2){f.vx=0;f.carry=0;f.mash=0;
@@ -113,14 +148,12 @@ function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0
     }
     if(c==='Qc'){zone={x:Math.max(300,Math.min(WW-300,f.x+f.face*330)),w:540,t:3.8,o:f};shake=14;for(let i=0;i<50;i++)fx.push({k:'p',x:f.x+f.face*(60+Math.random()*520),y:GROUND-10,vx:f.face*Math.random()*200,vy:-120-Math.random()*380,t:0,d:.5+Math.random()*.5,col:Math.random()<.5?'#ff5c8a':'#ff9ec0',s:5+Math.random()*9})}
     if(c==='Wc')f.vx=f.face*860;
-    if(c==='Ec')for(let i=0;i<46;i++)fx.push({k:'p',x:f.x+f.face*80,y:GROUND-140+(Math.random()-.5)*50,vx:f.face*(160+Math.random()*560),vy:-200+Math.random()*280,t:0,d:.5+Math.random()*.5,col:Math.random()<.5?'#ff5c8a':'#ff9ec0',s:5+Math.random()*9});
     if(c==='Rd'){const o=f===P?C:P,vy=1050;f.vy=vy;f.y=.01;f.vx=Math.max(-760,Math.min(760,(o.x-f.x)/(2*vy/G)))}
     return}
   if(c==='W'){proj.push({o:f,kind:'rocket',x:f.x+f.face*120,y:GROUND-112,vx:f.face*720,vy:0,g:0,t:0,hit:false,dmg:26,stun:.55,push:460,lift:380});f.vx=-f.face*90;
     for(let i=0;i<10;i++)fx.push({k:'p',x:f.x-f.face*(70+Math.random()*40),y:GROUND-115+(Math.random()-.5)*40,vx:-f.face*(120+Math.random()*260),vy:-Math.random()*120,t:0,d:.5,col:'rgba(255,255,255,.75)',s:8+Math.random()*8})}
   else if(c==='Q'){f.vx=f.face*CLOSE_SPECIALS.Q.speed}
-  else if(c==='R'){f.vx=0}
-  else{f.vx=f.face*600;f.vy=560;f.y=.01} }
+  else if(c==='R'){f.vx=0} }
 function stepF(f,o,dt){
   const I=f.inp,K=CH[BASE_CHARACTER[f.ch]];f.t+=dt;const gr=f.y<=0&&f.vy<=0;f.slip=Math.max(0,(f.slip||0)-dt);f.rev=Math.max(0,(f.rev||0)-dt);f.dizzy=Math.max(0,(f.dizzy||0)-dt);if(f.rev>0){const q=I.l;I.l=I.r;I.r=q}if(f.slip>0)I.down=0;
   if(phase!=='fight'&&(f.st==='idle'||f.st==='walk'||f.st==='guard')){f.vx=0;if(f.st!=='idle')setSt(f,'idle')}
@@ -141,6 +174,7 @@ function stepF(f,o,dt){
   else if(f.st==='charge'){f.vx=0;if(f.t>.5)fire(f)}
   else if(f.st==='special'){ const c=f.ch;f.trail.push({x:f.x,y:f.y});if(f.trail.length>6)f.trail.shift();
     if(f.sv)spAlt(f,o,dt);
+    else if(FIRE_FISTS[c])stepFireFist(f,o,FIRE_FISTS[c]);
     else if(c==='Qb'){if(f.buf){if(f.buf.p>0||f.buf.k>0){f.buf.p=f.buf.k=0;f.mash++}}else if(Math.random()<dt*(5+level))f.mash++;
       f.spT-=dt;if(f.spT<=0&&f.spN<Math.min(16,3+f.mash)&&f.t>.05){f.spN++;f.spT=.085;proj.push({o:f,kind:'wave',col:0,x:f.x+f.face*120,y:GROUND-120,vx:f.face*640,vy:0,g:0,t:0,hit:false,dmg:2.3,stun:.3,push:110,lift:0});sfx.whoosh(.7)}
       if(f.t>1.5)setSt(f,'rec')}
@@ -153,11 +187,7 @@ function stepF(f,o,dt){
       const q=f.carry?o:f;if((f.face>0?q.x>=WW-74:q.x<=74)||f.t>1.4){if(f.carry&&o.st!=='ko'){applyHit(f,o,{dmg:19,stun:.8,push:-260,lift:460,sp:1,ub:1,hy:150});shake=24;flash=.15}f.carry=0;f.vx=0;setSt(f,'rec')}}
     else if(c==='Rd'){if(f.t>.15&&f.y<=0){f.vx=0;shake=24;dust(f.x);ring(f.x,GROUND-10,'#ff5c8a',220);ring(f.x,GROUND-10,'#fff',130);
         if(o.st!=='ko'){const d=Math.abs(o.x-f.x),sf=f.face;f.face=o.x>=f.x?1:-1;if(d<140&&o.y<200)applyHit(f,o,{dmg:28,stun:.8,push:420,lift:520,sp:1,ub:1,hy:150});else if(d<360&&o.y<40)applyHit(f,o,{dmg:13,stun:.5,push:300,lift:300,sp:1,ub:1,hy:60});f.face=sf}setSt(f,'rec')}}
-    else if(c==='Ec'){if(f.t>.08&&tryHit(f,o,{reach:250,dmg:17,stun:.5,push:200,sp:1,vr:200,hy:150}))o.rev=3.2;if(f.t>.7)setSt(f,'rec')}
     else if(c==='Wb')stepBassGeyser(f,o);
-    else if(c==='Eb'){const n=Math.floor((f.t-.1)/.3);while(f.spN<=n&&f.spN<3){f.spN++;f.tx=o.x;f.spT=.17;f.hitDone=false;fx.push({k:'bolt',x:f.tx,y:GROUND,t:0,d:.4,seed:Math.random()*99});flash=.15;shake=12}
-      if(f.spN&&!f.hitDone){f.spT-=dt;if(f.spT<=0){f.hitDone=true;if(Math.abs(o.x-f.tx)<95&&o.st!=='ko')applyHit(f,o,{dmg:10,stun:.4,push:120,lift:200,sp:1,hy:150})}}
-      if(f.t>1.05)setSt(f,'rec')}
     else if(c==='Rc'){f.spT-=dt;if(Math.random()<.5)fx.push({k:'p',x:f.x+(Math.random()<.5?-1:1)*18,y:GROUND-150,vx:(Math.random()-.5)*700,vy:-260-Math.random()*220,t:0,d:.7,col:'rgba(150,215,255,.9)',s:4+Math.random()*5});if(Math.random()<.05)ring(f.x,GROUND-130,'#cfefff',260);if(f.spT<=0&&f.spN<5&&f.t>.1){f.spT=.14;f.spN++;if(Math.abs(o.x-f.x)<290&&o.y<230&&o.st!=='ko'){const sf=f.face;f.face=o.x>=f.x?1:-1;applyHit(f,o,{dmg:4,stun:.35,push:230,sp:1,hy:150});f.face=sf}}if(f.t>.95)setSt(f,'rec')}
     else if(c==='G'){f.vx=0;if(f.t<.4&&Math.random()<.5)fx.push({k:'p',x:f.x+f.face*80,y:GROUND-150,vx:f.face*(200+Math.random()*500),vy:-160+Math.random()*240,t:0,d:.5+Math.random()*.4,col:'rgba(255,255,255,.85)',s:5+Math.random()*8});if(f.t>.08)tryHit(f,o,{reach:250,dmg:25,stun:.75,push:260,sp:1,vr:200,hy:150});if(f.t>.7)setSt(f,'rec')}
     else if(c==='B'){f.vx*=Math.pow(.02,dt);if(f.t>.1&&f.t<.42&&tryHit(f,o,{reach:135,dmg:27,stun:.8,push:220,sp:1,vr:190,hy:210})){for(let i=0;i<7;i++)fx.push({k:'s',x:o.x+(Math.random()-.5)*90,y:GROUND-o.y-230+(Math.random()-.5)*50,t:0,d:.3+Math.random()*.3,r:16+Math.random()*14,rot:Math.random()*3})}if(f.t>.62){f.vx=0;setSt(f,'rec')}}
@@ -166,7 +196,6 @@ function stepF(f,o,dt){
     else if(c==='R'){f.trail.length=0;const n=Math.floor((f.t-.04)/.1);while(f.spN<=n&&f.spN<7){const big=f.spN===6;f.spN++;sfx.whoosh(.7);
         proj.push({o:f,kind:'donut',big,x:f.x+f.face*60,y:GROUND-150-Math.random()*50,vx:f.face*(big?560:620+Math.random()*160),vy:big?130:40+Math.random()*120,g:260,t:0,hit:false,dmg:big?8:4,stun:big?.5:.26,push:big?420:110,lift:big?360:0,c:Math.floor(Math.random()*4),rot:Math.random()*6})}
       if(f.t>.9)setSt(f,'rec')}
-    else{tryHit(f,o,{reach:112,dmg:25,stun:.6,push:300,lift:640,sp:1,vr:190,hy:150});if(f.t>.12&&f.y<=0){f.vx=0;setSt(f,'rec')}}
   }
   else if(f.st==='rec'){f.vx*=Math.pow(.0005,dt);if(f.t>.26&&f.y<=0)setSt(f,'idle')}
   else if(f.st==='hit'){f.stun-=dt;if(f.stun<=0&&f.y<=0)setSt(f,'idle')}

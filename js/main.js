@@ -25,7 +25,7 @@ function loop(ts){
   render(tm);
   requestAnimationFrame(loop);
 }
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.suspend();if(bgm)bgA.pause()}else{if(AC)AC.resume();if(bgm)bgA.play().catch(()=>{});last=performance.now()/1000;acc=0}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.suspend();if(bgm)bgA.pause()}else{if(AC)AC.resume();if(bgm)resumeBgm();last=performance.now()/1000;acc=0}});
 window.__bg=()=>bgA?{t:bgA.currentTime,paused:bgA.paused,err:!!bgA.error,routed:!!bgSrc,gain:musG?musG.gain.value:null}:null;
 window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,streak,timer,round}},update,held,buf,set level(v){level=v}};
 (async function(){

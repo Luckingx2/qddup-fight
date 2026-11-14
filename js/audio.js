@@ -62,18 +62,45 @@ const sfx={
   win(){ if(!AC)return; const t=AC.currentTime;[523,659,784,1047,1319].forEach((f,i)=>tone(f,.22,'square',.2,0,t+i*.11))},
   lose(){ if(!AC)return; const t=AC.currentTime;[392,330,262,196].forEach((f,i)=>tone(f,.3,'triangle',.24,0,t+i*.2))}
 };
-const bgA=new Audio('assets/audio/bgm.mp3');
-bgA.loop=true;
-bgA.preload='auto';
+const BGM_TRACKS=[
+  'assets/audio/bgm.mp3',
+  'assets/audio/qwer-tb-h.mp3',
+  'assets/audio/qwer-soda.mp3',
+  'assets/audio/qwer-my-name-is-malguem.mp3'
+];
+const bgA=new Audio();
+bgA.preload='none';
 bgA.volume=.6;
-let bgSrc=null;
+let bgSrc=null, currentTrack=null, remainingTracks=[];
+
+function startNextTrack(){
+  if(!remainingTracks.length){
+    remainingTracks=BGM_TRACKS.slice();
+    for(let i=remainingTracks.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [remainingTracks[i],remainingTracks[j]]=[remainingTracks[j],remainingTracks[i]];
+    }
+    if(remainingTracks[0]===currentTrack){
+      const j=1+Math.floor(Math.random()*(remainingTracks.length-1));
+      [remainingTracks[0],remainingTracks[j]]=[remainingTracks[j],remainingTracks[0]];
+    }
+  }
+  currentTrack=remainingTracks.shift();
+  bgA.src=currentTrack;
+  resumeBgm();
+}
+function resumeBgm(){
+  if(currentTrack&&!document.hidden&&bgA.paused)bgA.play().catch(()=>{});
+}
+bgA.addEventListener('ended',startNextTrack);
 function playBgm(id){
   if(!bgSrc&&AC){
     try{bgSrc=AC.createMediaElementSource(bgA);bgSrc.connect(musG);bgA.volume=.6}catch(e){}
   }
   setMusicGain(.5);
-  bgm={id,beat:0};
-  if(bgA.paused)bgA.play().catch(()=>{});
+  if(!bgm||bgm.id!==id)bgm={id,beat:0};
+  if(!currentTrack)startNextTrack();
+  else resumeBgm();
 }
 const audioSettings=$('audioSettings');
 function syncAudioSettings(){

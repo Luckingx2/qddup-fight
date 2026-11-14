@@ -16,6 +16,11 @@ function frameOf(f){
       const strike=f.spN>0&&f.t+.08<f.spT?f.spN-1:f.spN;
       return ['punch',c==='E'?'special2':'kick','special','special'][strike];
     }
+    if(v===0&&FIRE_FISTS[c]){
+      if(f.t<.10)return 'charge';
+      if(c==='Eb')return f.y>0?'special':'punch';
+      return c==='Ec'&&f.t>=.26?'special':'punch';
+    }
     if(c==='Wb'&&v===0)return f.t<.22?'guard':'special';
     if(v===0)return c==='R'?(Math.floor(f.t/.1)%2?'charge':'special'):'special';
     if(v===1)return'special2';if(c==='G')return'idle';if(c==='B')return'charge';if(c==='W')return'special';if(c==='E')return Math.floor(f.t/.08)%2?'punch':'kick';return'special2'}
