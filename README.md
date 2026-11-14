@@ -72,3 +72,24 @@
 
 - 폰: 왼쪽 패드(좌우 이동, 위 점프, 아래 가드), P 펀치, K 킥, 필살, 태그
 - PC: 방향키 + Z·X·C·V, 또는 WASD + J·K·L·;
+
+## 빠른 대전과 누적 랭킹
+
+타이틀 화면에서 2~16자 닉네임을 입력합니다. 빠른 대전은 일반 대기열을 사용하고, 랭킹전은 점수가 비슷한 상대를 먼저 찾습니다. 랭킹 점수는 1,000점에서 시작하며 승리하면 25점, 패배하면 15점을 잃습니다. 순위표에는 랭킹전 기록이 있는 상위 50명이 표시됩니다.
+
+로그인 없이 플레이하며 브라우저에 저장된 무작위 키가 랭킹 기록을 식별합니다. 닉네임은 표시용이라 같은 닉네임을 입력해도 다른 기기의 기록에 접근할 수 없습니다. 브라우저 데이터를 지우면 그 기록을 다시 연결할 수 없습니다.
+
+기존 PeerJS 대전을 사용합니다. 랭킹전은 두 브라우저가 동일한 승자를 보고하면 한 번만 점수를 반영합니다. 경기 시뮬레이션은 방장 브라우저에서 실행되므로 서버 판정 및 조작 방지 기능은 제공하지 않습니다. 연결이 끊겨 양쪽 결과가 도착하지 않은 경기는 점수를 반영하지 않습니다.
+
+### Cloudflare Worker 배포
+
+Cloudflare 계정에서 D1 데이터베이스를 만들고 `online/wrangler.jsonc`의 `database_id`에 연결합니다. Worker와 D1 마이그레이션을 배포한 뒤, `index.html`의 `online-api` 메타 태그에 Worker의 HTTPS 주소를 넣습니다. GitHub Pages의 정적 게임은 이 API에 매칭과 랭킹만 요청합니다.
+
+```sh
+cd online
+npx wrangler d1 create qddup-fight
+npx wrangler d1 migrations apply DB --remote
+npx wrangler deploy
+```
+
+로컬에서 연동할 때는 `--local`로 마이그레이션을 적용하고, `wrangler dev --var GAME_ORIGIN:http://localhost:8000`으로 실행합니다. 게임은 별도 HTTP 서버에서 `http://localhost:8000`으로 열고 `online-api`를 로컬 Worker 주소로 지정합니다.
