@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="online-api" content="https://qddup-online-api.gary00.chatgpt.site">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>큐떱대전</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,8 +76,8 @@ canvas{width:100%;height:100%;display:block}
 .card.sel{border-color:#fff;transform:translateY(-4px);box-shadow:0 0 0 3px rgba(201,166,255,.5),0 14px 30px rgba(0,0,0,.5)}
 .btn{font-family:'Black Han Sans',sans-serif;font-size:20px;padding:13px 30px;border-radius:999px;border:0;background:var(--holo);color:#15132e;cursor:pointer;box-shadow:0 6px 0 #6b5fb0,0 12px 24px rgba(0,0,0,.4)}
 .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #6b5fb0}
-#sNet{z-index:40;background:rgba(7,6,15,.9)}.nbox{display:flex;flex-direction:column;align-items:center;gap:14px;padding:26px 22px;border-radius:20px;border:2px solid var(--line);background:var(--pan);max-width:360px;width:100%;text-align:center}.nbox h3{margin:0;font-family:'Black Han Sans',sans-serif;font-size:22px}.nbox p{margin:0;color:var(--dim);font-size:13px;line-height:1.5}.nbox .code{font-family:'Bungee',sans-serif;font-size:46px;letter-spacing:.14em;color:#fff;user-select:all;-webkit-user-select:all}.nbox input{font-family:'Bungee',sans-serif;font-size:32px;letter-spacing:.14em;text-align:center;text-transform:uppercase;width:100%;padding:10px;border-radius:12px;border:2px solid var(--line);background:#0b0a1c;color:#fff;outline:none}#netRow .btn{font-size:14px;padding:8px 16px}
-#sTitle{background:#07060f;gap:12px;padding:0 0 calc(14px + env(safe-area-inset-bottom));justify-content:center;overflow:hidden}#sTitle::before{content:'';position:absolute;inset:-40px;background:url(assets/title.jpg) center/cover;filter:blur(26px) brightness(.45);z-index:0}#ttl{position:relative;z-index:1;display:block;width:100%;flex:0 1 auto;min-height:0;max-height:calc(100% - 84px);object-fit:contain}#tGo{position:relative;z-index:1;flex:0 0 auto;font-size:22px;padding:13px 44px;animation:tp 1.2s ease-in-out infinite}@keyframes tp{50%{transform:scale(1.07)}}
+.joinForm{display:grid;gap:12px;width:100%}#nIn,#nick{user-select:text;-webkit-user-select:text;touch-action:manipulation}#sNet{z-index:40;background:rgba(7,6,15,.9)}.nbox{display:flex;flex-direction:column;align-items:center;gap:14px;padding:26px 22px;border-radius:20px;border:2px solid var(--line);background:var(--pan);max-width:360px;width:100%;text-align:center}.nbox h3{margin:0;font-family:'Black Han Sans',sans-serif;font-size:22px}.nbox p{margin:0;color:var(--dim);font-size:13px;line-height:1.5}.nbox .code{font-family:'Bungee',sans-serif;font-size:46px;letter-spacing:.14em;color:#fff;user-select:all;-webkit-user-select:all}.nbox input{font-family:'Bungee',sans-serif;font-size:32px;letter-spacing:.14em;text-align:center;text-transform:uppercase;width:100%;padding:10px;border-radius:12px;border:2px solid var(--line);background:#0b0a1c;color:#fff;outline:none}#netRow .btn{font-size:14px;padding:8px 16px}
+#sTitle{background:#07060f;gap:12px;padding:0 0 calc(14px + env(safe-area-inset-bottom));justify-content:center;overflow:hidden}#sTitle::before{content:'';position:absolute;inset:-40px;background:url(assets/title.jpg) center/cover;filter:blur(26px) brightness(.45);z-index:0}#ttl{position:relative;z-index:1;display:block;width:100%;flex:0 1 auto;min-height:0;max-height:calc(100% - 84px);object-fit:contain}#titleForm{position:relative;z-index:1;display:grid;justify-items:center;gap:8px;width:min(92%,360px);flex:0 0 auto}#nick{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#15132e;color:var(--txt);font:inherit;font-size:16px;text-align:center}#ttl{max-height:calc(100% - 145px)}#onlineRow .btn{font-size:14px;padding:8px 16px}.rankList{width:100%;border-collapse:collapse;color:var(--txt);font-size:13px}.rankList td,.rankList th{padding:6px;border-bottom:1px solid var(--line)}.rankList td:nth-child(2){overflow-wrap:anywhere}#netBox .rankList{display:block;max-height:55vh;overflow:auto}#tGo{position:relative;z-index:1;flex:0 0 auto;font-size:22px;padding:13px 44px;animation:tp 1.2s ease-in-out infinite}@keyframes tp{50%{transform:scale(1.07)}}
 .btn.ghost{background:transparent;color:var(--txt);border:2px solid var(--line);box-shadow:none;font-size:16px;padding:10px 22px}
 .btn[disabled]{opacity:.35;pointer-events:none}
 .sub{color:var(--dim);font-size:13px;margin:0;text-align:center}
@@ -137,13 +138,14 @@ canvas{width:100%;height:100%;display:block}
   </form>
 </dialog>
 
-<section id="sTitle" class="scr"><img id="ttl" src="assets/title.jpg" alt="큐떱대전"><button class="btn" id="tGo">시작하기</button></section>
+<section id="sTitle" class="scr"><img id="ttl" src="assets/title.jpg" alt="큐떱대전"><form id="titleForm"><label for="nick">닉네임</label><input id="nick" type="text" minlength="2" maxlength="16" required autocomplete="nickname" placeholder="2~16자"><button class="btn" id="tGo">시작하기</button></form></section>
 <section id="sSel" class="scr">
   <h1 class="logo">큐떱대전<small>캐릭터를 고르세요</small></h1>
   <div class="pv"><canvas id="pv" width="540" height="600"></canvas><div id="pvN"></div></div>
   <div class="cards" id="cards"></div>
   <button class="btn" id="go" disabled>대전 시작</button>
   <p class="sub" id="best"></p>
+  <div class="row" id="onlineRow"><button class="btn ghost" id="quickMatch">빠른 대전</button><button class="btn ghost" id="rankedMatch">랭킹전</button><button class="btn ghost" id="leaderboard">누적 순위</button></div>
   <div class="row" id="netRow"><button class="btn ghost" id="nHost">온라인 방 만들기</button><button class="btn ghost" id="nJoin">방 참가</button></div>
 </section>
 <section id="sNet" class="scr"><div class="nbox" id="netBox"></div></section>
@@ -339,14 +341,16 @@ function stageSpin(){
       if(last){stage=STAGES[window.__stg!==undefined?window.__stg:fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(startMatch,1100)} },t) }
 }
 function result(win){
+  lastOnlineKind=net?.match?.kind || null;
+  lastOnlineMatch=net?.match?.id || null;
   mode='menu';if(bgm)setMusicGain(.2);show('sRes');
-  if(net){if(net.host)netSend({t:'res',w:win});win?sfx.win():sfx.lose();$('resT').textContent=win?'YOU WIN':'YOU LOSE';$('resT').className='big '+(win?'win':'lose');$('resS').textContent='온라인 대전';$('resA').textContent='한 판 더';$('resB').textContent='방 나가기';return}
+  if(net){if(net.host){if(net.match)netSnap();netSend({t:'res',w:win})}win?sfx.win():sfx.lose();$('resT').textContent=win?'YOU WIN':'YOU LOSE';$('resT').className='big '+(win?'win':'lose');$('resS').textContent=net.match?'빠른 대전':'온라인 대전';$('resA').textContent=net.match?'다시 매칭':'한 판 더';$('resB').textContent='방 나가기';if(net.match)matchResult(net,win);return}
   $('resB').textContent='캐릭터 변경';
   if(win){streak++; if(streak>best){best=streak;try{localStorage.setItem('wqre_best',best)}catch(e){}} sfx.win();
     $('resT').textContent='YOU WIN';$('resT').className='big win';$('resS').textContent=streak+'연승 중 · 다음 상대는 조금 더 강합니다';$('resA').textContent='다음 상대 뽑기'}
   else{sfx.lose();$('resT').textContent='YOU LOSE';$('resT').className='big lose';$('resS').textContent=(streak?streak+'연승에서 멈췄습니다 · ':'')+'최고 연승 '+best;streak=0;$('resA').textContent='다시 도전'}
 }
-$('resA').onclick=()=>{initAudio();unlockVids();if(net){toSelect();netLobby()}else roulette()};
+$('resA').onclick=()=>{initAudio();unlockVids();if(lastOnlineKind){const kind=lastOnlineKind;netClose();toSelect();startQueue(kind)}else if(net){toSelect();netLobby()}else roulette()};
 $('resB').onclick=()=>{initAudio();streak=0;if(net)netLeave();toSelect()};
 
 /* ---------- online ---------- */
@@ -355,34 +359,71 @@ const ME=()=>net&&!net.host?C:P;
 for(const k in sfx){const o=sfx[k];sfx[k]=(...a)=>{if(net&&net.host&&mode==='fight'&&net.ev.length<40)net.ev.push([k,...a]);return o(...a)}}
 function netBox(h){if(!h){$('sNet').classList.remove('show');return}$('netBox').innerHTML=h;$('sNet').classList.add('show');const x=$('nX');if(x)x.onclick=()=>{netLeave();netBox()}}
 function netSend(m){try{if(net&&net.conn&&net.conn.open)net.conn.send(m)}catch(e){}}
-function loadPeer(cb){if(window.Peer)return cb();const e=document.createElement('script');e.src='assets/peerjs.min.js';e.onload=cb;e.onerror=()=>netErr('온라인 모듈을 불러오지 못했습니다.');document.head.appendChild(e)}
+let peerScript;
+function loadPeer(cb, fail=()=>netErr('온라인 모듈을 불러오지 못했습니다.')){
+  if(window.Peer)return cb();
+  if(!peerScript)peerScript=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='assets/peerjs.min.js';
+    script.onload=resolve;
+    script.onerror=()=>{peerScript=null;script.remove();reject()};
+    document.head.appendChild(script);
+  });
+  peerScript.then(cb,fail);
+}
 function mkPeer(id){const o={debug:0},ps=NQ.get('ps');if(ps){const q=ps.split(':');o.host=q[0];o.port=+q[1];o.path='/';o.secure=false}return id?new Peer(id,o):new Peer(o)}
-function netErr(t){const n=net;net=null;try{if(n&&n.pr)n.pr.destroy()}catch(e){}netUI();netBox('<h3>온라인 대전</h3><p>'+t+'</p><button class="btn ghost" id="nX">확인</button>')}
+function netErr(t){netClose();netUI();netBox('<h3>온라인 대전</h3><p>'+t+'</p><button class="btn ghost" id="nX">확인</button>')}
 function netPErr(e){const t=e&&e.type;if(net&&net.ok&&t!=='network'&&t!=='disconnected')return;netErr(t==='peer-unavailable'?'그 코드의 방을 찾지 못했습니다. 코드를 다시 확인하세요.':t==='unavailable-id'?'방 코드가 겹쳤습니다. 다시 만들어 주세요.':'연결하지 못했습니다. 이 환경에서 외부 접속이 막혀 있거나 네트워크가 불안정합니다. ('+(t||'error')+')')}
 function netHost(){netBox('<h3>방 만드는 중…</h3>');loadPeer(()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<6;i++)code+=a[Math.floor(Math.random()*a.length)];
   let pr;try{pr=mkPeer('qddup-'+code)}catch(e){return netErr('연결하지 못했습니다.')}net={host:true,pr,code,conn:null,ev:[],acc:0,cn:0,pk:null,rpk:null,ok:false};
   pr.on('open',()=>{if(!net||net.ok)return;netBox('<h3>방 코드</h3><div class="code">'+code+'</div><p>상대에게 이 코드를 보내세요.<br>상대가 들어오면 자동으로 넘어갑니다.</p><button class="btn ghost" id="nCopy">초대 링크 복사</button><button class="btn ghost" id="nX">취소</button>');
     $('nCopy').onclick=()=>{const u=location.origin+location.pathname+'?room='+code;try{navigator.clipboard.writeText(u).then(()=>{$('nCopy').textContent='복사했습니다'},()=>{prompt('초대 링크',u)})}catch(e){prompt('초대 링크',u)}}});
   pr.on('connection',c=>{if(!net||net.conn){try{c.close()}catch(e){}return}netConn(c)});pr.on('error',netPErr)})}
-function netJoinUI(pre){netBox('<h3>방 참가</h3><p>상대가 보낸 6자리 코드를 입력하세요.</p><input id="nIn" maxlength="6" autocomplete="off" autocapitalize="characters" value="'+(pre||'')+'"><button class="btn" id="nGo">참가</button><button class="btn ghost" id="nX">취소</button>');
-  $('nGo').onclick=()=>{initAudio();unlockVids();const c=$('nIn').value.trim().toUpperCase();if(c.length<4)return;netJoin(c)}}
+function netJoinUI(prefill){
+  netBox('<form id="joinForm" class="joinForm"><h3>방 참가</h3><label for="nIn">6자리 방 코드</label><input id="nIn" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" required><button class="btn" id="nGo">참가</button><button class="btn ghost" type="button" id="nX">취소</button></form>');
+  const input=$('nIn');
+  input.value=prefill || '';
+  input.oninput=()=>{
+    input.value=input.value.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,6);
+    input.setCustomValidity('');
+  };
+  $('joinForm').onsubmit=event=>{
+    event.preventDefault();
+    const code=input.value.trim().toUpperCase();
+    if(!/^[A-Z2-9]{6}$/.test(code)){
+      input.setCustomValidity('6자리 방 코드를 입력해 주세요.');
+      input.reportValidity();
+      return;
+    }
+    initAudio();unlockVids();netJoin(code);
+  };
+  input.focus();
+}
 function netJoin(code){netBox('<h3>접속 중…</h3><button class="btn ghost" id="nX">취소</button>');loadPeer(()=>{let pr;try{pr=mkPeer()}catch(e){return netErr('연결하지 못했습니다.')}net={host:false,pr,code,conn:null,ev:[],cn:0,pk:null,rpk:null,ok:false,lh:'',it:0};
   pr.on('open',()=>{if(!net)return;netConn(pr.connect('qddup-'+code,{reliable:true,serialization:'json'}));setTimeout(()=>{if(net&&net.pr===pr&&!net.ok)netErr('시간 안에 연결되지 않았습니다. 코드를 확인하거나 다른 네트워크에서 시도하세요.')},15000)});pr.on('error',netPErr)})}
-function netConn(c){net.conn=c;const n=net;c.on('open',()=>{if(net!==n)return;net.ok=true;net.last=performance.now();netBox();toSelect();netLobby()});c.on('data',netRecv);c.on('close',()=>{if(net===n)netDrop()});c.on('error',()=>{if(net===n)netDrop()})}
-function netUI(){const on=!!(net&&net.ok);$('netRow').style.display=on?'none':'';if(!on){$('go').disabled=!pick;$('go').textContent=pick?CH[pick].name+' 로 대전 시작':'대전 시작'}}
-function netLobby(){netUI();if(net.my)pick=net.my;$('go').disabled=!pick;$('go').textContent=pick?CH[pick].name+' 로 준비 완료':'캐릭터를 고르세요';$('best').textContent='온라인 대전 · 방 '+net.code+(net.rpk?' · 상대 준비 완료':' · 상대 연결됨')}
+function netConn(c){
+  net.conn=c;
+  const n=net, active=()=>net===n&&n.conn===c;
+  c.on('open',()=>{if(!active())return;n.ok=true;n.last=performance.now();netBox();toSelect();netLobby()});
+  c.on('data',message=>{if(active())netRecv(message)});
+  const disconnect=()=>{if(active()&&(!n.match||n.ok))netDrop()};
+  c.on('close',disconnect);
+  c.on('error',disconnect);
+}
+function netUI(){const on=!!(net&&net.ok);$('netRow').style.display=on?'none':'';$('onlineRow').style.display=on?'none':'';if(!on){$('go').disabled=!pick;$('go').textContent=pick?CH[pick].name+' 로 대전 시작':'대전 시작'}}
+function netLobby(){netUI();if(net.my)pick=net.my;$('go').disabled=!pick;$('go').textContent=pick?CH[pick].name+' 로 준비 완료':'캐릭터를 고르세요';$('best').textContent=net.match?((net.match.kind==='ranked'?'랭킹전':'빠른 대전')+' · '+net.match.opponent+(net.rpk?' 준비 완료':'')):'온라인 대전 · 방 '+net.code+(net.rpk?' · 상대 준비 완료':' · 상대 연결됨')}
 function netTry(){if(!net||!net.host||!net.pk||!net.rpk)return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
 function netBegin(m){net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
-function netRecv(m){if(!net)return;net.last=performance.now();if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}
+function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}if(!m||typeof m!=='object')return;net.last=performance.now();
   if(m.t==='s'){if(!net.host&&mode==='fight')net.snap=m}
-  else if(m.t==='i'){if(net.host){rh.l=m.h[0];rh.r=m.h[1];rh.up=m.h[2];rh.down=m.h[3];for(const k of m.p||'')if(k in rbuf)rbuf[k]=.16}}
-  else if(m.t==='pick'){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))$('best').textContent='온라인 대전 · 방 '+net.code+' · 상대 준비 완료';netTry()}
-  else if(m.t==='start'){if(!net.host){initAudio();netBegin(m)}}
+  else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,4))if('pkst'.includes(k))rbuf[k]=.16}}
+  else if(m.t==='pick'&&ORDER.includes(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
+  else if(m.t==='start'){if(!net.host&&ORDER.includes(m.p)&&ORDER.includes(m.c)&&Number.isInteger(m.stg)&&STAGES[m.stg]){initAudio();netBegin(m)}}
   else if(m.t==='bye'){netDrop()}
-  else if(m.t==='res'){if(!net.host&&mode==='fight'){if(cut)endCut();result(!m.w)}}}
-function netClose(){const n=net;net=null;if(!n)return;try{if(n.conn)n.conn.close()}catch(e){}try{n.pr.destroy()}catch(e){}if(cut)endCut();netUI()}
+  else if(m.t==='res'){if(!net.host&&mode==='fight'&&typeof m.w==='boolean'){if(net.snap){netApply(net.snap);net.snap=null}if(net.match?.kind==='ranked'&&!(phase==='ko'&&(P.wins>=2||C.wins>=2)&&m.w===(P.wins>C.wins)))return;if(cut)endCut();result(!m.w)}}}
+function netClose(){const n=net;net=null;if(!n)return;if(n.match)releaseQueue(n.match.id);try{if(n.conn)n.conn.close()}catch(e){}try{n.pr.destroy()}catch(e){}if(cut)endCut();netUI()}
 function netLeave(){netClose();$('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다'}
-function netDrop(){if(!net)return;netClose();toSelect();netBox('<h3>연결 끊김</h3><p>상대와의 연결이 끊어졌습니다.</p><button class="btn ghost" id="nX">확인</button>')}
+function netDrop(){if(!net)return;const showingResult=$('sRes').classList.contains('show');netClose();if(showingResult)return;toSelect();netBox('<h3>연결 끊김</h3><p>상대와의 연결이 끊어졌습니다.</p><button class="btn ghost" id="nX">확인</button>')}
 function netSnap(){const F=f=>{const o={};for(const k in f){const v=f[k];if(v===null||typeof v==='number'||typeof v==='string'||typeof v==='boolean')o[k]=v}o.assist=f.assist||null;o.trail=f.trail;return o},W=o=>o===P?0:1;
   const m={t:'s',P:F(P),C:F(C),ph:phase,pt,rd:round,tm:timer,cam:camX,sh:shake,hs:hitstop,sl:slow,fl:flash,msg,cb:[combo.n,combo.t,combo.who?W(combo.who):-1],pj:proj.map(p=>Object.assign({},p,{o:W(p.o)})),fx:fx.length>170?fx.slice(-170):fx,
     zn:zone&&Object.assign({},zone,{o:W(zone.o)}),fd:flood&&Object.assign({},flood,{o:W(flood.o)}),fz:freeze&&{t:freeze.t,f:W(freeze.f)},cu:cut?W(cut.f):-1,cn:net.cn,ev:net.ev};
@@ -397,14 +438,188 @@ function netGuest(dt){if(net.snap){netApply(net.snap);net.snap=null}
   let pr='';for(const k of 'pkst')if(buf[k]>0){pr+=k;buf[k]=0}const h=''+held.l+held.r+held.up+held.down;net.it+=dt;
   if(pr||h!==net.lh||net.it>.2){net.lh=h;net.it=0;netSend({t:'i',h:[held.l,held.r,held.up,held.down],p:pr})}}
 setInterval(()=>{if(!net||!net.ok)return;netSend({t:'p'});if(performance.now()-net.last>15000)netDrop()},1000);addEventListener('pagehide',()=>{netSend({t:'bye'})});
-$('tGo').onclick=()=>{initAudio();unlockVids();sfx.sel();toSelect()};
+$('titleForm').onsubmit=event=>{
+  event.preventDefault();
+  const input=$('nick'), name=input.value.normalize('NFKC').trim();
+  if(!/^[\p{L}\p{N}_ -]{2,16}$/u.test(name)){
+    input.setCustomValidity('한글, 영문, 숫자, 공백, _ 또는 -를 사용해 2~16자로 입력해 주세요.');
+    input.reportValidity();
+    return;
+  }
+  playerName=name;
+  try{localStorage.setItem('qddup_nickname',name)}catch(e){}
+  initAudio();unlockVids();sfx.sel();toSelect();
+  const room=NQ.get('room');
+  if(room&&/^[A-Z2-9]{6}$/i.test(room))netJoinUI(room.toUpperCase());
+};
+$('nick').oninput=()=> $('nick').setCustomValidity('');
 $('nHost').onclick=()=>{initAudio();unlockVids();netHost()};$('nJoin').onclick=()=>{initAudio();netJoinUI()};
-if(NQ.get('room'))setTimeout(()=>netJoinUI(NQ.get('room').toUpperCase().slice(0,6)),600);
+
+
+/* ---------- public matchmaking ---------- */
+const ONLINE_API=document.querySelector('meta[name="online-api"]')?.content.replace(/\/$/,'');
+let playerName='', playerToken='', queueSearch=null, lastOnlineKind=null, lastOnlineMatch=null;
+try{
+  playerName=localStorage.getItem('qddup_nickname') || '';
+  playerToken=localStorage.getItem('qddup_player_token') || '';
+}catch(e){}
+$('nick').value=playerName;
+function onlineToken(){
+  if(!/^[a-f0-9]{64}$/.test(playerToken)){
+    playerToken=Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('');
+    try{localStorage.setItem('qddup_player_token',playerToken)}catch(e){}
+  }
+  return playerToken;
+}
+async function onlineApi(path,body,keepalive=false){
+  const options=body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json',
+    Authorization:'Bearer '+onlineToken()},body:JSON.stringify(body),keepalive};
+  const response=await fetch(ONLINE_API+path,{...options,signal:AbortSignal.timeout(10000)});
+  if(!response.ok)throw new Error('온라인 서버 오류');
+  return response.json();
+}
+function releaseQueue(id){
+  return onlineApi('/leave',{id},true).catch(()=>null);
+}
+function onlineMessage(title,message){
+  netBox('<h3></h3><p role="status"></p><button class="btn ghost" id="nX">닫기</button>');
+  $('netBox').querySelector('h3').textContent=title;
+  $('netBox').querySelector('p').textContent=message;
+}
+async function startQueue(kind){
+  if(net||queueSearch)return;
+  if(!ONLINE_API){onlineMessage('온라인 대전','매칭 서버 연결이 준비되면 이용할 수 있습니다.');return}
+  const search={kind,cancelled:false,id:null};
+  queueSearch=search;
+  onlineMessage(kind==='ranked'?'랭킹전':'빠른 대전','상대를 찾는 중…');
+  $('nX').textContent='취소';
+  $('nX').onclick=()=>{
+    search.cancelled=true;
+    netBox();
+    releaseQueue(search.id).then(reply=>{if(reply?.id)releaseQueue(reply.id)});
+  };
+  try{
+    const deadline=Date.now()+120000;
+    while(!search.cancelled&&Date.now()<deadline){
+      const {match}=await onlineApi('/queue',{kind,nickname:playerName});
+      if(search.cancelled){if(match)await releaseQueue(match.id);else await releaseQueue(null);return}
+      if(match){
+        search.id=match.id;
+        $('netBox').querySelector('p').textContent=match.opponent+' 님과 연결 중…';
+        await connectQueue(search,match);
+        return;
+      }
+      await new Promise(resolve=>setTimeout(resolve,1600));
+    }
+    if(!search.cancelled){await releaseQueue(null);onlineMessage('온라인 대전','아직 대기 중인 상대가 없어요. 다시 시도해 주세요.')}
+  }catch(e){
+    await releaseQueue(search.id);
+    if(!search.cancelled){netClose();onlineMessage('온라인 대전','상대와 연결하지 못했어요. 다시 시도해 주세요.')}
+  }finally{
+    if(queueSearch===search)queueSearch=null;
+  }
+}
+async function connectQueue(search,match){
+  await new Promise((resolve,reject)=>loadPeer(resolve,reject));
+  if(search.cancelled)return;
+  const host=!!match.host, base='qddup-match-'+match.id;
+  await new Promise((resolve,reject)=>{
+    const pr=mkPeer(base+(host?'-host':'-guest'));
+    const state={host,pr,match,code:'',conn:null,ev:[],cn:0,pk:null,rpk:null,ok:false,lh:'',it:0};
+    net=state;
+    const timeout=setTimeout(()=>reject(new Error('connection_timeout')),25000);
+    const attach=connection=>{
+      if(search.cancelled||net!==state||state.conn){connection.close();return}
+      netConn(connection);
+      connection.on('open',()=>{if(net===state&&state.conn===connection){clearTimeout(timeout);resolve()}});
+      connection.on('close',()=>{
+        if(!state.ok&&net===state&&state.conn===connection){state.conn=null;if(!host)setTimeout(connect,1500)}
+      });
+    };
+    pr.on('connection',connection=>{
+      if(host&&connection.peer===base+'-guest')attach(connection);
+      else connection.close();
+    });
+    pr.on('error',error=>{
+      if(!state.ok&&error.type==='peer-unavailable'&&!host){
+        const failed=state.conn;
+        state.conn=null;
+        if(failed)failed.close();
+        setTimeout(connect,1500);
+      }else if(!state.ok){clearTimeout(timeout);reject(error)}
+      else if(net===state)netPErr(error);
+    });
+    function connect(){
+      if(search.cancelled||net!==state||state.conn)return;
+      attach(pr.connect(base+'-host',{reliable:true,serialization:'json'}));
+    }
+    pr.on('open',()=>{if(!host)connect()});
+    $('nX').onclick=()=>{
+      search.cancelled=true;
+      clearTimeout(timeout);
+      netClose();
+      netBox();
+      resolve();
+    };
+  });
+}
+async function matchResult(state,win){
+  if(state.match.kind!=='ranked'){releaseQueue(state.match.id);return}
+  const id=state.match.id;
+  const winner=(state.host===win)?'host':'guest';
+  const status=$('resS');
+  status.textContent='랭킹전 · 점수 확인 중…';
+  try{
+    let message='상대 결과를 기다리는 중 · 점수 반영 대기';
+    for(let attempt=0;attempt<5;attempt++){
+      const reply=await onlineApi('/result',{id,winner});
+      if(reply.confirmed){message='랭킹전 · 누적 순위에 반영됨';break}
+      if(reply.disputed){message='양쪽 결과가 달라 점수가 반영되지 않았어요.';break}
+      await new Promise(resolve=>setTimeout(resolve,1200));
+    }
+    if(lastOnlineMatch===id&&$('sRes').classList.contains('show'))status.textContent=message;
+  }catch(e){
+    if(lastOnlineMatch===id&&$('sRes').classList.contains('show'))status.textContent='랭킹 서버에서 결과를 확인하지 못했어요.';
+  }finally{releaseQueue(id)}
+}
+async function showLeaderboard(){
+  onlineMessage('누적 순위',ONLINE_API?'불러오는 중…':'랭킹 서버 연결이 준비되면 이용할 수 있습니다.');
+  if(!ONLINE_API)return;
+  const status=$('netBox').querySelector('p');
+  try{
+    const {players}=await onlineApi('/leaderboard');
+    if(!status.isConnected||!$('sNet').classList.contains('show'))return;
+    if(!players.length){status.textContent='아직 기록된 랭킹전이 없어요.';return}
+    const table=document.createElement('table');
+    table.className='rankList';
+    const header=table.createTHead().insertRow();
+    for(const label of ['순위','닉네임','점수','승','패']){
+      const cell=document.createElement('th');
+      cell.scope='col';
+      cell.textContent=label;
+      header.append(cell);
+    }
+    const rows=table.createTBody();
+    players.forEach((player,index)=>{
+      const row=rows.insertRow();
+      for(const value of [index+1,player.nickname,player.points,player.wins,player.losses]){
+        row.insertCell().textContent=value;
+      }
+    });
+    status.replaceWith(table);
+  }catch(e){status.textContent='순위표를 불러오지 못했어요. 다시 시도해 주세요.'}
+}
+$('quickMatch').onclick=()=>startQueue('quick');
+$('rankedMatch').onclick=()=>startQueue('ranked');
+$('leaderboard').onclick=showLeaderboard;
+addEventListener('pagehide',()=>{
+  if(queueSearch||net?.match)releaseQueue(net?.match?.id || queueSearch?.id || null);
+});
 
 /* ---------- input ---------- */
 const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0};
 const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t'};
-addEventListener('keydown',e=>{if(audioSettings.open||e.target.matches?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
+addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{
   const dn=e=>{e.preventDefault();initAudio();buf[b.dataset.k]=.16;b.classList.add('on')},up=e=>{e.preventDefault();b.classList.remove('on')};
@@ -416,12 +631,12 @@ document.querySelectorAll('.pb[data-k]').forEach(b=>{
   function end(e){if(e.pointerId!==pid)return;pid=null;held.l=held.r=held.up=held.down=0;kn.style.transform=''}
   d.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();pid=e.pointerId;try{d.setPointerCapture(pid)}catch(_){ }upd(e)});
   d.addEventListener('pointermove',e=>{if(e.pointerId===pid)upd(e)});d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end)})();
-addEventListener('contextmenu',e=>e.preventDefault());
+$('app').addEventListener('contextmenu',e=>e.preventDefault());
 /* iOS Safari: stop double-tap / pinch zoom on the play area, and clear stuck inputs */
 (function(){const app=$('app'),opt={passive:false},pv=e=>{if(e.cancelable)e.preventDefault()};
   ['touchstart','touchmove','touchend'].forEach(t=>app.addEventListener(t,pv,opt));
   ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,pv,opt));
-  document.addEventListener('dblclick',pv,opt);
+  app.addEventListener('dblclick',pv,opt);
   let lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&!(e.target.closest&&e.target.closest('.scr')))pv(e);lt=n},opt);
   const reset=()=>{held.l=held.r=held.up=held.down=0;buf.p=buf.k=buf.s=buf.t=0;document.querySelectorAll('.pb.on').forEach(b=>b.classList.remove('on'));$('knob').style.transform=''};
   addEventListener('blur',reset);addEventListener('pagehide',reset);document.addEventListener('visibilitychange',()=>{if(document.hidden)reset()});
@@ -756,7 +971,7 @@ window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,s
   const jobs=[];for(const k of ORDER){jobs.push(loadImg(k,'assets/'+k+'.webp'),loadImg(k+'_face','assets/'+k+'_face.webp'))}
   for(const s of STAGES)jobs.push(loadImg('bg_'+s.id,'assets/bg_'+s.id+'.jpg'));
   await Promise.all(jobs);try{await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))])}catch(e){}
-  mkVids();buildSelect();fit();$('load').style.display='none';show(NQ.get('room')?'sSel':'sTitle');requestAnimationFrame(loop);
+  mkVids();buildSelect();fit();$('load').style.display='none';show('sTitle');requestAnimationFrame(loop);
 })();
 </script>
 </body>
