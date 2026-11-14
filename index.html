@@ -47,6 +47,13 @@ canvas{width:100%;height:100%;display:block}
   #hint{display:none}
 }
 #snd{position:fixed;right:10px;top:calc(8px + env(safe-area-inset-top));z-index:30;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(21,19,46,.8);color:var(--txt);font:600 12px 'IBM Plex Sans KR',sans-serif;cursor:pointer}
+#audioSettings{width:min(90vw,350px);max-height:90vh;padding:24px;border:2px solid var(--line);border-radius:20px;background:var(--pan);color:var(--txt)}
+#audioSettings::backdrop{background:rgba(7,6,15,.78)}
+#audioSettings form{display:grid;gap:18px}
+#audioSettings h2{margin:0;font-family:'Black Han Sans',sans-serif;font-size:24px}
+#audioSettings label{display:flex;justify-content:space-between;gap:12px;font-size:15px}
+#audioSettings input{display:block;width:100%;margin:8px 0 0;accent-color:#c9a6ff;touch-action:pan-x}
+#audioSettings .btn{justify-self:center}
 #snd.in{position:absolute;left:50%;right:auto;top:14%;transform:translateX(-50%);width:auto;height:auto;padding:2px 9px;font-size:10px;border-radius:999px;opacity:.75}
 .scr{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:14px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom));background:radial-gradient(130% 90% at 50% -10%,#2a2463 0%,#0f0d27 55%,#07060f 100%);overflow:auto;touch-action:pan-y}
 .scr.show{display:flex}
@@ -114,7 +121,21 @@ canvas{width:100%;height:100%;display:block}
     <div id="hint">왼쪽 패드: 이동 · 위 점프 · 아래 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
   </div>
 </div>
-<button id="snd" aria-label="소리 켜기/끄기">♪ON</button>
+<button id="snd" type="button" aria-label="소리 설정" aria-haspopup="dialog" aria-controls="audioSettings">♪</button>
+<dialog id="audioSettings" aria-labelledby="audioHeading">
+  <form method="dialog">
+    <h2 id="audioHeading">소리 설정</h2>
+    <div>
+      <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume">100%</output></label>
+      <input id="musicVolume" type="range" min="0" max="100" value="100">
+    </div>
+    <div>
+      <label for="effectsVolume">효과음 <output id="effectsValue" for="effectsVolume">100%</output></label>
+      <input id="effectsVolume" type="range" min="0" max="100" value="100">
+    </div>
+    <button class="btn ghost" type="submit">닫기</button>
+  </form>
+</dialog>
 
 <section id="sTitle" class="scr"><img id="ttl" src="assets/title.jpg" alt="큐떱대전"><button class="btn" id="tGo">시작하기</button></section>
 <section id="sSel" class="scr">
@@ -174,10 +195,39 @@ const IMG={};
 function loadImg(k,src){return new Promise(r=>{const i=new Image();i.onload=()=>{IMG[k]=i;r()};i.onerror=()=>r();i.src=src})}
 
 /* ---------- audio ---------- */
-let AC=null,master,musG,sfxG,nbuf,muted=false,bgm=null;
+let AC=null,master,musG,sfxG,videoG,nbuf,bgm=null;
+let musicLevel=1, effectsLevel=1, musicGain=.5;
+const videoSources=new WeakSet();
+try{
+  const saved=JSON.parse(localStorage.getItem('qddup_audio'));
+  if(Number.isInteger(saved?.music)&&saved.music>=0&&saved.music<=100)musicLevel=saved.music/100;
+  if(Number.isInteger(saved?.effects)&&saved.effects>=0&&saved.effects<=100)effectsLevel=saved.effects/100;
+}catch(e){}
+function setMusicGain(gain){
+  musicGain=gain;
+  if(musG)musG.gain.value=gain*musicLevel;
+  if(!bgSrc)bgA.volume=.6*musicLevel*(gain/.5);
+  bgA.muted=musicLevel===0;
+}
+function setVideoVolume(video){
+  if(AC&&!videoSources.has(video)){
+    try{
+      AC.createMediaElementSource(video).connect(videoG);
+      videoSources.add(video);
+    }catch(e){}
+  }
+  video.volume=videoSources.has(video)?1:effectsLevel;
+  video.muted=effectsLevel===0;
+}
+function setEffectsLevel(level){
+  effectsLevel=level;
+  if(sfxG)sfxG.gain.value=.9*level;
+  if(videoG)videoG.gain.value=level;
+  if(cut)setVideoVolume(cut.v);
+}
 function initAudio(){ if(AC){ if(AC.state==='suspended')AC.resume(); return }
-  try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.9;master.connect(AC.destination);
-    musG=AC.createGain();musG.gain.value=.5;musG.connect(master);sfxG=AC.createGain();sfxG.gain.value=.9;sfxG.connect(master);
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.9;master.connect(AC.destination);
+    musG=AC.createGain();musG.gain.value=musicGain*musicLevel;musG.connect(master);sfxG=AC.createGain();sfxG.gain.value=.9*effectsLevel;sfxG.connect(master);videoG=AC.createGain();videoG.gain.value=effectsLevel;videoG.connect(AC.destination);
     nbuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=nbuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}catch(e){AC=null}}
 function tone(f,dur,type,vol,dest,t0,f2){ if(!AC)return; const t=t0||AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);
   if(f2)o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -213,14 +263,40 @@ bgA.volume=.6;
 let bgSrc=null;
 function playBgm(id){
   if(!bgSrc&&AC){
-    try{bgSrc=AC.createMediaElementSource(bgA);bgSrc.connect(musG)}catch(e){}
+    try{bgSrc=AC.createMediaElementSource(bgA);bgSrc.connect(musG);bgA.volume=.6}catch(e){}
   }
-  if(musG)musG.gain.value=.5;
-  bgA.muted=muted;
+  setMusicGain(.5);
   bgm={id,beat:0};
   if(bgA.paused)bgA.play().catch(()=>{});
 }
-$('snd').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();muted=!muted;if(bgA)bgA.muted=muted;if(cut)cut.v.muted=muted;initAudio();if(master)master.gain.value=muted?0:.9;$('snd').textContent=muted?'♪OFF':'♪ON'});
+const audioSettings=$('audioSettings');
+function syncAudioSettings(){
+  const music=Math.round(musicLevel*100), effects=Math.round(effectsLevel*100);
+  $('musicVolume').value=music;
+  $('musicValue').value=music+'%';
+  $('effectsVolume').value=effects;
+  $('effectsValue').value=effects+'%';
+}
+function changeAudioSettings(event){
+  if(event.target.id==='musicVolume'){
+    musicLevel=Number(event.target.value)/100;
+    setMusicGain(musicGain);
+  }else{
+    setEffectsLevel(Number(event.target.value)/100);
+  }
+  syncAudioSettings();
+  try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100)}))}catch(e){}
+}
+$('snd').onclick=()=>{
+  initAudio();
+  syncAudioSettings();
+  audioSettings.showModal();
+  // Stop held game inputs when keyboard focus moves to the settings.
+  for(const key of Object.keys(held))held[key]=0;
+  for(const key of Object.keys(buf))buf[key]=0;
+};
+$('musicVolume').oninput=changeAudioSettings;
+$('effectsVolume').oninput=changeAudioSettings;
 
 /* ---------- screens ---------- */
 let pick=null,opp=null,stage=null,streak=0,best=0,lastOpp=null;
@@ -263,7 +339,7 @@ function stageSpin(){
       if(last){stage=STAGES[window.__stg!==undefined?window.__stg:fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(startMatch,1100)} },t) }
 }
 function result(win){
-  mode='menu';if(bgm&&musG)musG.gain.value=.2;show('sRes');
+  mode='menu';if(bgm)setMusicGain(.2);show('sRes');
   if(net){if(net.host)netSend({t:'res',w:win});win?sfx.win():sfx.lose();$('resT').textContent=win?'YOU WIN':'YOU LOSE';$('resT').className='big '+(win?'win':'lose');$('resS').textContent='온라인 대전';$('resA').textContent='한 판 더';$('resB').textContent='방 나가기';return}
   $('resB').textContent='캐릭터 변경';
   if(win){streak++; if(streak>best){best=streak;try{localStorage.setItem('wqre_best',best)}catch(e){}} sfx.win();
@@ -328,7 +404,7 @@ if(NQ.get('room'))setTimeout(()=>netJoinUI(NQ.get('room').toUpperCase().slice(0,
 /* ---------- input ---------- */
 const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0};
 const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t'};
-addEventListener('keydown',e=>{const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
+addEventListener('keydown',e=>{if(audioSettings.open||e.target.matches?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{
   const dn=e=>{e.preventDefault();initAudio();buf[b.dataset.k]=.16;b.classList.add('on')},up=e=>{e.preventDefault();b.classList.remove('on')};
@@ -355,11 +431,11 @@ addEventListener('contextmenu',e=>e.preventDefault());
 const VID={};let cut=null,usedSp={},vUn=false;
 function mkVids(){for(const sk of SVK)for(const c of ORDER){if(sk==='2'&&SPN[c]<2)continue;if(sk==='T'&&!TAG[c])continue;const k=c+sk,v=document.createElement('video');v.preload=sk?'metadata':'auto';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.src='assets/sp_'+(VAL[k]||k)+'.mp4';$('cut').insertBefore(v,$('cutH'));VID[k]=v}
   $('cut').addEventListener('pointerdown',e=>{e.preventDefault();if(cut&&cut.t>.5&&!net)endCut()})}
-function unlockVids(){if(vUn)return;vUn=true;for(const k in VID){const v=VID[k];try{v.muted=true;const p=v.play();if(p&&p.then)p.then(()=>{v.pause();try{v.currentTime=0}catch(e){}}).catch(()=>{})}catch(e){}}}
+function unlockVids(){if(vUn)return;vUn=true;for(const k in VID){const v=VID[k];try{v.muted=true;const p=v.play();if(p&&p.then)p.then(()=>{if(cut?.v===v)return;v.pause();try{v.currentTime=0}catch(e){}}).catch(()=>{})}catch(e){}}}
 function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none':'';const vk=f.ch+SVK[f.sv||0],v=VID[vk];if(!v||v.error||v.readyState<1){freeze={f,t:.5};sfx.charge();return}
   const key=vk+(f.cpu?'c':'p'),rate=usedSp[key]?1.9:1;usedSp[key]=1;
   cut={f,v,vk,t:0,max:((v.duration||5)/rate)+1.5};try{v.currentTime=0}catch(e){}
-  v.playbackRate=rate;v.muted=muted;v.volume=1;v.classList.toggle('flip',f.face<0);v.classList.add('on');$('cut').classList.add('on');if(musG)musG.gain.value=.08;
+  v.playbackRate=rate;setVideoVolume(v);v.classList.toggle('flip',f.face<0);v.classList.add('on');$('cut').classList.add('on');setMusicGain(.08);
   v.onended=()=>endCut();try{const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;const q=v.play();if(q&&q.catch)q.catch(()=>endCut())})}catch(e){endCut()}}
 function endCut(){if(!cut)return;const f=cut.f,v=cut.v;cut=null;v.onended=null;try{v.pause()}catch(e){}v.classList.remove('on');$('cut').classList.remove('on');$('cutT').classList.remove('on');f.t=0;freeze={f,t:.3};sfx.charge()}
 
@@ -398,7 +474,7 @@ function applyHit(f,o,a){
   shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8);
   fx.push({k:'d',x:o.x,y:GROUND-o.y-250,t:0,d:.7,txt:Math.round(a.dmg)});
   if(o.hp<=0&&phase==='fight'){setSt(o,'ko');o.down=false;o.vy=Math.max(o.vy,460);o.y=Math.max(o.y,.01);o.vx=f.face*Math.max(a.push,330);
-    phase='ko';pt=0;slow=1.0;flash=.5;sfx.ko();shake=22;say('K.O.',2.2);f.wins++;f.winner=true;o.winner=false;if(bgm&&musG)musG.gain.value=.2}
+    phase='ko';pt=0;slow=1.0;flash=.5;sfx.ko();shake=22;say('K.O.',2.2);f.wins++;f.winner=true;o.winner=false;if(bgm)setMusicGain(.2)}
 }
 function tryHit(f,o,a){
   if(f.hitDone||o.st==='ko')return false;const dx=(o.x-f.x)*f.face;
@@ -521,7 +597,7 @@ function update(dt){
   if(net&&!net.host){netGuest(dt);return}
   if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>(window.__cutT0||3.0)&&cut.v.currentTime<4.7);if(!net&&cut.t>.5&&(buf.p>0||buf.k>0||buf.s>0||buf.t>0)){buf.p=buf.k=buf.s=buf.t=0;endCut()}else if(cut.t>cut.max)endCut();return}
   if(hitstop>0){hitstop-=dt;return}
-  if(freeze){freeze.t-=dt;freeze.f.t+=dt;if(freeze.t<=0){const f=freeze.f;freeze=null;fire(f);if(musG)musG.gain.value=.5;}return}
+  if(freeze){freeze.t-=dt;freeze.f.t+=dt;if(freeze.t<=0){const f=freeze.f;freeze=null;fire(f);setMusicGain(.5);}return}
   let sdt=dt;if(slow>0){slow-=dt;sdt=dt*.28}
   pt+=dt;
   if(phase==='intro'){if(pt>1.15&&pt-dt<=1.15){say('FIGHT!',.7);sfx.bell()}if(pt>1.75)phase='fight'}
@@ -529,7 +605,7 @@ function update(dt){
       if(P.hp!==C.hp){const w=P.hp>C.hp?P:C;w.wins++;w.winner=true;(w===P?C:P).winner=false}else P.winner=C.winner=false}}
   else if(phase==='ko'||phase==='time'){
     if(pt>1.5&&pt-dt<=1.5){for(const f of[P,C])if(f.winner&&f.st!=='ko'){setSt(f,'win');f.vx=0;if(f.hp>=100)say('PERFECT',1.2)}}
-    if(pt>3.3){ if(musG)musG.gain.value=.5; if(P.wins>=2||C.wins>=2){result(P.wins>C.wins);return} round++;startRound();return } }
+    if(pt>3.3){ setMusicGain(.5); if(P.wins>=2||C.wins>=2){result(P.wins>C.wins);return} round++;startRound();return } }
   // inputs
   const I=P.inp;I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;
   if(net){const J=C.inp;J.l=rh.l;J.r=rh.r;J.up=rh.up;J.down=rh.down;J.p=rbuf.p>0?1:0;J.k=rbuf.k>0?1:0;J.s=rbuf.s>0?1:0;J.t=rbuf.t>0?1:0}
@@ -673,7 +749,7 @@ function fit(){const r=cv.getBoundingClientRect(),d=Math.min(2.5,window.devicePi
 addEventListener('resize',fit);
 let last=0,acc=0;
 function loop(ts){const tm=ts/1000;let dt=Math.min(.1,tm-last);last=tm;acc+=dt;let n=0;while(acc>=1/120&&n<12){update(1/120);acc-=1/120;n++}if(net&&net.host&&net.ok&&mode==='fight'&&P){net.acc+=dt;if(net.acc>=1/30){net.acc=0;netSnap()}}render(tm);requestAnimationFrame(loop)}
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.suspend();if(bgm)bgA.pause()}else{if(AC&&!muted)AC.resume();if(bgm)bgA.play().catch(()=>{});last=performance.now()/1000;acc=0}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.suspend();if(bgm)bgA.pause()}else{if(AC)AC.resume();if(bgm)bgA.play().catch(()=>{});last=performance.now()/1000;acc=0}});
 window.__bg=()=>bgA?{t:bgA.currentTime,paused:bgA.paused,err:!!bgA.error,routed:!!bgSrc,gain:musG?musG.gain.value:null}:null;
 window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,streak,timer,round}},update,held,buf,set level(v){level=v}};
 (async function(){
