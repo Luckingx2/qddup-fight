@@ -499,3 +499,7 @@
 - `notice/qofa-thumbnail-b.jpg` (1280×720): 네 명이 나란히 선 팀 구도, 뒤에 불꽃 폭발
 - 바탕 그림은 Q·W·E·R 기본 자세 그림을 참고로 Higgsfield에서 2장 생성. 제목 "큐오파", 부제 "큐떱 오브 파이터즈", "BUSAN '26"은 게임 글꼴로 직접 합성
 - 다른 게임의 로고·글자 모양·캐릭터·그림은 쓰지 않음. 구도와 분위기만 참고한 자체 제작물
+
+**큐오파 대표 썸네일 결정**
+- 사용자가 A안(대결 구도)을 대표로 선택. `notice/qofa-thumbnail.jpg`로 복사해 둠. B안은 `notice/qofa-thumbnail-b.jpg`로 보관
+- 게임의 링크 미리보기 그림(`assets/ui/qddup-busan-share.jpg`)과 첫 화면 표지는 아직 그대로. 바꿀지는 미정
