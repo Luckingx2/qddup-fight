@@ -1,4 +1,8 @@
 'use strict';
+function syncPadReady(){
+  const me=ME();if(!me)return;
+  const bs=$('bS');if(bs)bs.classList.toggle('rdy',me.meter>=100);const bt=$('bT');if(bt){bt.classList.toggle('rdy',me.meter>=100&&!me.tagUsed&&!!TAG[me.ch]);bt.classList.toggle('used',!!me.tagUsed||!TAG[me.ch])}const kt=document.querySelector('#pcKeys .kc[data-c="t"]');if(kt)kt.classList.toggle('used',!!me.tagUsed||!TAG[me.ch]);
+}
 function update(dt){
   if(mode!=='fight')return;
   for(const k in buf)buf[k]=Math.max(0,buf[k]-dt);for(const k in rbuf)rbuf[k]=Math.max(0,rbuf[k]-dt);
@@ -6,6 +10,7 @@ function update(dt){
   for(const e of fx){e.t+=dt;if(e.vx!==undefined){e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.k==='p')e.vy+=600*dt}} fx=fx.filter(e=>e.t<e.d);
   shake*=Math.pow(.002,dt);flash=Math.max(0,flash-dt);if(msg){msg.t+=dt;if(msg.t>msg.dur)msg=null}
   combo.t-=dt;tickEmotes(dt);
+  syncPadReady();
   if(net&&(net.lost||net.resumeAt))return;
   if(net&&!net.host){netGuest(dt);return}
   if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>(window.__cutT0||3.0)&&cut.v.currentTime<4.7);if(!net&&cut.t>.5&&(buf.p>0||buf.k>0||buf.s>0||buf.t>0)){buf.p=buf.k=buf.s=buf.t=0;endCut()}else if(cut.t>cut.max)endCut();return}
@@ -43,6 +48,5 @@ function update(dt){
     if(p.kind==='rocket'&&Math.random()<.7)fx.push({k:'p',x:p.x-(p.vx>0?1:-1)*34,y:p.y+(Math.random()-.5)*10,vx:-p.vx*.15,vy:(Math.random()-.5)*60,t:0,d:.35,col:Math.random()<.5?'#ffb3e1':'rgba(255,255,255,.8)',s:6+Math.random()*7})}
   proj=proj.filter(p=>!p.hit&&p.x>-100&&p.x<WW+100&&p.t<2.4&&p.y<GROUND+6);
   const mid=(P.x+C.x)/2-VW/2;camX+=(Math.max(0,Math.min(WW-VW,mid))-camX)*Math.min(1,dt*6);
-  const bs=$('bS');if(bs)bs.classList.toggle('rdy',ME().meter>=100);const bt=$('bT');if(bt){bt.classList.toggle('rdy',ME().meter>=100&&!ME().tagUsed&&!!TAG[ME().ch]);bt.classList.toggle('used',!!ME().tagUsed||!TAG[ME().ch])}const kt=document.querySelector('#pcKeys .kc[data-c="t"]');if(kt)kt.classList.toggle('used',!!ME().tagUsed||!TAG[ME().ch]);
 }
 

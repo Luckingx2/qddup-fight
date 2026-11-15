@@ -2,10 +2,10 @@
 /* ---------- input ---------- */
 const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0,g:0};
 let KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t',KeyG:'g'};
-addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
+addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=k==='s'||k==='t'?.7:.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{
-  const dn=e=>{e.preventDefault();initAudio();buf[b.dataset.k]=.16;b.classList.add('on')},up=e=>{e.preventDefault();b.classList.remove('on')};
+  const dn=e=>{e.preventDefault();initAudio();buf[b.dataset.k]=b.dataset.k==='s'||b.dataset.k==='t'?.7:.16;b.classList.add('on')},up=e=>{e.preventDefault();b.classList.remove('on')};
   b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up)});
 (function(){const d=$('dpad'),kn=$('knob');let pid=null;
   function upd(e){const r=d.getBoundingClientRect(),dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);

@@ -267,7 +267,7 @@ function netTry(){netPrep();if(!net||!net.host||!net.vr||!net.rvr||net.rpc===und
 function netBegin(m){$('vload').classList.remove('on');shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.vrp=net.vr=net.rvr=0;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
 function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}if(!m||typeof m!=='object')return;
   if(m.t==='s'){if(!net.host&&mode==='fight'&&!(m.q<=net.rq)){net.rq=m.q;if(net.snap){m.fx=(net.snap.fx||[]).concat(m.fx||[]);m.ev=(net.snap.ev||[]).concat(m.ev||[])}net.snap=m}}
-  else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,5))if('pkstg'.includes(k))rbuf[k]=.16}}
+  else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,5))if('pkstg'.includes(k))rbuf[k]=k==='s'||k==='t'?.7:.16}}
   else if(m.t==='hi'&&!net.t0){net.rpc=!!m.pc;net.host=IS_PC!==net.rpc?IS_PC:net.lead;netTry()}
   else if(m.t==='vr'){net.rvr=1;netTry()}
   else if(m.t==='pick'&&canPickCharacter(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
