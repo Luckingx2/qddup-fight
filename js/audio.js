@@ -47,11 +47,17 @@ function loadVoices(base){
     voiceLoad[key]=fetch(av('assets/audio/voices/'+key+'.mp3')).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>{voiceBuf[key]=buf}).catch(()=>{delete voiceBuf[key];delete voiceLoad[key]});
   }
 }
+let voiceTurn=0;
+function stopVoices(){
+  for(const base in voiceLive){try{voiceLive[base].stop()}catch(e){}delete voiceLive[base]}
+}
 function sayVoice(base,kind){
+  const turn=++voiceTurn;
+  stopVoices();
   if(!VOICE_SET[base]?.includes(kind))return;
   loadVoices(base);
   const ready=voiceLoad[base+'-'+kind];
-  if(ready)ready.then(()=>sfx.voice(base,kind));
+  if(ready)ready.then(()=>{if(turn===voiceTurn)sfx.voice(base,kind)});
 }
 const sfx={
   voice(base,kind){ const buf=voiceBuf[base+'-'+kind]; if(!AC||!buf)return;
