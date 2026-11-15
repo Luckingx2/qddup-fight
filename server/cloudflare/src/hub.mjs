@@ -1,6 +1,6 @@
 import {DurableObject} from 'cloudflare:workers';
 
-export const season = env => Math.max(1, Number(env.RANKING_SEASON) || 1);
+export const season = () => Number(new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10).replace(/-/g, ''));
 const enc = new TextEncoder();
 const hex = buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
 const sha256 = async text => hex(await crypto.subtle.digest('SHA-256', enc.encode(text)));

@@ -356,8 +356,8 @@ async function handle(request, env) {
       db.prepare(`UPDATE matches SET
         host_report = CASE WHEN host = ? THEN COALESCE(host_report, ?) ELSE host_report END,
         guest_report = CASE WHEN guest = ? THEN COALESCE(guest_report, ?) ELSE guest_report END
-        WHERE id = ? AND kind = 'ranked' AND ranking_season = ? AND (host = ? OR guest = ?) AND created_at >= ?
-        RETURNING host_report, guest_report, winner`).bind(id, body.winner, id, body.winner, body.id, seasonNow, id, id, Date.now() - MATCH_TTL),
+        WHERE id = ? AND kind = 'ranked' AND (host = ? OR guest = ?) AND created_at >= ?
+        RETURNING host_report, guest_report, winner`).bind(id, body.winner, id, body.winner, body.id, id, id, Date.now() - MATCH_TTL),
       db.prepare(`UPDATE matches SET winner = host_report
         WHERE id = ? AND (host = ? OR guest = ?) AND kind = 'ranked' AND winner IS NULL
           AND host_report = guest_report AND created_at >= ? RETURNING winner`).bind(body.id, id, id, Date.now() - MATCH_TTL)

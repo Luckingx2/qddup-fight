@@ -339,3 +339,4 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 #vload .gauge{width:min(320px,70vw)}
 #vloadPct{font-family:'Bungee',sans-serif;font-size:13px;color:var(--dim)}
 .kc[hidden]{display:none}
+.rankNote{margin:0;font-size:12.5px;color:#fff3b0}

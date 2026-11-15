@@ -249,7 +249,7 @@ async function dropJudge(state,body,show2){
         if(!here())break;
         const win=r.outcome==='void'?null:r.outcome===r.me;
         const why={dq:win?'상대가 한 경기에서 2번 연결이 끊겨 실격승했어요':'한 경기에서 2번 연결이 끊겨 실격패 처리됐어요',early:'시작 5초 안에 연결이 끊겨 무효 처리됐어요',tie:'둘 다 연결이 끊겼고 체력이 같아 무효 처리됐어요',hp:'둘 다 연결이 끊겨 남은 체력으로 판정했어요',result:'경기 결과가 이미 반영됐어요',left:win?'상대가 경기를 나가 승리했어요':'경기를 나가 패배 처리됐어요',alive:win?'상대가 10초 안에 돌아오지 않아 승리했어요':'연결이 끊겨 10초 안에 돌아오지 못해 패배 처리됐어요'}[r.reason]||'';
-        show2(win,why+(state.match.kind==='ranked'&&win!==null?' · 시즌 '+(r.season||1)+' 순위에 반영됨':''));
+        show2(win,why+(state.match.kind==='ranked'&&win!==null?' · 오늘 순위에 반영됨':''));
         break;
       }
     }catch(e){if(e.status===404||e.status===401)break}

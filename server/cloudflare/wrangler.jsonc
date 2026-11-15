@@ -3,7 +3,7 @@
   "main": "src/worker.mjs",
   "compatibility_date": "2026-11-01",
   "assets": {"directory": "./public", "binding": "ASSETS"},
-  "vars": {"EXTRA_ORIGINS": "https://luckingx2.github.io", "TURN_DAILY_LIMIT": "3000", "RANKING_SEASON": "1"},
+  "vars": {"EXTRA_ORIGINS": "https://luckingx2.github.io", "TURN_DAILY_LIMIT": "3000"},
   "d1_databases": [{
     "binding": "DB",
     "database_name": "qddup-battle",

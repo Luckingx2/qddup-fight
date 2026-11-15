@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>큐떱부산 캐릭터 소개</title>
+<meta property="og:title" content="큐떱부산 캐릭터 소개">
+<meta property="og:description" content="13명의 특성과 필살기">
+<style>
+@font-face{font-family:'Pretendard';src:url(assets/fonts/Pretendard-ExtraBold.woff2?v=1b077a90) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'IBM Plex Sans KR';src:url(assets/fonts/IBMPlexSansKR-Regular.woff2?v=737cb610) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Sans KR';src:url(assets/fonts/IBMPlexSansKR-SemiBold.woff2?v=57c25254) format('woff2');font-weight:600 700;font-display:swap}
+@font-face{font-family:'Bungee';src:url(assets/fonts/Bungee.woff2?v=8ac97fda) format('woff2');font-display:swap}
+:root{--ink:#07060f;--pan:#15132e;--pan2:#1d1a3d;--line:#34305f;--txt:#f1f0ff;--dim:#a6a3cf;--holo:linear-gradient(100deg,#8ef6ff,#c9a6ff 35%,#ffb3e1 60%,#fff3b0 85%,#8ef6ff)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(120% 60% at 50% 0%,#1b1840,var(--ink) 70%) fixed,var(--ink);color:var(--txt);font-family:'IBM Plex Sans KR',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px 80px}
+.top{padding:44px 0 18px;text-align:center}
+.top h1{margin:0;font-family:'Pretendard',sans-serif;font-weight:800;font-size:clamp(34px,8vw,64px);line-height:1.05;background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.top p{margin:10px auto 0;max-width:36em;color:var(--dim);font-size:15px}
+.play{display:inline-block;margin-top:18px;padding:11px 28px;border-radius:999px;background:var(--holo);color:#15132e;font-family:'Pretendard',sans-serif;font-weight:800;text-decoration:none;box-shadow:0 5px 0 #6b5fb0}
+nav{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:8px;padding:10px 0;margin:14px -16px 0;background:rgba(7,6,15,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav a{min-width:52px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);color:var(--txt);text-decoration:none;text-align:center;font-family:'Bungee',sans-serif;font-size:15px}
+nav a:hover{border-color:#c9a6ff}
+.rules{margin:26px 0 0;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--pan)}
+.rules h2{margin:0 0 8px;font-family:'Pretendard',sans-serif;font-size:18px}
+.rules ul{margin:0;padding-left:1.1em;color:var(--dim);font-size:14px}
+.rules li+li{margin-top:3px}
+.rules b{color:var(--txt);font-weight:600}
+.family{margin-top:44px;scroll-margin-top:64px}
+.famhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+.famhead h2{margin:0;font-family:'Pretendard',sans-serif;font-weight:800;font-size:28px}
+.famhead p{margin:0;color:var(--dim);font-size:14px}
+.fighter{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;margin-top:14px;padding:18px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:18px;background:linear-gradient(120deg,var(--pan2),var(--pan));scroll-margin-top:64px}
+.portrait{align-self:stretch;display:grid;place-items:end center;min-height:240px;border-radius:14px;background:radial-gradient(80% 70% at 50% 45%,color-mix(in srgb,var(--c) 34%,transparent),transparent 72%)}
+.portrait img{display:block;max-width:100%;max-height:300px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.5))}
+.info header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.info h3{margin:0;font-family:'Bungee',sans-serif;font-weight:400;font-size:34px;line-height:1;color:var(--c)}
+.role{padding:3px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);font-size:13px;font-weight:600}
+.trade{margin:8px 0 12px;color:var(--dim);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 18px}
+.stat{display:grid;grid-template-columns:3.2em minmax(0,1fr) 2.6em;align-items:center;gap:8px;font-size:13px}
+.stat span{color:var(--dim)}
+.stat b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:999px;background:#0e0c22;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,#fff 0%),var(--c))}
+.extra{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none;font-size:12.5px}
+.extra li{display:flex;gap:6px;padding:3px 10px;border-radius:8px;background:#0e0c22;color:var(--dim)}
+.extra b{color:var(--txt);font-weight:600}
+.special{position:relative;margin-top:14px;padding:13px 15px;border-radius:12px;background:color-mix(in srgb,var(--c) 13%,#0e0c22);border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
+.special h4{margin:0 0 4px;font-family:'Pretendard',sans-serif;font-weight:800;font-size:16.5px}
+.special p{margin:0;font-size:14px}
+.kind{float:right;margin:0 0 4px 10px;padding:2px 8px;border-radius:999px;background:var(--c);color:#15132e;font-size:11.5px;font-weight:700}
+.tagline{margin:8px 0 0;font-size:13px;color:var(--dim)}
+.tagline b{color:var(--txt);font-weight:600;margin-right:4px}
+footer{margin-top:48px;text-align:center;color:var(--dim);font-size:13px}
+@media (max-width:640px){
+  .fighter{grid-template-columns:1fr;gap:12px;padding:14px}
+  .portrait{min-height:0;place-items:center}
+  .portrait img{max-height:210px}
+  .stats{grid-template-columns:1fr}
+  .info h3{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>큐떱부산<br>캐릭터 소개</h1>
+    <p>Q·W·E·R 네 계열, 13명의 특성과 필살기입니다. 수치는 게임에 들어 있는 값 그대로입니다.</p>
+    <a class="play" href="./">게임 하러 가기</a>
+  </div>
+  <nav aria-label="계열 바로가기"><a href="#family-Q">Q</a><a href="#family-W">W</a><a href="#family-E">E</a><a href="#family-R">R</a></nav>
+  <section class="rules">
+    <h2>공통 규칙</h2>
+    <ul>
+      <li><b>필살기</b> 게이지가 100%일 때 필살 버튼(C 또는 L). 캐릭터마다 한 가지로 정해져 있습니다.</li>
+      <li><b>태그기</b> 게이지가 100%일 때 태그 버튼(V 또는 ;). 짝꿍이 함께 나오며 라운드당 한 번만 쓸 수 있습니다.</li>
+      <li><b>앉기</b> 아래 방향. 앉아 있으면 상대가 서서 치는 주먹과 킥이 빗나갑니다. 앉아 공격, 점프 공격, 필살기는 맞습니다.</li>
+      <li><b>하단 킥</b> 앉은 채 킥. 맞은 상대는 넘어집니다. 피해는 일반 킥의 80%입니다.</li>
+      <li><b>가드</b> 상대 반대 방향으로 이동 키를 누릅니다.</li>
+      <li><b>수치 읽는 법</b> 사거리는 기본기 사거리에 더해지는 값, 공격 속도는 높을수록 기본기가 빠르고, 가드 중 받는 피해는 낮을수록 가드가 단단합니다.</li>
+    </ul>
+  </section>
+<section class="family" id="family-Q"><div class="famhead"><h2>Q 계열</h2><p>드러머. 가까이 붙어 주먹과 킥으로 밀어붙이는 계열</p></div>
+<article class="fighter" id="Q" style="--c:#b7a2ff">
+  <div class="portrait"><img src="assets/ui/roster/Q.webp?v=91b08bca" alt="Q" loading="lazy"></div>
+  <div class="info">
+    <header><h3>Q</h3><span class="role">강타 복서</span></header>
+    <p class="trade">펀치와 킥이 강해요. 공격이 빗나가면 빈틈이 커요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:60%"></i></div><b>98</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:62%"></i></div><b>278</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:74%"></i></div><b>825</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:87%"></i></div><b>9</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:89%"></i></div><b>14</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:41%"></i></div><b>+8</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>93%</b></li><li><span>가드 중 받는 피해</span><b>100%</b></li><li><span>필살기 피해</span><b>103%</b></li></ul>
+    <section class="special"><span class="kind">근접 연타</span><h4>필살기 · 불꽃 복싱 3연타</h4><p>앞으로 파고들어 불꽃 주먹을 세 번 이어 칩니다. 첫 타가 닿아야 다음 타로 이어지고, 마지막 타는 상대를 띄워 날립니다.</p></section>
+    <p class="tagline"><b>태그기</b> R와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Qb" style="--c:#8fb4ff">
+  <div class="portrait"><img src="assets/ui/roster/Qb.webp?v=315030af" alt="Q2" loading="lazy"></div>
+  <div class="info">
+    <header><h3>Q2</h3><span class="role">강한 킥 · 음파</span></header>
+    <p class="trade">킥이 가장 강하고 음파로 견제해요. 체력이 낮고 회복이 느려요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:47%"></i></div><b>95</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:57%"></i></div><b>270</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:63%"></i></div><b>810</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:87%"></i></div><b>9</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:100%"></i></div><b>15</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:55%"></i></div><b>+14</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>87%</b></li><li><span>가드 중 받는 피해</span><b>105%</b></li><li><span>필살기 피해</span><b>114%</b></li></ul>
+    <section class="special"><span class="kind">원거리 · 연타</span><h4>필살기 · 드럼롤</h4><p>제자리에서 음파를 쏩니다. 발동 뒤에 공격 버튼을 연타한 만큼 음파가 더 나갑니다.</p></section>
+    <p class="tagline"><b>태그기</b> R2와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Qc" style="--c:#ff6b81">
+  <div class="portrait"><img src="assets/ui/roster/Qc.webp?v=807f094b" alt="Q3" loading="lazy"></div>
+  <div class="info">
+    <header><h3>Q3</h3><span class="role">강한 펀치 · 지상 제어</span></header>
+    <p class="trade">펀치가 가장 강하고 웅덩이로 압박해요. 이동과 공격 회복이 느려요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:74%"></i></div><b>101</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:50%"></i></div><b>260</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:56%"></i></div><b>800</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:100%"></i></div><b>10</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:89%"></i></div><b>14</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:65%"></i></div><b>+18</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>84%</b></li><li><span>가드 중 받는 피해</span><b>97%</b></li><li><span>필살기 피해</span><b>111%</b></li></ul>
+    <section class="special"><span class="kind">지상 제어</span><h4>필살기 · 페인트 웅덩이</h4><p>앞쪽 바닥에 페인트 웅덩이를 깝니다. 웅덩이를 밟은 상대는 미끄러지고 가드를 하지 못합니다.</p></section>
+    <p class="tagline"><b>태그기</b> R3와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+</section>
+<section class="family" id="family-W"><div class="famhead"><h2>W 계열</h2><p>베이시스트. 빠른 발과 긴 사거리로 거리를 조절하는 계열</p></div>
+<article class="fighter" id="W" style="--c:#ff6b8e">
+  <div class="portrait"><img src="assets/ui/roster/W.webp?v=070725d0" alt="W" loading="lazy"></div>
+  <div class="info">
+    <header><h3>W</h3><span class="role">민첩한 중거리 견제</span></header>
+    <p class="trade">빠르게 거리를 바꾸며 견제해요. 펀치 피해는 낮아요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:87%"></i></div><b>104</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:90%"></i></div><b>325</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:52%"></i></div><b>795</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:47%"></i></div><b>6</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:56%"></i></div><b>11</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:81%"></i></div><b>+25</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>120%</b></li><li><span>가드 중 받는 피해</span><b>80%</b></li><li><span>필살기 피해</span><b>103%</b></li></ul>
+    <section class="special"><span class="kind">돌진</span><h4>필살기 · 하트 돌진</h4><p>하트를 흩날리며 빠르게 돌진합니다. 맞은 상대는 오래 경직됩니다.</p></section>
+    <p class="tagline"><b>태그기</b> E와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Wb" style="--c:#c4a0ff">
+  <div class="portrait"><img src="assets/ui/roster/Wb.webp?v=c2614728" alt="W2" loading="lazy"></div>
+  <div class="info">
+    <header><h3>W2</h3><span class="role">민첩한 장거리 견제</span></header>
+    <p class="trade">긴 사거리와 빠른 이동이 강점이에요. 점프가 낮아요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:69%"></i></div><b>100</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:79%"></i></div><b>306</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:34%"></i></div><b>770</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:47%"></i></div><b>6</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:56%"></i></div><b>11</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:100%"></i></div><b>+33</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>115%</b></li><li><span>가드 중 받는 피해</span><b>90%</b></li><li><span>필살기 피해</span><b>105%</b></li></ul>
+    <section class="special"><span class="kind">중거리 · 지상</span><h4>필살기 · 저음 지진</h4><p>앞쪽 바닥에 예고 원이 생긴 뒤 보라색 충격파가 솟아 지상의 상대를 띄웁니다. 너무 가깝거나 멀면 맞지 않습니다.</p></section>
+    <p class="tagline"><b>태그기</b> E2와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Wc" style="--c:#ff8fa3">
+  <div class="portrait"><img src="assets/ui/roster/Wc.webp?v=f48d9b9d" alt="W3" loading="lazy"></div>
+  <div class="info">
+    <header><h3>W3</h3><span class="role">최고속 돌진</span></header>
+    <p class="trade">이동과 기본기 발동이 가장 빨라요. 체력이 낮아요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:38%"></i></div><b>93</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:100%"></i></div><b>341</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:60%"></i></div><b>805</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:60%"></i></div><b>7</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:56%"></i></div><b>11</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:41%"></i></div><b>+8</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>130%</b></li><li><span>가드 중 받는 피해</span><b>112%</b></li><li><span>필살기 피해</span><b>101%</b></li></ul>
+    <section class="special"><span class="kind">돌진</span><h4>필살기 · 페인트 롤러 돌진</h4><p>롤러를 밀며 돌진해 상대를 벽까지 밀어 처박습니다. 점프로 피할 수 있습니다.</p></section>
+    <p class="tagline"><b>태그기</b> E3와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+</section>
+<section class="family" id="family-E"><div class="famhead"><h2>E 계열</h2><p>불주먹. 느리지만 한 방과 연타가 강한 계열</p></div>
+<article class="fighter" id="E" style="--c:#7fe6ff">
+  <div class="portrait"><img src="assets/ui/roster/E.webp?v=940c568d" alt="E" loading="lazy"></div>
+  <div class="info">
+    <header><h3>E</h3><span class="role">한 방 화력</span></header>
+    <p class="trade">킥이 강하지만 이동과 공격 후 회복이 느려요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:82%"></i></div><b>103</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:34%"></i></div><b>233</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:40%"></i></div><b>778</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:60%"></i></div><b>7</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:78%"></i></div><b>13</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:46%"></i></div><b>+10</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>87%</b></li><li><span>가드 중 받는 피해</span><b>100%</b></li><li><span>필살기 피해</span><b>97%</b></li></ul>
+    <section class="special"><span class="kind">근접 연타</span><h4>필살기 · 보랏빛 고양이 3연격</h4><p>보랏빛 궤적을 그리며 세 번 이어 칩니다. 첫 타가 닿아야 다음 타로 이어지고, 마지막 타는 상대를 높이 띄웁니다.</p></section>
+    <p class="tagline"><b>태그기</b> R와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Eb" style="--c:#7fe6ff">
+  <div class="portrait"><img src="assets/ui/roster/Eb.webp?v=bd00a1c0" alt="E2" loading="lazy"></div>
+  <div class="info">
+    <header><h3>E2</h3><span class="role">어퍼컷 반격</span></header>
+    <p class="trade">펀치와 공중 반격이 강하지만 근접해야 해요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:74%"></i></div><b>101</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:46%"></i></div><b>253</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:68%"></i></div><b>816</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:74%"></i></div><b>8</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:56%"></i></div><b>11</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:34%"></i></div><b>+5</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>95%</b></li><li><span>가드 중 받는 피해</span><b>100%</b></li><li><span>필살기 피해</span><b>103%</b></li></ul>
+    <section class="special"><span class="kind">근접 · 띄우기</span><h4>필살기 · 청염 어퍼컷</h4><p>파란 불꽃 주먹으로 올려쳐 상대를 높이 띄웁니다.</p></section>
+    <p class="tagline"><b>태그기</b> W2와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+<article class="fighter" id="Ec" style="--c:#ff5c7a">
+  <div class="portrait"><img src="assets/ui/roster/Ec.webp?v=9044e970" alt="E3" loading="lazy"></div>
+  <div class="info">
+    <header><h3>E3</h3><span class="role">연계 화력</span></header>
+    <p class="trade">근접 기본기와 연타가 강하지만 사거리와 방어가 약해요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:52%"></i></div><b>96</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:54%"></i></div><b>265</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:60%"></i></div><b>805</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:74%"></i></div><b>8</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:67%"></i></div><b>12</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:36%"></i></div><b>+6</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>97%</b></li><li><span>가드 중 받는 피해</span><b>112%</b></li><li><span>필살기 피해</span><b>102%</b></li></ul>
+    <section class="special"><span class="kind">근접 연타</span><h4>필살기 · 홍염 더블 펀치</h4><p>붉은 불꽃 주먹을 두 번 뻗습니다. 첫 펀치가 맞아야 두 번째 펀치가 이어집니다.</p></section>
+    <p class="tagline"><b>태그기</b> W3와 함께 · 게이지 100%, 라운드당 1회</p>
+  </div>
+</article>
+</section>
+<section class="family" id="family-R"><div class="famhead"><h2>R 계열</h2><p>보컬. 높은 점프와 가드를 뚫는 잡기를 가진 계열</p></div>
+<article class="fighter" id="R" style="--c:#ffb86b">
+  <div class="portrait"><img src="assets/ui/roster/R.webp?v=3e3bb339" alt="R" loading="lazy"></div>
+  <div class="info">
+    <header><h3>R</h3><span class="role">공중 기동</span></header>
+    <p class="trade">높은 점프와 도넛으로 거리를 재지만 체력이 낮아요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:43%"></i></div><b>94</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:68%"></i></div><b>289</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:100%"></i></div><b>860</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:47%"></i></div><b>6</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:45%"></i></div><b>10</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:34%"></i></div><b>+5</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>105%</b></li><li><span>가드 중 받는 피해</span><b>115%</b></li><li><span>필살기 피해</span><b>96%</b></li><li><span>공중 기동</span><b>특화</b></li></ul>
+    <section class="special"><span class="kind">원거리 연사</span><h4>필살기 · 도넛 난사</h4><p>제자리에서 도넛을 일곱 개 연달아 던집니다. 마지막 도넛이 가장 큽니다.</p></section>
+    <p class="tagline"><b>태그기</b> W와 함께 · 게이지 100%, 라운드당 1회</p><p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>
+  </div>
+</article>
+<article class="fighter" id="Rb" style="--c:#ff9ecb">
+  <div class="portrait"><img src="assets/ui/roster/Rb.webp?v=536e0533" alt="R2" loading="lazy"></div>
+  <div class="info">
+    <header><h3>R2</h3><span class="role">안정형</span></header>
+    <p class="trade">체력과 중거리 킥이 좋지만 공격 후 빈틈이 길어요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:100%"></i></div><b>107</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:49%"></i></div><b>258</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:45%"></i></div><b>785</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:47%"></i></div><b>6</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:67%"></i></div><b>12</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:58%"></i></div><b>+15</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>91%</b></li><li><span>가드 중 받는 피해</span><b>98%</b></li><li><span>필살기 피해</span><b>98%</b></li></ul>
+    <section class="special"><span class="kind">가드 무시</span><h4>필살기 · 고음 샤우팅</h4><p>분홍 음파를 내질러 상대를 화면 끝까지 날립니다. 가드를 무시합니다.</p></section>
+    <p class="tagline"><b>태그기</b> Q2와 함께 · 게이지 100%, 라운드당 1회</p><p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>
+  </div>
+</article>
+<article class="fighter" id="Rd" style="--c:#ff4d6d">
+  <div class="portrait"><img src="assets/ui/roster/Rd.webp?v=08cb5ab8" alt="R3" loading="lazy"></div>
+  <div class="info">
+    <header><h3>R3</h3><span class="role">공중 강습</span></header>
+    <p class="trade">높은 점프와 내려찍기가 강하지만 지상 기동이 느려요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:96%"></i></div><b>106</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:40%"></i></div><b>242</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:74%"></i></div><b>825</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:60%"></i></div><b>7</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:67%"></i></div><b>12</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:41%"></i></div><b>+8</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>88%</b></li><li><span>가드 중 받는 피해</span><b>106%</b></li><li><span>필살기 피해</span><b>102%</b></li></ul>
+    <section class="special"><span class="kind">공중 강습 · 가드 불가</span><h4>필살기 · 통굽 내려찍기</h4><p>높이 뛰어올라 상대 위로 떨어집니다. 착지 충격은 가드할 수 없습니다.</p></section>
+    <p class="tagline"><b>태그기</b> Q3와 함께 · 게이지 100%, 라운드당 1회</p><p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>
+  </div>
+</article>
+<article class="fighter" id="Rc" style="--c:#ffe066">
+  <div class="portrait"><img src="assets/ui/roster/Rc.webp?v=50afe96b" alt="R4" loading="lazy"></div>
+  <div class="info">
+    <header><h3>R4</h3><span class="role">회복 기동</span></header>
+    <p class="trade">빠른 이동과 회복이 강점이며 기본기 화력이 가장 낮아요.</p>
+    <div class="stats"><div class="stat"><span>체력</span><div class="bar"><i style="width:34%"></i></div><b>92</b></div><div class="stat"><span>이동</span><div class="bar"><i style="width:73%"></i></div><b>297</b></div><div class="stat"><span>점프</span><div class="bar"><i style="width:89%"></i></div><b>845</b></div><div class="stat"><span>펀치</span><div class="bar"><i style="width:34%"></i></div><b>5</b></div><div class="stat"><span>킥</span><div class="bar"><i style="width:34%"></i></div><b>9</b></div><div class="stat"><span>사거리</span><div class="bar"><i style="width:36%"></i></div><b>+6</b></div></div>
+    <ul class="extra"><li><span>공격 속도</span><b>111%</b></li><li><span>가드 중 받는 피해</span><b>110%</b></li><li><span>필살기 피해</span><b>100%</b></li><li><span>공중 기동</span><b>특화</b></li></ul>
+    <section class="special"><span class="kind">회복</span><h4>필살기 · 뿌앵 울기</h4><p>눈물이 차오르는 동안 가까운 상대를 여러 번 때리고 자신의 체력을 조금씩 회복합니다.</p></section>
+    <p class="tagline"><b>태그기</b> R3와 함께 · 게이지 100%, 라운드당 1회</p><p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>
+  </div>
+</article>
+</section>
+  <footer>큐떱부산 · 수치는 밸런스 조정에 따라 바뀔 수 있습니다.</footer>
+</div>
+</body>
+</html>

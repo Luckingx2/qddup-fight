@@ -165,7 +165,7 @@ async function matchResult(state,win){
     let message='상대 결과를 기다리는 중 · 점수 반영 대기';
     for(let attempt=0;attempt<5;attempt++){
       const reply=await onlineApi('/result',{id,winner});
-      if(reply.confirmed){message='랭킹대전 · 시즌 '+(reply.season||1)+' 순위에 반영됨';break}
+      if(reply.confirmed){message='랭킹대전 · 오늘 순위에 반영됨';break}
       if(reply.disputed){message='양쪽 결과가 달라 점수가 반영되지 않았어요.';break}
       await new Promise(resolve=>setTimeout(resolve,1200));
     }
@@ -178,11 +178,12 @@ async function showLeaderboard(){
   onlineMessage('랭킹순위',ONLINE_API?'불러오는 중…':'랭킹 서버 연결이 준비되면 이용할 수 있습니다.');
   if(!ONLINE_API)return;
   const status=$('netBox').querySelector('p');
+  const note=document.createElement('p');note.className='rankNote';note.textContent='랭킹은 매일 밤 12시(한국 시간)에 초기화돼요.';status.before(note);
   try{
     const {players,season,me}=await onlineApi('/leaderboard');
     if(!status.isConnected||!$('sNet').classList.contains('show'))return;
-    if(season)status.previousElementSibling.textContent='시즌 '+season+' 순위';
-    if(!players.length&&!me){status.textContent='이번 시즌에 기록된 랭킹대전이 없어요.';return}
+    $('netBox').querySelector('h3').textContent='오늘의 순위';
+    if(!players.length&&!me){status.textContent='오늘 기록된 랭킹대전이 아직 없어요.';return}
     const table=document.createElement('table');
     table.className='rankList';
     const header=table.createTHead().insertRow();

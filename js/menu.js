@@ -3,6 +3,7 @@ const MENUS={
   main:{title:'메인 메뉴',back:null,items:[
     ['게임하기',()=>openMenu('play')],
     ['랭킹순위',()=>showLeaderboard()],
+    ['캐릭터 소개',()=>window.open('characters.html','_blank')],
     ['설정',()=>openMenu('settings')]]},
   play:{title:'게임하기',back:'main',items:[
     ['CPU',()=>{unlockVids();practice=false;toSelect()}],
