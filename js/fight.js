@@ -193,7 +193,7 @@ function stepF(f,o,dt){
   else if((f.st==='idle'||f.st==='walk'||f.st==='guard'||f.st==='crouch')&&gr){
     if(f.st==='guard'&&f.stun>0){f.stun-=dt}
     else{ f.face=o.x>=f.x?1:-1;
-      if((I.s||(I.t&&!f.tagUsed&&TAG[f.ch]))&&f.meter>=100){const tg=I.t&&!f.tagUsed&&TAG[f.ch];f.meter=0;setSt(f,'charge');f.vx=0;if(f.buf)f.buf.s=f.buf.t=0;if(tg){f.sv=2;f.tagUsed=true}else{let v=Math.random()<.5?0:1;if(v===f.lastSv&&Math.random()<.65)v=1-v;if(SPN[f.ch]<2)v=0;f.sv=f.lastSv=v}if(window.__sv!==undefined)f.sv=(window.__sv===1&&SPN[f.ch]<2)?0:window.__sv;startCut(f)}
+      if((I.s||(I.t&&!f.tagUsed&&TAG[f.ch]))&&f.meter>=100){const tg=I.t&&!f.tagUsed&&TAG[f.ch];f.meter=0;setSt(f,'charge');f.vx=0;if(f.buf)f.buf.s=f.buf.t=0;if(tg){f.sv=2;f.tagUsed=true}else f.sv=SPV[f.ch]||0;if(window.__sv!==undefined)f.sv=(window.__sv===1&&SPN[f.ch]<2)?0:window.__sv;startCut(f)}
       else if(I.g&&BASE_CHARACTER[f.ch]==='R'){setSt(f,'throw');f.vx=0;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
       else if(I.down&&canCrouch(f)){
         if(I.p){setSt(f,'cpunch');f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}

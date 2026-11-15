@@ -20,7 +20,7 @@ const CH={
 const FAMILIES={Q:['Q','Qb','Qc'],W:['W','Wb','Wc'],E:['E','Eb','Ec'],R:['R','Rb','Rd','Rc'],G:['G'],B:['B']};
 const BASE_CHARACTER=Object.fromEntries(Object.entries(FAMILIES).flatMap(([base,variants])=>variants.map(id=>[id,base])));
 const ORDER=['Q','W','E','R','G','B','Qb','Wb','Eb','Rb','Qc','Wc','Ec','Rd','Rc'];
-const TAG={Q:'R',W:'E',E:'R',R:'W',G:'B',B:'G',Qb:'Rb',Rb:'Qb',Wb:'Eb',Eb:'Wb',Qc:'Rd',Rd:'Qc',Wc:'Ec',Ec:'Wc',Rc:'Rd'},VAL={BT:'GT',RbT:'QbT',EbT:'WbT',RdT:'QcT',EcT:'WcT'},SVK=['','2','T'],SPN={Q:2,W:2,E:2,R:2,G:1,B:1,Qb:1,Wb:1,Eb:1,Rb:1,Rc:1,Qc:1,Wc:1,Ec:1,Rd:1};
+const TAG={Q:'R',W:'E',E:'R',R:'W',G:'B',B:'G',Qb:'Rb',Rb:'Qb',Wb:'Eb',Eb:'Wb',Qc:'Rd',Rd:'Qc',Wc:'Ec',Ec:'Wc',Rc:'Rd'},VAL={BT:'GT',RbT:'QbT',EbT:'WbT',RdT:'QcT',EcT:'WcT'},SVK=['','2','T'],SPV={Q:0,W:1,E:1,R:0},SPN={Q:2,W:2,E:2,R:2,G:1,B:1,Qb:1,Wb:1,Eb:1,Rb:1,Rc:1,Qc:1,Wc:1,Ec:1,Rd:1};
 const STAGES=[{id:'anime',name:'애니세상'},{id:'gym',name:'체육관'},{id:'donut',name:'도넛가게'},{id:'band',name:'밴드연습장'},{id:'concert',name:'콘서트 무대'},{id:'rooftop',name:'옥상'},{id:'beach',name:'해변'},{id:'park',name:'놀이공원'},{id:'snow',name:'눈마을'},{id:'space',name:'우주정거장'},{id:'aqua',name:'아쿠아리움'},{id:'hanok',name:'한옥 야시장'},{id:'base',name:'지하실'},
   {id:'bridge',name:'인천대교 노을'},
   {id:'chinatown',name:'차이나타운 광장'},
