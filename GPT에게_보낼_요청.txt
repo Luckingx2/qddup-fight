@@ -1,8 +1,0 @@
-첨부한 qddup-fight.zip을 내 GitHub 계정 luckingx2에 배포해줘.
-
-1. luckingx2/qddup-fight 저장소를 공개로 새로 만든다. 이미 있으면 그 저장소를 쓴다.
-2. zip을 풀어 qddup-fight 폴더 안의 파일을 전부 저장소 루트(main 브랜치)에 올린다. index.html, README.md, .nojekyll, assets 폴더(21개 파일)가 들어가야 한다. 파일 내용은 수정하지 않는다.
-3. GitHub Pages를 main 브랜치의 루트(/)로 켠다.
-4. https://luckingx2.github.io/qddup-fight/ 가 열리는지 확인하고, 캐릭터 선택 화면에 Q·W·E·R 카드 4장이 보이는지 알려준다.
-
-주의: assets/bgm.mp3는 일부러 뺀 것이니 추가하지 않는다. mp4와 webp는 바이너리 그대로 올린다(Git LFS 불필요, 파일당 1MB 미만).

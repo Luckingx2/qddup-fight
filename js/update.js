@@ -1,4 +1,3 @@
-/* 매 프레임 게임 진행 (라운드, 투사체, 카메라) */
 'use strict';
 function update(dt){
   if(mode!=='fight')return;
@@ -6,7 +5,8 @@ function update(dt){
   // fx always advance
   for(const e of fx){e.t+=dt;if(e.vx!==undefined){e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.k==='p')e.vy+=600*dt}} fx=fx.filter(e=>e.t<e.d);
   shake*=Math.pow(.002,dt);flash=Math.max(0,flash-dt);if(msg){msg.t+=dt;if(msg.t>msg.dur)msg=null}
-  combo.t-=dt;
+  combo.t-=dt;tickEmotes(dt);
+  if(net&&(net.lost||net.resumeAt))return;
   if(net&&!net.host){netGuest(dt);return}
   if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>(window.__cutT0||3.0)&&cut.v.currentTime<4.7);if(!net&&cut.t>.5&&(buf.p>0||buf.k>0||buf.s>0||buf.t>0)){buf.p=buf.k=buf.s=buf.t=0;endCut()}else if(cut.t>cut.max)endCut();return}
   if(hitstop>0){hitstop-=dt;return}

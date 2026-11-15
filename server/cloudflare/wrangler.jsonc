@@ -1,0 +1,15 @@
+{
+  "name": "qddup-battle",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-11-01",
+  "assets": {"directory": "./public", "binding": "ASSETS"},
+  "vars": {"EXTRA_ORIGINS": "https://luckingx2.github.io", "TURN_DAILY_LIMIT": "3000", "RANKING_SEASON": "1"},
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "qddup-battle",
+    "database_id": "2e09ba5d-2072-4ad1-9a7d-d5dce7a4c28d",
+    "migrations_dir": "migrations"
+  }],
+  "durable_objects": {"bindings": [{"name": "HUB", "class_name": "Hub"}]},
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["Hub"]}]
+}

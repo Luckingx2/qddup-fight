@@ -1,0 +1,4 @@
+ALTER TABLE matches ADD COLUMN host_drop TEXT;
+ALTER TABLE matches ADD COLUMN guest_drop TEXT;
+ALTER TABLE matches ADD COLUMN drop_at INTEGER;
+ALTER TABLE matches ADD COLUMN outcome TEXT;

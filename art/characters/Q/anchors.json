@@ -1,0 +1,18 @@
+{
+ "idle": 107,
+ "walk1": 122.5,
+ "walk2": 125.5,
+ "jump": 123,
+ "guard": 126,
+ "hit": 214.5,
+ "punch": 127,
+ "kick": 141.5,
+ "charge": 128.5,
+ "special": 136,
+ "ko": 211.5,
+ "win": 101,
+ "special2": 229,
+ "crouch": 144.2,
+ "ckick": 120.6,
+ "cpunch": 122.5
+}

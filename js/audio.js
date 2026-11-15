@@ -1,4 +1,3 @@
-/* 효과음, 배경음악, 볼륨 설정 */
 'use strict';
 /* ---------- audio ---------- */
 let AC=null,master,musG,sfxG,videoG,nbuf,bgm=null;
@@ -31,7 +30,8 @@ function setEffectsLevel(level){
   if(videoG)videoG.gain.value=level;
   if(cut)setVideoVolume(cut.v);
 }
-function initAudio(){ if(AC){ if(AC.state==='suspended')AC.resume(); return }
+function initAudio(){ try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  if(AC){ if(AC.state==='suspended')AC.resume(); return }
   try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.9;master.connect(AC.destination);
     musG=AC.createGain();musG.gain.value=musicGain*musicLevel;musG.connect(master);sfxG=AC.createGain();sfxG.gain.value=.9*effectsLevel;sfxG.connect(master);videoG=AC.createGain();videoG.gain.value=effectsLevel;videoG.connect(AC.destination);
     nbuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=nbuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}catch(e){AC=null}}
@@ -73,7 +73,7 @@ bgA.preload='none';
 bgA.volume=.6;
 let bgSrc=null, currentTrack=null, remainingTracks=[];
 
-function startNextTrack(){
+function startNextTrack(play=true){
   if(!remainingTracks.length){
     remainingTracks=BGM_TRACKS.slice();
     for(let i=remainingTracks.length-1;i>0;i--){
@@ -86,13 +86,21 @@ function startNextTrack(){
     }
   }
   currentTrack=remainingTracks.shift();
-  bgA.src=currentTrack;
-  resumeBgm();
+  bgA.src=av(currentTrack);
+  if(play)resumeBgm();
+}
+function primeBgm(){
+  if(currentTrack)return;
+  bgA.preload='auto';
+  startNextTrack(false);
+  try{bgA.load()}catch(e){}
 }
 function resumeBgm(){
   if(currentTrack&&!document.hidden&&bgA.paused)bgA.play().catch(()=>{});
 }
-bgA.addEventListener('ended',startNextTrack);
+bgA.addEventListener('ended',()=>startNextTrack());
+bgA.addEventListener('error',()=>{if(currentTrack)setTimeout(()=>startNextTrack(),1500)});
+for(const ev of ['pointerdown','keydown','touchend'])addEventListener(ev,()=>{if(AC&&AC.state!=='running')AC.resume().catch(()=>{});if(bgm)resumeBgm()},{capture:true,passive:true});
 function playBgm(id){
   if(!bgSrc&&AC){
     try{bgSrc=AC.createMediaElementSource(bgA);bgSrc.connect(musG);bgA.volume=.6}catch(e){}
@@ -105,29 +113,35 @@ function playBgm(id){
 const audioSettings=$('audioSettings');
 function syncAudioSettings(){
   const music=Math.round(musicLevel*100), effects=Math.round(effectsLevel*100);
-  $('musicVolume').value=music;
-  $('musicValue').value=music+'%';
-  $('effectsVolume').value=effects;
-  $('effectsValue').value=effects+'%';
+  const v={music,effects};
+  for(const el of document.querySelectorAll('[data-vol]'))el.value=v[el.dataset.vol];
+  for(const el of document.querySelectorAll('[data-volout]'))el.value=v[el.dataset.volout]+'%';
+  syncSndButtons();
 }
 function changeAudioSettings(event){
-  if(event.target.id==='musicVolume'){
+  if(event.target.dataset.vol==='music'){
     musicLevel=Number(event.target.value)/100;
     setMusicGain(musicGain);
   }else{
     setEffectsLevel(Number(event.target.value)/100);
   }
-  syncAudioSettings();
-  try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100)}))}catch(e){}
+  if(musicLevel>0)prevMusic=musicLevel;if(effectsLevel>0)prevEffects=effectsLevel;
+  syncAudioSettings();saveAudio();
 }
-$('snd').onclick=()=>{
-  initAudio();
-  syncAudioSettings();
-  audioSettings.showModal();
-  // Stop held game inputs when keyboard focus moves to the settings.
-  for(const key of Object.keys(held))held[key]=0;
-  for(const key of Object.keys(buf))buf[key]=0;
-};
-$('musicVolume').oninput=changeAudioSettings;
-$('effectsVolume').oninput=changeAudioSettings;
-
+let prevMusic=1,prevEffects=1;
+try{const s=JSON.parse(localStorage.getItem('qddup_audio'));if(s?.pm>0)prevMusic=s.pm/100;if(s?.pe>0)prevEffects=s.pe/100}catch(e){}
+function saveAudio(){try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100),pm:Math.round(prevMusic*100),pe:Math.round(prevEffects*100)}))}catch(e){}}
+function syncSndButtons(){
+  const m=musicLevel===0,e=effectsLevel===0;
+  $('sndM').classList.toggle('off',m);$('sndM').setAttribute('aria-pressed',m);$('sndM').setAttribute('aria-label',m?'배경음악 켜기':'배경음악 끄기');
+  $('sndE').classList.toggle('off',e);$('sndE').setAttribute('aria-pressed',e);$('sndE').setAttribute('aria-label',e?'효과음 켜기':'효과음 끄기');
+}
+function toggleMusic(){initAudio();if(musicLevel>0){prevMusic=musicLevel;musicLevel=0}else musicLevel=prevMusic||1;setMusicGain(musicGain);if(musicLevel>0&&bgm)resumeBgm();syncAudioSettings();saveAudio()};
+function toggleEffects(){initAudio();if(effectsLevel>0){prevEffects=effectsLevel;setEffectsLevel(0)}else{setEffectsLevel(prevEffects||1);sfx.sel()}syncAudioSettings();saveAudio()};
+for(const el of document.querySelectorAll('[data-vol]'))el.oninput=changeAudioSettings;
+syncAudioSettings();
+for(const [id,fn] of [['sndM',toggleMusic],['sndE',toggleEffects]]){
+  const b=$(id);let fired=0;
+  b.addEventListener('pointerup',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();fired=performance.now();fn();b.blur()});
+  b.addEventListener('click',e=>{if(performance.now()-fired<700)return;fn();b.blur()});
+}

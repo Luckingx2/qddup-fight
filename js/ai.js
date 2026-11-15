@@ -1,4 +1,3 @@
-/* CPU AI */
 'use strict';
 function think(f,o,dt){
   const A=f.ai,I=f.inp;I.p=I.k=I.s=I.t=0;A.t-=dt;const d=Math.abs(o.x-f.x),tw=o.x>f.x?1:-1;

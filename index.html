@@ -2,83 +2,71 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="online-api" content="https://qddup-online-api.gary00.chatgpt.site">
+<meta name="online-api" content="/api">
+<meta name="realtime-api" content="">
+<meta name="build" content="20261115010650">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>큐떱인천</title>
-<meta property="og:type" content="website">
-<meta property="og:title" content="큐떱인천">
-<meta property="og:description" content="Q·W·E·R과 함께하는 아케이드 격투 게임">
-<meta property="og:image" content="https://luckingx2.github.io/qddup-fight/assets/ui/qddup-incheon-share.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bungee&family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=incheon-net-recovery">
+<title>큐떱대전</title>
+<link rel="stylesheet" href="css/style.css?v=d42a13d2">
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V</div></div>
+  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div class="emoPop" id="emoL"></div><div class="emoPop right" id="emoR"></div><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 앉기 ↓ / S · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V · 감정표현 1 2 3</div></div>
   <div id="pad">
-    <div id="dpad" class="pb"><i class="u">점프</i><i class="l">◀</i><i class="r">▶</i><div id="knob"></div></div>
+    <div id="dpad" class="pb"><i class="u"></i><i class="dn"></i><i class="l"></i><i class="r"></i><div id="knob"></div></div>
     <div id="bP" class="pb" data-k="p">P</div>
     <div id="bK" class="pb" data-k="k">K</div>
     <div id="bS" class="pb" data-k="s">필살</div>
     <div id="bT" class="pb" data-k="t">태그</div>
+    <div id="emoBar"><button type="button" class="pb emo" data-key="1"></button><button type="button" class="pb emo" data-key="2"></button><button type="button" class="pb emo" data-key="3"></button></div>
     <div id="hint">왼쪽 패드: 이동 · 위 점프 · 상대 반대 방향 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
   </div>
 </div>
-<button id="snd" type="button" aria-label="소리 설정" aria-haspopup="dialog" aria-controls="audioSettings">♪</button>
+<button id="backArrow" type="button" aria-label="뒤로">←</button>
+<div id="snd"><button id="sndM" type="button" aria-label="배경음악 끄기" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5l11-2v12.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="6.5" cy="17.5" r="2.8" fill="currentColor"/><circle cx="17.5" cy="15.5" r="2.8" fill="currentColor"/></svg></button><button id="sndE" type="button" aria-label="효과음 끄기" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
 <dialog id="audioSettings" aria-labelledby="audioHeading">
   <form method="dialog">
     <h2 id="audioHeading">소리 설정</h2>
     <div>
-      <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume">100%</output></label>
-      <input id="musicVolume" type="range" min="0" max="100" value="100">
+      <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume" data-volout="music">100%</output></label>
+      <input id="musicVolume" data-vol="music" type="range" min="0" max="100" value="100">
     </div>
     <div>
-      <label for="effectsVolume">효과음 <output id="effectsValue" for="effectsVolume">100%</output></label>
-      <input id="effectsVolume" type="range" min="0" max="100" value="100">
+      <label for="effectsVolume">효과음 <output id="effectsValue" for="effectsVolume" data-volout="effects">100%</output></label>
+      <input id="effectsVolume" data-vol="effects" type="range" min="0" max="100" value="100">
     </div>
     <button class="btn ghost" type="submit">닫기</button>
   </form>
 </dialog>
 
-<section id="sTitle" class="scr"><img id="ttl" src="assets/ui/qddup-incheon.jpg" alt="큐떱인천"><form id="titleForm"><label for="nick">닉네임</label><input id="nick" type="text" minlength="2" maxlength="16" required autocomplete="nickname" placeholder="2~16자"><button class="btn" id="tGo">시작하기</button></form></section>
-<section id="sHome" class="scr">
-  <h1 class="logo">큐떱인천</h1>
-  <div class="menuTiles">
-    <button class="btn" id="openBattle"><span aria-hidden="true">⚔</span>대전</button>
-    <button class="btn ghost" id="leaderboard"><span aria-hidden="true">🏆</span>순위</button>
-    <button class="btn ghost" id="openSettings"><span aria-hidden="true">⚙</span>설정</button>
+<section id="sTitle" class="scr"><img id="ttl" src="assets/ui/title.jpg?v=c88f94e9" alt="큐떱대전"><form id="titleForm" novalidate><div id="authFields"><input id="nick" type="text" maxlength="16" autocomplete="username" placeholder="닉네임 (2~16자)" aria-label="닉네임"><input id="pw" type="password" maxlength="64" autocomplete="current-password" placeholder="비밀번호 (4자 이상)" aria-label="비밀번호"><button class="btn" id="tGo" type="submit">로그인</button></div><div id="authMe" hidden><button class="btn" id="tStart" type="button">시작하기</button></div><p id="authMsg" role="status"></p></form></section>
+<section id="sMenu" class="scr">
+  <div id="onlineNow" class="loading"><i></i><span>접속 인원 조회 중…</span></div>
+  <h1 class="logo">큐떱대전<small id="menuSub">메인 메뉴</small></h1>
+  <div class="menuList" id="menuList"></div>
+  <div class="menuPanel nbox" id="settingsPanel" hidden>
+    <div class="setTabs" role="tablist"><button type="button" role="tab" data-tab="sound" class="on" aria-selected="true">소리</button><button type="button" role="tab" data-tab="emote" aria-selected="false">감정표현</button><button type="button" role="tab" data-tab="account" aria-selected="false">계정</button></div>
+    <div class="setPage" data-page="sound">
+      <div class="vol"><label for="setMusic">배경음악 <output data-volout="music">100%</output></label><input id="setMusic" data-vol="music" type="range" min="0" max="100" value="100"></div>
+      <div class="vol"><label for="setEffects">효과음 <output data-volout="effects">100%</output></label><input id="setEffects" data-vol="effects" type="range" min="0" max="100" value="100"></div>
+    </div>
+    <div class="setPage" data-page="emote" hidden>
+      <div class="emoSlots" id="emoSlots"></div>
+      <div class="emoGrid" id="emoGrid"></div>
+    </div>
+    <div class="setPage" data-page="account" hidden>
+      <div class="account"><span id="accName"></span><button class="btn ghost" id="logout" type="button">로그아웃</button></div>
+    </div>
   </div>
-</section>
-<section id="sBattle" class="scr">
-  <h1 class="logo">대전</h1>
-  <div class="menuOptions">
-    <button class="btn" id="quickMatch">빠른 대전</button>
-    <button class="btn" id="rankedMatch">랭킹전</button>
-    <button class="btn ghost" id="openPrivate">사설 게임</button>
-    <button class="btn ghost" id="openCpu">CPU 대전</button>
-    <button class="btn ghost" id="battleBack">뒤로</button>
-  </div>
-</section>
-<section id="sPrivate" class="scr">
-  <h1 class="logo">사설 게임</h1>
-  <div class="menuOptions">
-    <button class="btn" id="nHost">온라인 방 만들기</button>
-    <button class="btn ghost" id="nJoin">방 참가</button>
-    <button class="btn ghost" id="privateBack">뒤로</button>
-  </div>
+  <button class="btn ghost mBack" id="menuBack" type="button">뒤로</button>
 </section>
 <section id="sSel" class="scr">
-  <h1 class="logo">큐떱인천<small>캐릭터를 고르세요</small></h1>
+  <h1 class="logo">큐떱대전<small>캐릭터를 고르세요</small></h1>
   <div class="pv"><canvas id="pv" width="540" height="600"></canvas><div id="pvN"></div></div>
-  <div class="cards" id="cards" aria-label="캐릭터"></div>
+  <div class="cards" id="cards"></div>
   <div class="row variants" id="variants" aria-label="캐릭터 스타일" hidden></div>
-  <button class="btn" id="go" disabled>대전 시작</button>
+  <div class="row"><button class="btn ghost mBack" id="selBack" type="button">메뉴로</button><button class="btn" id="go" disabled>캐릭터를 고르세요</button></div>
   <p class="sub" id="best"></p>
-  <button class="btn ghost" id="selectBack">뒤로</button>
 </section>
 <section id="sNet" class="scr"><div class="nbox" id="netBox"></div></section>
 
@@ -97,20 +85,23 @@
   <p class="sub" id="resS"></p>
   <div class="row"><button class="btn" id="resA"></button><button class="btn ghost" id="resB">캐릭터 변경</button></div>
 </section>
-<div id="netNotice" role="status" hidden>연결이 불안정해 잠시 멈췄어요. 상대가 돌아오거나 연결이 복구되면 이어집니다.</div>
-<div id="load">LOADING</div>
+<div id="load"><div id="loadT">LOADING</div><div class="gauge"><i id="loadFill"></i></div><div id="loadPct">0%</div></div>
 
-<script src="js/data.js?v=incheon-net-recovery"></script>
-<script src="js/audio.js?v=incheon-bgm-shuffle"></script>
-<script src="js/screens.js?v=incheon-net-recovery"></script>
-<script src="js/online.js?v=incheon-net-recovery"></script>
-<script src="js/matchmaking.js?v=incheon-net-recovery"></script>
-<script src="js/input.js?v=back-guard"></script>
-<script src="js/cutin.js?v=panda-finishers"></script>
-<script src="js/fight.js?v=back-guard"></script>
-<script src="js/ai.js?v=incheon-net-recovery"></script>
-<script src="js/update.js?v=incheon-net-recovery"></script>
-<script src="js/render.js?v=incheon-net-recovery"></script>
-<script src="js/main.js?v=incheon-bgm-shuffle"></script>
+<script src="js/assetv.js?v=f71ed1c1"></script>
+<script src="js/data.js?v=d587d9f0"></script>
+<script src="js/audio.js?v=bbe89921"></script>
+<script src="js/screens.js?v=cc46078a"></script>
+<script src="js/online.js?v=12120bc4"></script>
+<script src="js/matchmaking.js?v=23dd2ee0"></script>
+<script src="js/menu.js?v=d7239f79"></script>
+<script src="js/auth.js?v=b90a5668"></script>
+<script src="js/input.js?v=eb3dcfce"></script>
+<script src="js/cutin.js?v=72fbf422"></script>
+<script src="js/emote.js?v=fe681610"></script>
+<script src="js/fight.js?v=0673cae5"></script>
+<script src="js/ai.js?v=6548f394"></script>
+<script src="js/update.js?v=a8ee25af"></script>
+<script src="js/render.js?v=9ec2800f"></script>
+<script src="js/main.js?v=510b8119"></script>
 </body>
 </html>
