@@ -1,7 +1,7 @@
 'use strict';
 /* ---------- audio ---------- */
 let AC=null,master,musG,sfxG,videoG,nbuf,bgm=null;
-let musicLevel=1, effectsLevel=1, musicGain=.5;
+let musicLevel=.5, effectsLevel=1, musicGain=.5;
 const videoSources=new WeakSet();
 function setMusicGain(gain){
   musicGain=gain;
@@ -100,7 +100,7 @@ bgA.volume=.6;
 let bgSrc=null, currentTrack=null, remainingTracks=[], selectedTrack='shuffle';
 try{
   const saved=JSON.parse(localStorage.getItem('qddup_audio'));
-  if(Number.isInteger(saved?.music)&&saved.music>=0&&saved.music<=100)musicLevel=saved.music/100;
+  if(Number.isInteger(saved?.music)&&saved.music>=0&&saved.music<=100&&(saved.mv===2||saved.music===0))musicLevel=saved.music/100;
   if(Number.isInteger(saved?.effects)&&saved.effects>=0&&saved.effects<=100)effectsLevel=saved.effects/100;
   if(BGM_TRACKS.some(track=>track.id===saved?.track))selectedTrack=saved.track;
 }catch(e){}
@@ -190,15 +190,15 @@ function changeAudioSettings(event){
   if(musicLevel>0)prevMusic=musicLevel;if(effectsLevel>0)prevEffects=effectsLevel;
   syncAudioSettings();saveAudio();
 }
-let prevMusic=1,prevEffects=1;
-try{const s=JSON.parse(localStorage.getItem('qddup_audio'));if(s?.pm>0)prevMusic=s.pm/100;if(s?.pe>0)prevEffects=s.pe/100}catch(e){}
-function saveAudio(){try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100),pm:Math.round(prevMusic*100),pe:Math.round(prevEffects*100),track:selectedTrack}))}catch(e){}}
+let prevMusic=.5,prevEffects=1;
+try{const s=JSON.parse(localStorage.getItem('qddup_audio'));if(s?.pm>0&&s.mv===2)prevMusic=s.pm/100;if(s?.pe>0)prevEffects=s.pe/100}catch(e){}
+function saveAudio(){try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100),pm:Math.round(prevMusic*100),pe:Math.round(prevEffects*100),track:selectedTrack,mv:2}))}catch(e){}}
 function syncSndButtons(){
   const m=musicLevel===0,e=effectsLevel===0;
   $('sndM').classList.toggle('off',m);$('sndM').setAttribute('aria-pressed',m);$('sndM').setAttribute('aria-label',m?'배경음악 켜기':'배경음악 끄기');
   $('sndE').classList.toggle('off',e);$('sndE').setAttribute('aria-pressed',e);$('sndE').setAttribute('aria-label',e?'효과음 켜기':'효과음 끄기');
 }
-function toggleMusic(){initAudio();if(musicLevel>0){prevMusic=musicLevel;musicLevel=0}else musicLevel=prevMusic||1;setMusicGain(musicGain);if(musicLevel>0&&bgm)resumeBgm();syncAudioSettings();saveAudio()};
+function toggleMusic(){initAudio();if(musicLevel>0){prevMusic=musicLevel;musicLevel=0}else musicLevel=prevMusic||.5;setMusicGain(musicGain);if(musicLevel>0&&bgm)resumeBgm();syncAudioSettings();saveAudio()};
 function toggleEffects(){initAudio();if(effectsLevel>0){prevEffects=effectsLevel;setEffectsLevel(0)}else{setEffectsLevel(prevEffects||1);sfx.sel()}syncAudioSettings();saveAudio()};
 for(const el of document.querySelectorAll('[data-vol]'))el.oninput=changeAudioSettings;
 syncAudioSettings();

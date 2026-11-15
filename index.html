@@ -37,8 +37,8 @@
   <form method="dialog">
     <h2 id="audioHeading">소리 설정</h2>
     <div>
-      <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume" data-volout="music">100%</output></label>
-      <input id="musicVolume" data-vol="music" type="range" min="0" max="100" value="100">
+      <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume" data-volout="music">50%</output></label>
+      <input id="musicVolume" data-vol="music" type="range" min="0" max="100" value="50">
     </div>
     <div>
       <label for="effectsVolume">효과음 <output id="effectsValue" for="effectsVolume" data-volout="effects">100%</output></label>
@@ -57,7 +57,7 @@
     <div class="setTabs" role="tablist"><button type="button" role="tab" data-tab="sound" class="on" aria-selected="true">소리</button><button type="button" role="tab" data-tab="emote" aria-selected="false">감정표현</button><button type="button" role="tab" data-tab="account" aria-selected="false">계정</button></div>
     <div class="setPage" data-page="sound">
       <div class="track-settings"><label for="musicTrack">배경음악 선택</label><select id="musicTrack"><option value="shuffle">랜덤 재생</option></select><p>현재 재생 · <span id="nowPlaying" role="status">대기 중</span></p></div>
-      <div class="vol"><label for="setMusic">배경음악 <output data-volout="music">100%</output></label><input id="setMusic" data-vol="music" type="range" min="0" max="100" value="100"></div>
+      <div class="vol"><label for="setMusic">배경음악 <output data-volout="music">50%</output></label><input id="setMusic" data-vol="music" type="range" min="0" max="100" value="50"></div>
       <div class="vol"><label for="setEffects">효과음 <output data-volout="effects">100%</output></label><input id="setEffects" data-vol="effects" type="range" min="0" max="100" value="100"></div>
     </div>
     <div class="setPage" data-page="emote" hidden>
@@ -119,7 +119,7 @@
 
 <script src="js/assetv.js?v=d84c0974"></script>
 <script src="js/data.js?v=de50107a"></script>
-<script src="js/audio.js?v=ffbfd489"></script>
+<script src="js/audio.js?v=237c31eb"></script>
 <script src="js/screens.js?v=6763b763"></script>
 <script src="js/online.js?v=f758bf1d"></script>
 <script src="js/matchmaking.js?v=6a00bd4b"></script>
