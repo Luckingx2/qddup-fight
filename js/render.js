@@ -265,6 +265,13 @@ function render(tm){
   for(const e of fx){const a=1-e.t/e.d,sx=e.x-camX;cx.save();
     if(e.k==='p'){cx.globalAlpha=a;cx.fillStyle=e.col;cx.beginPath();cx.arc(sx,e.y,e.s*a,0,6.283);cx.fill()}
     else if(e.k==='r'){cx.globalAlpha=a;cx.strokeStyle=e.col;cx.lineWidth=6*a;cx.beginPath();cx.arc(sx,e.y,e.r*(1-a)+10,0,6.283);cx.stroke()}
+    else if(e.k==='hit'){const p=e.t/e.d,R=e.r*(.35+p*.9),g=cx.createRadialGradient(0,0,0,0,0,R);cx.globalCompositeOperation='lighter';cx.globalAlpha=a;cx.translate(sx,e.y);
+      g.addColorStop(0,'#fff');g.addColorStop(.4,e.col);g.addColorStop(1,'rgba(255,255,255,0)');cx.fillStyle=g;cx.beginPath();cx.arc(0,0,R,0,6.283);cx.fill();
+      cx.save();cx.rotate(e.rot);cx.strokeStyle='#fff';cx.lineCap='round';for(let i=0;i<8;i++){const q=i*Math.PI/4+(i%2?.22:0),r1=e.r*(.28+p*.7),r2=e.r*(.62+p*1.15)*(i%2?.68:1);cx.lineWidth=(i%2?3:5)*a+1;cx.beginPath();cx.moveTo(Math.cos(q)*r1,Math.sin(q)*r1);cx.lineTo(Math.cos(q)*r2,Math.sin(q)*r2);cx.stroke()}cx.restore();
+      cx.scale(e.dir,1);cx.strokeStyle=e.col;cx.lineWidth=8*a+1;cx.beginPath();cx.arc(-e.r*.25,0,e.r*(.6+p*.7),-1.05,1.05);cx.stroke()}
+    else if(e.k==='block'){const p=e.t/e.d;cx.globalCompositeOperation='lighter';cx.globalAlpha=a;cx.translate(sx,e.y);cx.scale(e.dir,1);cx.lineCap='round';
+      for(let i=0;i<2;i++){cx.strokeStyle=i?'#fff':'#8ef6ff';cx.lineWidth=(i?3:9)*a+1;cx.beginPath();cx.arc(-34,0,46+p*22+i*4,-.95,.95);cx.stroke()}
+      cx.fillStyle='rgba(142,246,255,.35)';cx.beginPath();cx.arc(-34,0,46+p*22,-.95,.95);cx.closePath();cx.fill()}
     else if(e.k==='s'){cx.globalCompositeOperation='lighter';cx.globalAlpha=a;cx.translate(sx,e.y);cx.rotate(e.rot);cx.fillStyle='#fff';const R=e.r*(1.3-a*.5);cx.beginPath();for(let i=0;i<16;i++){const q=i*Math.PI/8,r2=i%2?R*.28:R;cx.lineTo(Math.cos(q)*r2,Math.sin(q)*r2)}cx.closePath();cx.fill()}
     else if(e.k==='c'){cx.globalCompositeOperation='lighter';cx.globalAlpha=a;cx.translate(sx,e.y);cx.rotate(e.rot+e.t*8);cx.fillStyle=['#8ef6ff','#c9a6ff','#fff'][Math.floor(e.s)%3];cx.beginPath();cx.moveTo(0,-e.s);cx.lineTo(e.s*.6,0);cx.lineTo(0,e.s);cx.lineTo(-e.s*.6,0);cx.closePath();cx.fill()}
     else if(e.k==='l'){cx.globalAlpha=a*.8;cx.strokeStyle='#fff';cx.lineWidth=3;cx.beginPath();cx.moveTo(sx,e.y);cx.lineTo(sx-e.dir*e.w,e.y);cx.stroke()}

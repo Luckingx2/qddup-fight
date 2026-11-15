@@ -38,8 +38,13 @@ function noise(dur,vol,fq,ft,t0,dest,fq2){ if(!AC)return; const t=t0||AC.current
   s.connect(f);f.connect(g);g.connect(dest||sfxG);s.start(t,Math.random()*.5);s.stop(t+dur+.03)}
 const sfx={
   whoosh(v){noise(.13,.22*v,900,'bandpass',0,0,2600)},
-  hit(s){noise(.12,.5*s,1800,'lowpass',0,0,300);tone(150*s+60,.14,'sine',.6,0,0,50);tone(900,.04,'square',.12)},
-  guard(){tone(520,.07,'square',.2,0,0,380);noise(.06,.2,3000,'highpass')},
+  hit(s,kind){ if(!AC)return; const t=AC.currentTime;
+    if(kind==='k'){noise(.16,.6*s,1400,'lowpass',t,0,180);tone(110*s+40,.2,'sine',.75,0,t,38);tone(240,.05,'square',.14,0,t,90);noise(.03,.35,5200,'highpass',t)}
+    else if(kind==='l'){noise(.1,.45*s,2600,'bandpass',t,0,500);tone(170,.12,'triangle',.5,0,t,60);noise(.08,.28,700,'lowpass',t+.03,0,200)}
+    else if(kind==='g'){noise(.05,.3,2400,'bandpass',t,0,900);noise(.22,.6,900,'lowpass',t+.08,0,110);tone(80,.26,'sine',.75,0,t+.08,34)}
+    else{noise(.07,.5*s,3200,'bandpass',t,0,700);tone(210*s+80,.09,'sine',.55,0,t,70);tone(1200,.025,'square',.12,0,t);noise(.02,.3,6500,'highpass',t)}
+    if(s>=1.4){noise(.3,.4,900,'lowpass',t,0,90);tone(60,.32,'sine',.6,0,t,30);tone(1800,.05,'sawtooth',.1,0,t,500)}},
+  guard(s=1){ if(!AC)return; const t=AC.currentTime;tone(620,.06,'square',.18*s,0,t,410);tone(1240,.05,'triangle',.12*s,0,t,900);noise(.05,.22*s,3400,'highpass',t);if(s>1)tone(140,.1,'sine',.35,0,t,70)},
   jump(){tone(300,.14,'triangle',.22,0,0,620)},
   land(){noise(.09,.22,300,'lowpass');tone(90,.1,'sine',.3,0,0,50)},
   charge(){tone(220,.42,'sawtooth',.16,0,0,1400);tone(330,.42,'triangle',.2,0,0,2000);noise(.42,.12,500,'bandpass',0,0,5000)},

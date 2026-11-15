@@ -20,6 +20,8 @@ function startRound(){
 function say(txt,dur,sub){msg={txt,sub:sub||'',t:0,dur}}
 function spark(x,y,col,n,sp){for(let i=0;i<n;i++){const a=Math.random()*6.28,v=(.4+Math.random())*sp;fx.push({k:'p',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-60,t:0,d:.25+Math.random()*.3,col,s:3+Math.random()*5})}}
 function ring(x,y,col,r){fx.push({k:'r',x,y,t:0,d:.28,col,r})}
+function impact(x,y,dir,r,col){fx.push({k:'hit',x,y,t:0,d:.2,dir,r,col,rot:Math.random()*6.28})}
+function block(x,y,dir){fx.push({k:'block',x,y,t:0,d:.22,dir})}
 function star(x,y,r){fx.push({k:'s',x,y,t:0,d:.16,r,rot:Math.random()*3})}
 function dust(x){for(let i=0;i<8;i++)fx.push({k:'p',x:x+(Math.random()-.5)*80,y:GROUND,vx:(Math.random()-.5)*160,vy:-40-Math.random()*80,t:0,d:.4,col:'rgba(255,255,255,.7)',s:6+Math.random()*6})}
 
@@ -29,13 +31,13 @@ function applyHit(f,o,a){
   const hx=(f.x+o.x)/2+f.face*20,hy=GROUND-o.y-(a.hy||130);
   if(o.st==='guard'&&o.y<=0&&o.face===-f.face&&!a.ub){
     o.hp=Math.max(1,o.hp-damage*(a.sp?.28:.1)*CH[o.ch].guard);o.vx=f.face*a.push*.45;o.t=Math.min(o.t,.05);o.stun=.14;
-    ring(hx,hy,'#8ef6ff',34);spark(hx,hy,'#bff8ff',6,180);sfx.guard();f.meter=Math.min(100,f.meter+a.dmg*.5);o.meter=Math.min(100,o.meter+a.dmg*.6);hitstop=.04;return}
+    block(hx,hy,f.face);spark(hx,hy,'#bff8ff',8,220);sfx.guard(a.sp||damage>=10?1.3:1);f.meter=Math.min(100,f.meter+a.dmg*.5);o.meter=Math.min(100,o.meter+a.dmg*.6);hitstop=.04;return}
   o.hp=Math.max(0,o.hp-damage);o.vx=f.face*a.push;if(a.lift){o.vy=a.lift;o.y=Math.max(o.y,.01)}
   setSt(o,'hit');o.stun=a.stun;o.face=-f.face;o.airAtk=false;
   f.meter=Math.min(100,f.meter+a.dmg*1.8);o.meter=Math.min(100,o.meter+a.dmg*1.2);
   if(combo.who===f&&combo.t>0)combo.n++;else combo.n=1;combo.who=f;combo.t=1.1;
-  const big=damage>=10;star(hx,hy,big?70:46);ring(hx,hy,'#fff',big?60:40);spark(hx,hy,big?'#ffe27a':'#fff',big?16:9,big?420:300);spark(hx,hy,CH[f.ch].col,6,260);
-  shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8);
+  const big=damage>=10,kind=a.kind||(big?'k':'p');impact(hx,hy,f.face,a.sp?120:big?92:62,a.sp?'#ff9a3c':big?'#ffd24a':'#fff6c8');ring(hx,hy,'#fff',big?60:40);spark(hx,hy,big?'#ffe27a':'#fff',big?16:9,big?420:300);spark(hx,hy,CH[f.ch].col,6,260);if(kind==='l')dust(o.x);
+  shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8,kind);
   fx.push({k:'d',x:o.x,y:GROUND-o.y-250,t:0,d:.7,txt:Math.round(damage*10)/10});
   if(o.hp<=0&&phase==='fight'){setSt(o,'ko');o.down=false;o.vy=Math.max(o.vy,460);o.y=Math.max(o.y,.01);o.vx=f.face*Math.max(a.push,330);
     phase='ko';pt=0;slow=1.0;flash=.5;sfx.ko();shake=22;say('K.O.',2.2);f.wins++;f.winner=true;o.winner=false;if(bgm)setMusicGain(.2)}
@@ -206,16 +208,16 @@ function stepF(f,o,dt){
   }
   else if(f.st==='jump'){ if((I.p||I.k)&&!f.airAtk&&f.t>.08){f.airAtk=true;f.atkT=0;f.hitDone=false;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0}
     if(f.airAtk){f.atkT+=dt;if(f.atkT<.4)tryHit(f,o,{reach:122,dmg:K.kd-1,stun:.3,push:240,vr:150,hy:140})} }
-  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);if(f.t>.07*K.timing&&f.t<.18*K.timing)tryHit(f,o,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150});if(f.t>.3*K.timing)setSt(f,'idle')}
-  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);if(f.t>.13*K.timing&&f.t<.28*K.timing)tryHit(f,o,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135});if(f.t>.47*K.timing)setSt(f,'idle')}
-  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);if(f.t>.06*K.timing&&f.t<.16*K.timing)tryHit(f,o,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105});if(f.t>.28*K.timing)setSt(f,I.down?'crouch':'idle')}
-  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);if(f.t>.12*K.timing&&f.t<.26*K.timing)tryHit(f,o,{reach:150,dmg:K.kd,stun:.34,push:220,hy:55});if(f.t>.46*K.timing)setSt(f,I.down?'crouch':'idle')}
+  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);if(f.t>.07*K.timing&&f.t<.18*K.timing)tryHit(f,o,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150,kind:'p'});if(f.t>.3*K.timing)setSt(f,'idle')}
+  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);if(f.t>.13*K.timing&&f.t<.28*K.timing)tryHit(f,o,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135,kind:'k'});if(f.t>.47*K.timing)setSt(f,'idle')}
+  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);if(f.t>.06*K.timing&&f.t<.16*K.timing)tryHit(f,o,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'});if(f.t>.28*K.timing)setSt(f,I.down?'crouch':'idle')}
+  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);if(f.t>.12*K.timing&&f.t<.26*K.timing)tryHit(f,o,{reach:150,dmg:K.kd,stun:.34,push:220,hy:55,kind:'l'});if(f.t>.46*K.timing)setSt(f,I.down?'crouch':'idle')}
   else if(f.st==='throw'){
     if(!f.hitDone&&f.t>=R_THROW.startup){
       f.hitDone=true;
       const distance=(o.x-f.x)*f.face;
       if(phase==='fight'&&distance>=0&&distance<=R_THROW.reach&&o.y<=0&&o.st!=='ko'&&o.st!=='win'){
-        applyHit(f,o,{dmg:R_THROW.damage,stun:.32,push:470,lift:320,ub:1,hy:140});
+        applyHit(f,o,{dmg:R_THROW.damage,stun:.32,push:470,lift:320,ub:1,hy:140,kind:'g'});
         o.thrown=o.st==='hit';
         ring(o.x,GROUND-135,CH[f.ch].col,70);
       }
