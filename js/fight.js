@@ -244,7 +244,7 @@ function stepF(f,o,dt){
     else if(c==='Wc'){f.vx=f.face*860;if(Math.random()<.5)fx.push({k:'p',x:f.x-f.face*30,y:GROUND-6,vx:-f.face*Math.random()*160,vy:-60-Math.random()*160,t:0,d:.5,col:'#ff5c8a',s:5+Math.random()*7});
       if(!f.carry){if(o.y<70&&tryHit(f,o,{reach:120,dmg:9,stun:.6,push:0,sp:1,ub:1,vr:80,hy:120}))f.carry=1}
       else if(o.st!=='ko'){o.x=Math.max(70,Math.min(WW-70,f.x+f.face*105));o.vx=0;o.stun=.5}
-      const q=f.carry?o:f;if((f.face>0?q.x>=WW-74:q.x<=74)||f.t>1.4){if(f.carry&&o.st!=='ko'){surfacePulse(o.x,'#ff2973',150,'paintSplash');spark(o.x,GROUND-120,'#ff5c91',18,370);applyHit(f,o,{dmg:19,stun:.8,push:-260,lift:460,sp:1,ub:1,hy:150});shake=24;flash=.15}f.carry=0;f.vx=0;setSt(f,'rec')}}
+      const q=f.carry?o:f,wall=f.face>0?q.x>=WW-74:q.x<=74;if(wall||f.t>.62){if(f.carry&&o.st!=='ko'){surfacePulse(o.x,'#ff2973',150,'paintSplash');spark(o.x,GROUND-120,'#ff5c91',18,370);applyHit(f,o,{dmg:wall?19:10,stun:.8,push:-260,lift:460,sp:1,ub:1,hy:150});shake=24;flash=.15}f.carry=0;f.vx=0;setSt(f,'rec')}}
     else if(c==='Rd'){if(f.t>.15&&f.y<=0){f.vx=0;shake=24;dust(f.x);surfacePulse(f.x,'#ff5c8a',360);ring(f.x,GROUND-10,'#fff',130);
         if(o.st!=='ko'){const d=Math.abs(o.x-f.x),sf=f.face;f.face=o.x>=f.x?1:-1;if(d<140&&o.y<200)applyHit(f,o,{dmg:28,stun:.8,push:420,lift:520,sp:1,ub:1,hy:150});else if(d<360&&o.y<40)applyHit(f,o,{dmg:13,stun:.5,push:300,lift:300,sp:1,ub:1,hy:60});f.face=sf}setSt(f,'rec')}}
     else if(c==='Wb')stepBassGeyser(f,o);
