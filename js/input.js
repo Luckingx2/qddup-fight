@@ -1,7 +1,7 @@
 'use strict';
 /* ---------- input ---------- */
 const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0,g:0};
-const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t',KeyG:'g'};
+let KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t',KeyG:'g'};
 addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{

@@ -14,18 +14,20 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="css/style.css?v=01f18914">
+<link rel="stylesheet" href="css/style.css?v=512b38af">
 <link rel="stylesheet" href="css/select.css?v=17087a6e">
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div class="emoPop" id="emoL"></div><div class="emoPop right" id="emoR"></div><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 앉기 ↓ / S · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V · 감정표현 1 2 3<span id="throwKey" hidden> · 잡아 던지기 G</span></div></div>
+  <div id="ctrlEdit" hidden><span>끌어서 옮기세요</span><button type="button" class="btn ghost" id="ctrlResetOne">초기화</button><button type="button" class="btn" id="ctrlDone">완료</button></div>
+  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><button id="pauseBtn" type="button" aria-label="메뉴"><span></span><span></span><span></span></button><div class="emoPop" id="emoL"></div><div class="emoPop right" id="emoR"></div><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 앉기 ↓ / S · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V · 감정표현 1 2 3<span id="throwKey" hidden> · 잡아 던지기 G</span></div></div>
   <div id="pad">
     <div id="dpad" class="pb"><i class="u"></i><i class="dn"></i><i class="l"></i><i class="r"></i><div id="knob"></div></div>
     <div id="bP" class="pb" data-k="p">P</div>
     <div id="bK" class="pb" data-k="k">K</div>
     <div id="bS" class="pb" data-k="s">필살</div>
     <div id="bT" class="pb" data-k="t">태그</div>
+    <div id="pcKeys" aria-hidden="true"><div class="pkMove"><span class="kc" data-c="u" style="grid-area:u"></span><span class="kc" data-c="l" style="grid-area:l"></span><span class="kc" data-c="d" style="grid-area:d"></span><span class="kc" data-c="r" style="grid-area:r"></span></div><div class="pkAct"><span class="kc" data-c="p"><b></b><small>펀치</small></span><span class="kc" data-c="k"><b></b><small>킥</small></span><span class="kc" data-c="s"><b></b><small>필살</small></span><span class="kc" data-c="t"><b></b><small>태그</small></span><span class="kc" data-c="g" id="pkG" hidden><b></b><small>잡기</small></span></div></div>
     <div id="emoBar"><button type="button" class="pb emo" data-key="1"></button><button type="button" class="pb emo" data-key="2"></button><button type="button" class="pb emo" data-key="3"></button></div>
     <button id="bG" class="pb" type="button" data-k="g" aria-label="잡아 던지기" hidden>잡기</button>
     <div id="hint">왼쪽 패드: 이동 · 위 점프 · 상대 반대 방향 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
@@ -54,11 +56,22 @@
   <h1 class="logo">큐떱부산<small id="menuSub">메인 메뉴</small></h1>
   <div class="menuList" id="menuList"></div>
   <div class="menuPanel nbox" id="settingsPanel" hidden>
-    <div class="setTabs" role="tablist"><button type="button" role="tab" data-tab="sound" class="on" aria-selected="true">소리</button><button type="button" role="tab" data-tab="emote" aria-selected="false">감정표현</button><button type="button" role="tab" data-tab="account" aria-selected="false">계정</button></div>
+    <div class="setTabs" role="tablist"><button type="button" role="tab" data-tab="sound" class="on" aria-selected="true">소리</button><button type="button" role="tab" data-tab="control" aria-selected="false">조작</button><button type="button" role="tab" data-tab="emote" aria-selected="false">감정표현</button><button type="button" role="tab" data-tab="account" aria-selected="false">계정</button></div>
     <div class="setPage" data-page="sound">
       <div class="track-settings"><label for="musicTrack">배경음악 선택</label><select id="musicTrack"><option value="shuffle">랜덤 재생</option></select><p>현재 재생 · <span id="nowPlaying" role="status">대기 중</span></p></div>
       <div class="vol"><label for="setMusic">배경음악 <output data-volout="music">50%</output></label><input id="setMusic" data-vol="music" type="range" min="0" max="100" value="50"></div>
       <div class="vol"><label for="setEffects">효과음 <output data-volout="effects">100%</output></label><input id="setEffects" data-vol="effects" type="range" min="0" max="100" value="100"></div>
+    </div>
+    <div class="setPage" data-page="control" hidden>
+      <div class="ctrlPC">
+        <button type="button" class="ctrlOpt" data-t="A" aria-pressed="false"><strong>A 타입</strong><span class="ctrlMini"><span class="kc" data-c="l"><b></b></span><span class="kc" data-c="u"><b></b></span><span class="kc" data-c="d"><b></b></span><span class="kc" data-c="r"><b></b></span><i></i><span class="kc" data-c="p"><b></b></span><span class="kc" data-c="k"><b></b></span><span class="kc" data-c="s"><b></b></span><span class="kc" data-c="t"><b></b></span></span><small>방향키 이동 · Z 펀치 · X 킥 · C 필살 · V 태그 · G 잡기</small></button>
+        <button type="button" class="ctrlOpt" data-t="B" aria-pressed="false"><strong>B 타입</strong><span class="ctrlMini"><span class="kc" data-c="l"><b></b></span><span class="kc" data-c="u"><b></b></span><span class="kc" data-c="d"><b></b></span><span class="kc" data-c="r"><b></b></span><i></i><span class="kc" data-c="p"><b></b></span><span class="kc" data-c="k"><b></b></span><span class="kc" data-c="s"><b></b></span><span class="kc" data-c="t"><b></b></span></span><small>WASD 이동 · J 펀치 · K 킥 · L 필살 · ; 태그 · G 잡기</small></button>
+      </div>
+      <div class="ctrlMobile">
+        <p class="ctrlNote">조이스틱과 버튼을 끌어서 원하는 곳에 둘 수 있어요. 세로·가로 화면은 따로 저장돼요.</p>
+        <button type="button" class="btn" id="ctrlEditBtn">버튼 위치 편집</button>
+        <button type="button" class="btn ghost" id="ctrlResetAll">기본 위치로</button>
+      </div>
     </div>
     <div class="setPage" data-page="emote" hidden>
       <div class="emoSlots" id="emoSlots"></div>
@@ -115,24 +128,26 @@
   <p class="sub" id="resS"></p>
   <div class="row"><button class="btn" id="resA"></button><button class="btn ghost" id="resB">캐릭터 변경</button></div>
 </section>
+<div id="vload"><div id="vloadT">LOADING</div><div class="gauge"><i id="vloadFill"></i></div><div id="vloadPct">0%</div></div>
 <div id="winCut"><video id="winVid" playsinline preload="none" aria-label="승리 세리머니"></video><span>화면을 누르면 건너뛰기</span></div>
 <div id="load"><div id="loadT">LOADING</div><div class="gauge"><i id="loadFill"></i></div><div id="loadPct">0%</div></div>
 
-<script src="js/assetv.js?v=65c76de1"></script>
-<script src="js/data.js?v=de50107a"></script>
+<script src="js/assetv.js?v=055d681c"></script>
+<script src="js/data.js?v=672c02b6"></script>
 <script src="js/audio.js?v=860d8a95"></script>
-<script src="js/screens.js?v=6e708fe0"></script>
-<script src="js/online.js?v=f758bf1d"></script>
+<script src="js/screens.js?v=23394b23"></script>
+<script src="js/online.js?v=26bd5be8"></script>
 <script src="js/matchmaking.js?v=6a00bd4b"></script>
-<script src="js/menu.js?v=d7239f79"></script>
+<script src="js/menu.js?v=6d3dfbe2"></script>
 <script src="js/auth.js?v=ac3d249d"></script>
-<script src="js/input.js?v=6c7549a6"></script>
-<script src="js/cutin.js?v=d31c5e4d"></script>
+<script src="js/input.js?v=bb4334e7"></script>
+<script src="js/controls.js?v=e72aa610"></script>
+<script src="js/cutin.js?v=a65784af"></script>
 <script src="js/emote.js?v=fe681610"></script>
-<script src="js/fight.js?v=72cc2a34"></script>
+<script src="js/fight.js?v=6b40678a"></script>
 <script src="js/ai.js?v=bcbada43"></script>
-<script src="js/update.js?v=82e3c217"></script>
-<script src="js/render.js?v=44a0a4a2"></script>
-<script src="js/main.js?v=d8e48aae"></script>
+<script src="js/update.js?v=4a970fca"></script>
+<script src="js/render.js?v=ec513389"></script>
+<script src="js/main.js?v=c70dfb56"></script>
 </body>
 </html>

@@ -12,7 +12,8 @@ for name in sorted(os.listdir(os.path.join(root,'css'))):
     s=open(css,encoding='utf-8').read()
     s=re.sub(r"url\(\.\./(assets/[^)?]+)(\?v=[0-9a-f]+)?\)",lambda m:f"url(../{m.group(1)}?v={assets[m.group(1)]})",s)
     open(css,'w',encoding='utf-8').write(s)
-open(os.path.join(root,'js/assetv.js'),'w').write('const ASSET_V='+json.dumps(assets,separators=(',',':'),sort_keys=True)+';\n')
+sizes={k:os.path.getsize(os.path.join(root,k)) for k in assets}
+open(os.path.join(root,'js/assetv.js'),'w').write('const ASSET_V='+json.dumps(assets,separators=(',',':'),sort_keys=True)+';\nconst ASSET_SZ='+json.dumps(sizes,separators=(',',':'),sort_keys=True)+';\n')
 idx=os.path.join(root,'index.html')
 s=open(idx,encoding='utf-8').read()
 def fix(m):

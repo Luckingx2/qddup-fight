@@ -5,8 +5,9 @@ const MENUS={
     ['랭킹순위',()=>showLeaderboard()],
     ['설정',()=>openMenu('settings')]]},
   play:{title:'게임하기',back:'main',items:[
-    ['CPU',()=>{unlockVids();toSelect()}],
-    ['멀티플레이',()=>openMenu('multi')]]},
+    ['CPU',()=>{unlockVids();practice=false;toSelect()}],
+    ['멀티플레이',()=>openMenu('multi')],
+    ['연습하기',()=>{unlockVids();practice=true;toSelect()}]]},
   multi:{title:'멀티플레이',back:'play',items:[
     ['일반대전',()=>{unlockVids();startQueue('quick')}],
     ['랭킹대전',()=>{unlockVids();startQueue('ranked')}],
@@ -32,11 +33,15 @@ function openMenu(id){
   $('accName').textContent=playerName;
   syncBack();
 }
-function toMenu(id){const fresh=!isShown('sMenu');mode='menu';show('sMenu');playBgm('menu');openMenu(id||'main');if(fresh)refreshOnline()}
+function toMenu(id){if(!pauseSettings)practice=false;const fresh=!isShown('sMenu');mode='menu';show('sMenu');playBgm('menu');openMenu(id||'main');if(fresh)refreshOnline()}
 function toTitle(){mode='menu';show('sTitle')}
 
 const isShown=id=>$(id).classList.contains('show');
 function backAction(){
+  if(typeof ctrlEditing!=='undefined'&&ctrlEditing)return ()=>endCtrlEdit();
+  if(pauseSettings&&isShown('sMenu'))return ()=>backToPause();
+  if(mode==='paused')return ()=>resumeGame();
+  if(mode==='fight'&&!net&&P)return ()=>pauseGame();
   if(isShown('sNet')){const x=$('nX');return x?()=>x.click():null}
   if(isShown('sSel'))return ()=>{if(net){netLeave();toMenu('multi')}else toMenu('play')};
   if(isShown('sMenu')&&MENUS[menuAt].back)return ()=>openMenu(MENUS[menuAt].back);
@@ -46,7 +51,7 @@ function goBack(){const act=backAction();if(!act)return;initAudio();sfx.sel();ac
 let backGuard=false;
 function syncBack(){
   const can=!!backAction();
-  $('backArrow').classList.toggle('on',can);
+  $('backArrow').classList.toggle('on',can&&!((mode==='fight'||mode==='paused')&&!net&&P&&!isShown('sMenu')));
   if(can&&!backGuard){try{history.pushState({qddupBack:1},'')}catch(e){}backGuard=true}
 }
 addEventListener('popstate',()=>{backGuard=false;goBack();syncBack()});
@@ -55,7 +60,7 @@ $('backArrow').onclick=pressBack;
 $('menuBack').onclick=pressBack;
 $('selBack').onclick=pressBack;
 addEventListener('keydown',e=>{
-  if(e.key!=='Escape'||mode==='fight'||audioSettings.open||e.target.closest?.('input, textarea'))return;
+  if(e.key!=='Escape'||(mode==='fight'&&net)||audioSettings.open||e.target.closest?.('input, textarea'))return;
   if(backAction()){e.preventDefault();pressBack()}
 });
 
@@ -79,5 +84,29 @@ function setTab(name){
   document.querySelectorAll('#settingsPanel .setTabs button').forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
   document.querySelectorAll('#settingsPanel .setPage').forEach(p=>p.hidden=p.dataset.page!==name);
   if(name==='emote')syncEmoteUI();
+  if(name==='control')syncCtrlUI();
 }
 document.querySelectorAll('#settingsPanel .setTabs button').forEach(b=>b.onclick=()=>{sfx.sel();setTab(b.dataset.tab)});
+let practice=false,pauseSettings=false;
+function pauseBox(){netBox('<h3>일시정지</h3><button class="btn" id="pzGo" type="button">계속하기</button><button class="btn ghost" id="pzSet" type="button">설정</button>'+(practice?'<button class="btn ghost" id="pzSel" type="button">캐릭터 선택</button>':'')+'<button class="btn ghost" id="pzMain" type="button">메인메뉴</button>');
+  const tap=(id,fn)=>{const el=$(id);let t=0;el.addEventListener('pointerup',e=>{e.preventDefault();t=performance.now();fn()});el.addEventListener('click',()=>{if(performance.now()-t>700)fn()})};
+  tap('pzGo',()=>{sfx.sel();resumeGame()});
+  tap('pzSet',()=>{sfx.sel();pauseSettings=true;netBox();mode='paused';show('sMenu');openMenu('settings');syncBack()});
+  tap('pzMain',()=>{sfx.sel();quitGame()});
+  if($('pzSel'))tap('pzSel',()=>{sfx.sel();pauseSettings=false;netBox();clearEmotes();P=C=null;practice=true;toSelect();syncBack()});
+}
+function pauseGame(){
+  if(mode!=='fight'||net||!P||cut)return;
+  mode='paused';for(const k in held)held[k]=0;for(const k in buf)buf[k]=0;
+  if(bgm)setMusicGain(.25);pauseBox();syncBack();
+}
+function resumeGame(){
+  if(mode!=='paused')return;
+  pauseSettings=false;netBox();show(null);mode='fight';if(bgm)setMusicGain(.5);syncBack();
+}
+function backToPause(){pauseSettings=false;show(null);mode='paused';pauseBox();syncBack()}
+function quitGame(){
+  pauseSettings=false;practice=false;netBox();clearEmotes();P=C=null;mode='menu';toMenu('main');
+}
+setInterval(()=>{if(typeof mode==='undefined'||typeof P==='undefined')return;try{const pb=$('pauseBtn'),home=$('emoBar');if(pb.parentNode!==home)home.prepend(pb);const on=mode==='fight'&&!net&&!!P;$('pauseBtn').classList.toggle('on',on);$('sNet').classList.toggle('pz',mode==='paused'&&!isShown('sMenu'));if(on)$('backArrow').classList.remove('on')}catch(e){}},200);
+$('pauseBtn').addEventListener('pointerup',e=>{e.preventDefault();if(mode==='fight')pauseGame();else if(mode==='paused')resumeGame()});

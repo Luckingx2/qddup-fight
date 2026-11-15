@@ -4,7 +4,7 @@ let net=null,dropResult=false;const rh={l:0,r:0,up:0,down:0},rbuf={p:0,k:0,s:0,t
 const ME=()=>net&&!net.host?C:P;
 const IS_PC=matchMedia('(hover:hover) and (pointer:fine)').matches;
 for(const k in sfx){const o=sfx[k];sfx[k]=(...a)=>{if(net&&net.host&&mode==='fight'&&net.ev.length<40)net.ev.push([k,...a]);return o(...a)}}
-function netBox(h){if(!h){$('sNet').classList.remove('show');syncBack();return}$('netBox').innerHTML=h;$('sNet').classList.add('show');const x=$('nX');if(x)x.onclick=()=>{netLeave();netBox()};syncBack()}
+function netBox(h){if(h)$('vload').classList.remove('on');if(!h){$('sNet').classList.remove('show');syncBack();return}$('netBox').innerHTML=h;$('sNet').classList.add('show');const x=$('nX');if(x)x.onclick=()=>{netLeave();netBox()};syncBack()}
 function netSend(m){try{if(net&&net.conn&&net.conn.open)net.conn.send(m)}catch(e){}}
 let peerScript;
 let iceCache=null,rtApi=null,rtAt=0;
@@ -260,12 +260,16 @@ async function dropJudge(state,body,show2){
 }
 function netUI(){const on=!!(net&&net.ok);if(!on){$('go').disabled=!pick;$('go').textContent='READY!'}}
 function netLobby(){netUI();if(net.my&&!pick)pick=net.my;syncCharacterPicker();$('go').disabled=!pick||!!net.pk;$('go').textContent=net.pk?'상대를 기다리는 중':'READY!';$('best').textContent=net.match?((net.match.kind==='ranked'?'랭킹대전':'일반대전')+' · '+net.match.opponent+(net.rpk?' 준비 완료':'')):'온라인 대전 · 방 '+net.code+(net.rpk?' · 상대 준비 완료':' · 상대 연결됨')}
-function netTry(){if(!net||!net.host||net.rpc===undefined||!canPickCharacter(net.pk)||!canPickCharacter(net.rpk)||mode!=='menu'||!$('sSel').classList.contains('show'))return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
-function netBegin(m){shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
+function netPrep(){if(!net||!net.pk||!net.rpk||net.vrp)return;net.vrp=1;const n=net;
+  const ov=$('vload');if(!cutsReady([net.pk,net.rpk])){ov.classList.add('on');$('vloadFill').style.width='0%';$('vloadPct').textContent='0%'}
+  ensureCuts([net.pk,net.rpk],p=>{if(net!==n)return;$('vloadFill').style.width=p.toFixed(1)+'%';$('vloadPct').textContent=Math.floor(p)+'%'}).then(()=>{if(net!==n){ov.classList.remove('on');return}n.vr=1;netSend({t:'vr'});setTimeout(()=>{if(net===n&&!n.rvr){n.rvr=1;netTry()}},15000);netTry()})}
+function netTry(){netPrep();if(!net||!net.host||!net.vr||!net.rvr||net.rpc===undefined||!canPickCharacter(net.pk)||!canPickCharacter(net.rpk)||mode!=='menu'||!$('sSel').classList.contains('show'))return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
+function netBegin(m){$('vload').classList.remove('on');shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.vrp=net.vr=net.rvr=0;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
 function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}if(!m||typeof m!=='object')return;
   if(m.t==='s'){if(!net.host&&mode==='fight'&&!(m.q<=net.rq)){net.rq=m.q;if(net.snap){m.fx=(net.snap.fx||[]).concat(m.fx||[]);m.ev=(net.snap.ev||[]).concat(m.ev||[])}net.snap=m}}
   else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,5))if('pkstg'.includes(k))rbuf[k]=.16}}
   else if(m.t==='hi'&&!net.t0){net.rpc=!!m.pc;net.host=IS_PC!==net.rpc?IS_PC:net.lead;netTry()}
+  else if(m.t==='vr'){net.rvr=1;netTry()}
   else if(m.t==='pick'&&canPickCharacter(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
   else if(m.t==='start'){if(!net.host&&canPickCharacter(m.p)&&canPickCharacter(m.c)&&Number.isInteger(m.stg)&&STAGES[m.stg]){initAudio();netBegin(m)}}
   else if(m.t==='em'&&typeof m.e==='string')recvEmote(m.e)
@@ -273,7 +277,7 @@ function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}c
   else if(m.t==='dq'){if(mode==='fight'&&net.t0)netFightDrop('odq')}
   else if(m.t==='bye'){if(mode==='fight'&&net.t0){net.bye=true;net.alive=true}netGiveUp()}
   else if(m.t==='res'){if(!net.host&&mode==='fight'&&typeof m.w==='boolean'){if(net.snap){netApply(net.snap);net.snap=null}if(net.match?.kind==='ranked'&&!((phase==='ko'||phase==='time')&&(P.wins>=2||C.wins>=2)&&m.w===(P.wins>C.wins)))return;if(cut)endCut();result(!m.w)}}}
-function netClose(){const n=net;if(n)netSend({t:'bye'});net=null;if(!n)return;if(n.match)releaseQueue(n.match.id);setTimeout(()=>{try{if(n.st)n.st.close()}catch(e){}try{if(n.conn)n.conn.close()}catch(e){}try{n.pr.destroy()}catch(e){}},400);if(cut)endCut();netUI()}
+function netClose(){$('vload').classList.remove('on');const n=net;if(n)netSend({t:'bye'});net=null;if(!n)return;if(n.match)releaseQueue(n.match.id);setTimeout(()=>{try{if(n.st)n.st.close()}catch(e){}try{if(n.conn)n.conn.close()}catch(e){}try{n.pr.destroy()}catch(e){}},400);if(cut)endCut();netUI()}
 function netLeave(){netClose();$('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다'}
 function netDrop(){if(!net)return;const showingResult=$('sRes').classList.contains('show'),matched=!!net.match;netClose();if(showingResult){resultOnline=dropResult=false;if(matched){$('resB').textContent='메뉴로'}else toMenu('main');netBox('<h3>상대가 방을 나갔어요</h3>');const box=$('netBox').innerHTML;setTimeout(()=>{if($('sNet').classList.contains('show')&&$('netBox').innerHTML===box)netBox()},1800);return}toMenu('multi');netBox('<h3>연결 끊김</h3><p>상대와의 연결이 끊어졌습니다.</p><button class="btn ghost" id="nX">확인</button>')}
 function netSnap(){const F=f=>{const o={};for(const k in f){const v=f[k];if(v===null||typeof v==='number'||typeof v==='string'||typeof v==='boolean')o[k]=v}o.assist=f.assist||null;o.trail=f.trail;return o},W=o=>o===P?0:1;

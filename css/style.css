@@ -289,3 +289,53 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 #winCut.on{display:block}
 #winCut video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 #winCut span{position:absolute;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));font-size:12px;color:#fff;opacity:.8;text-shadow:0 1px 3px #000;pointer-events:none}
+#keys{display:none!important}
+.kc{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 6px;border-radius:8px;border:1.5px solid rgba(255,255,255,.75);border-bottom-width:4px;background:rgba(20,18,50,.6);color:#fff;font:700 15px 'Bungee',sans-serif;line-height:1}
+.kc small{font:600 10px 'IBM Plex Sans KR',sans-serif;margin-top:2px;opacity:.85}
+#pcKeys{display:none}
+@media (pointer:fine){
+#pcKeys{display:block;position:absolute;inset:0;pointer-events:none}
+#pcKeys>div{position:absolute;bottom:calc(50% - min(28.125vw,50dvh) + 16px);opacity:.8}
+.pkMove{left:calc(50% - min(50vw,calc(100dvh*8/9)) + 16px);display:grid;grid-template-columns:repeat(3,34px);grid-template-areas:". u ." "l d r" "t t t";gap:4px;justify-items:center}
+.pkMove small{grid-area:t;font:600 11px 'IBM Plex Sans KR',sans-serif;color:#fff;text-shadow:0 1px 3px #000;white-space:nowrap;margin-top:2px}
+.pkAct{right:calc(50% - min(50vw,calc(100dvh*8/9)) + 16px);display:flex;gap:6px;align-items:flex-end}
+.pkAct .kc{height:46px;min-width:46px}
+#emoBar{left:50%;translate:-50% 0}
+}
+.ctrlPC{display:flex;flex-direction:column;gap:10px;width:100%}
+.ctrlOpt{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border-radius:14px;border:2px solid var(--line);background:rgba(21,19,46,.6);color:var(--txt);cursor:pointer;font:600 13px 'IBM Plex Sans KR',sans-serif}
+.ctrlOpt strong{font:800 15px 'Pretendard',sans-serif}
+.ctrlOpt small{color:var(--dim);font-size:12px}
+.ctrlOpt.on{border-color:#e0c7ff;background:#392767}
+.ctrlMini{display:flex;gap:4px;align-items:center}
+.ctrlMini i{width:14px}
+.ctrlMini .kc{min-width:28px;height:28px;font-size:12px;padding:0 4px}
+.ctrlMobile{display:flex;flex-direction:column;gap:10px;width:100%;align-items:stretch}
+.ctrlNote{margin:0;font-size:13px;color:var(--dim);text-align:center}
+@media (pointer:fine){.ctrlMobile{display:none}}
+@media (pointer:coarse){.ctrlPC{display:none}}
+#ctrlEdit{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));translate:-50% 0;z-index:60;display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-radius:999px;background:rgba(21,19,46,.92);border:1px solid var(--line);font:600 12px 'IBM Plex Sans KR',sans-serif;color:#fff;white-space:nowrap}
+#ctrlEdit[hidden]{display:none}
+#ctrlEdit .btn{padding:7px 14px;font-size:13px;margin:0}
+#pad.editing{pointer-events:auto}
+#pad.editing .pb,#pad.editing #emoBar{outline:2px dashed rgba(255,255,255,.85);outline-offset:4px;pointer-events:auto;opacity:1!important;cursor:grab}
+#pad.editing #emoBar .emo{outline:none}
+#pad.editing .dragging{outline-color:#ffd76a}
+.kc{font-family:'Pretendard',sans-serif;font-weight:800}
+@media (pointer:fine){.pkMove{grid-template-columns:repeat(3,40px)}.pkMove .kc{min-width:40px;height:40px;font-size:17px}.pkAct .kc{height:54px;min-width:54px;font-size:18px}.pkAct .kc small{font-size:11px}}
+#pauseBtn{display:none;position:absolute;left:50%;top:17%;transform:translateX(-50%);z-index:12;width:max(26px,3.4%);aspect-ratio:1;height:auto;border-radius:22%;border:2px solid rgba(255,255,255,.35);background:rgba(15,13,39,.6);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:16%;padding:0;touch-action:manipulation}
+#pauseBtn.on{display:flex}
+#pauseBtn span{display:block;width:44%;height:2px;border-radius:2px;background:#fff}
+#netBox #pzGo,#netBox #pzSet,#netBox #pzSel,#netBox #pzMain{display:block;box-sizing:border-box;width:min(220px,70%);height:48px;margin:10px auto 0;padding:0 16px;font-family:'Pretendard',sans-serif;font-weight:800;font-size:16px;line-height:1;border:2px solid var(--line)}
+#netBox #pzGo{box-shadow:none;border-color:transparent}
+
+#sNet.pz{background:rgba(7,6,15,.45)}
+#bT.used,#pad #bT.used{opacity:.45;filter:grayscale(1) brightness(.6);pointer-events:none}
+#pcKeys .kc.used{opacity:.4;filter:grayscale(1)}
+#emoBar #pauseBtn{position:relative;left:auto;top:auto;transform:none;width:42px;height:42px;border-radius:50%;pointer-events:auto;align-self:center;gap:4px}
+#emoBar #pauseBtn span{width:16px}
+#vload{position:fixed;inset:0;z-index:46;background:rgba(7,6,15,.92);display:none;flex-direction:column;gap:12px;align-items:center;justify-content:center;font-family:'Bungee',sans-serif;color:var(--dim)}
+#vload.on{display:flex}
+#vload .gauge{width:min(320px,70vw)}
+#vloadPct{font-family:'Bungee',sans-serif;font-size:13px;color:var(--dim)}
+.kc[hidden]{display:none}

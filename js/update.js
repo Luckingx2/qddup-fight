@@ -14,7 +14,7 @@ function update(dt){
   let sdt=dt;if(slow>0){slow-=dt;sdt=dt*.28}
   pt+=dt;
   if(phase==='intro'){if(pt>1.15&&pt-dt<=1.15){say('FIGHT!',.7);sfx.bell()}if(pt>1.75)phase='fight'}
-  else if(phase==='fight'){timer-=dt;if(timer<=0){timer=0;phase='time';pt=0;say('TIME UP',1.6);
+  else if(phase==='fight'){if(!practice)timer-=dt;if(timer<=0){timer=0;phase='time';pt=0;say('TIME UP',1.6);
       const diff=P.hp/CH[P.ch].hp-C.hp/CH[C.ch].hp;
       P.winner=diff>1e-6;C.winner=diff<-1e-6;
       if(P.winner)P.wins++;
@@ -25,7 +25,7 @@ function update(dt){
   // inputs
   const I=P.inp;I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;I.g=buf.g>0?1:0;
   if(net){const J=C.inp;J.l=rh.l;J.r=rh.r;J.up=rh.up;J.down=rh.down;J.p=rbuf.p>0?1:0;J.k=rbuf.k>0?1:0;J.s=rbuf.s>0?1:0;J.t=rbuf.t>0?1:0;J.g=rbuf.g>0?1:0}
-  else if(phase==='fight')think(C,P,sdt);else{const J=C.inp;J.l=J.r=J.up=J.down=J.gd=J.p=J.k=J.s=J.t=J.g=0}
+  else if(phase==='fight'&&!practice)think(C,P,sdt);else{const J=C.inp;J.l=J.r=J.up=J.down=J.gd=J.p=J.k=J.s=J.t=J.g=0}
   stepF(P,C,sdt);stepF(C,P,sdt);
   if(zone){zone.t-=sdt;const o=zone.o===P?C:P;if(o.y<=0&&Math.abs(o.x-zone.x)<zone.w/2&&o.st!=='ko')o.slip=.3;if(zone.t<=0)zone=null}
   if(flood){flood.t-=sdt;if(phase==='fight'&&flood.o.hp>0)flood.o.hp=Math.min(CH[flood.o.ch].hp,flood.o.hp+5*sdt);if(flood.t<=0)flood=null}
@@ -43,6 +43,6 @@ function update(dt){
     if(p.kind==='rocket'&&Math.random()<.7)fx.push({k:'p',x:p.x-(p.vx>0?1:-1)*34,y:p.y+(Math.random()-.5)*10,vx:-p.vx*.15,vy:(Math.random()-.5)*60,t:0,d:.35,col:Math.random()<.5?'#ffb3e1':'rgba(255,255,255,.8)',s:6+Math.random()*7})}
   proj=proj.filter(p=>!p.hit&&p.x>-100&&p.x<WW+100&&p.t<2.4&&p.y<GROUND+6);
   const mid=(P.x+C.x)/2-VW/2;camX+=(Math.max(0,Math.min(WW-VW,mid))-camX)*Math.min(1,dt*6);
-  const bs=$('bS');if(bs)bs.classList.toggle('rdy',ME().meter>=100);const bt=$('bT');if(bt){bt.classList.toggle('rdy',ME().meter>=100&&!ME().tagUsed&&!!TAG[ME().ch]);bt.classList.toggle('used',!!ME().tagUsed||!TAG[ME().ch])}
+  const bs=$('bS');if(bs)bs.classList.toggle('rdy',ME().meter>=100);const bt=$('bT');if(bt){bt.classList.toggle('rdy',ME().meter>=100&&!ME().tagUsed&&!!TAG[ME().ch]);bt.classList.toggle('used',!!ME().tagUsed||!TAG[ME().ch])}const kt=document.querySelector('#pcKeys .kc[data-c="t"]');if(kt)kt.classList.toggle('used',!!ME().tagUsed||!TAG[ME().ch]);
 }
 

@@ -89,7 +89,7 @@ function buildSelect(){
   random.onclick=()=>{const bases=Object.keys(FAMILIES).filter(id=>canPickCharacter(id));sfx.sel();chooseCharacter(bases[Math.floor(Math.random()*bases.length)])};
   $('cards').appendChild(random);
   $('stages').innerHTML=STAGES.map(s=>`<div class="stg" data-s="${s.id}"><img src="${av(`assets/thumbnails/th_${s.id}.jpg`)}" alt=""><span>${s.name}</span></div>`).join('');
-  $('go').onclick=()=>{initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else roulette()};
+  $('go').onclick=()=>{initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else if(practice)startPractice();else roulette()};
   $('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다';
 }
 function toSelect(){
@@ -111,17 +111,17 @@ function roulette(){
   let pool=ORDER.filter(k=>k!==pick); const cand=pool.filter(k=>k!==lastOpp||Math.random()<.34);
   const fin=cand[Math.floor(Math.random()*cand.length)]||pool[0];
   const n=16+Math.floor(Math.random()*3); let t=0,idx=Math.floor(Math.random()*pool.length);
-  for(let i=0;i<=n;i++){ const last=i===n; t+=60+Math.pow(i/n,2.6)*340;
+  for(let i=0;i<=n;i++){ const last=i===n; t+=30+Math.pow(i/n,2.6)*170;
     later(()=>{ idx=(idx+1)%pool.length; const k=last?fin:pool[idx]; const f=$('vsCf'); $('vsC').src=av('assets/faces/'+k+'_face.webp'); $('vsCn').textContent=CH[k].name; $('vsCn').style.color=CH[k].col;
       f.classList.remove('tumble','lock'); void f.offsetWidth; f.classList.add(last?'lock':'tumble'); last?sfx.lock():sfx.tick();
-      if(last){opp=fin;lastOpp=fin;$('vsMsg').textContent='스테이지를 뽑는 중';later(stageSpin,420)} },t) }
+      if(last){opp=fin;lastOpp=fin;ensureCuts([pick,fin]);$('vsMsg').textContent='스테이지를 뽑는 중';later(stageSpin,210)} },t) }
 }
 function stageSpin(){
   const els=[...document.querySelectorAll('.stg')]; const N=STAGES.length,fin=STAGES[window.__stg]?window.__stg:Math.floor(Math.random()*N);
   const n=16, start=(fin-n+N)%N; let t=0;
-  for(let i=0;i<=n;i++){ const last=i===n; t+=70+Math.pow(i/n,2.4)*240;
+  for(let i=0;i<=n;i++){ const last=i===n; t+=35+Math.pow(i/n,2.4)*120;
     later(()=>{ const j=(start+i)%N; els.forEach((e,q)=>e.classList.toggle('on',q===j)); last?sfx.lock():sfx.tick();
-      if(last){stage=STAGES[fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(startMatch,1100)} },t) }
+      if(last){stage=STAGES[fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(()=>beginWhenReady([pick,opp],startMatch),550)} },t) }
 }
 function result(win){
   const mine=net?ME():P;playCeremony((win?mine:(mine===P?C:P)).ch);
@@ -137,4 +137,8 @@ function result(win){
 }
 $('resA').onclick=()=>{initAudio();unlockVids();if(lastOnlineKind){const kind=lastOnlineKind;resultOnline=false;netClose();toMenu('multi');startQueue(kind)}else if(net){toSelect();netLobby()}else if(resultOnline||dropResult){resultOnline=dropResult=false;toMenu('friend');onlineMessage('친선대전','상대가 방을 나갔어요.')}else roulette()};
 $('resB').onclick=()=>{initAudio();streak=0;if(net||dropResult||resultOnline){dropResult=resultOnline=false;netLeave();toMenu('multi')}else toSelect()};
-
+function startPractice(){
+  opp='D';
+  stage=STAGES[Math.floor(Math.random()*STAGES.length)];
+  beginWhenReady([pick,opp],()=>{startMatch();syncBack()});
+}

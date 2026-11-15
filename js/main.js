@@ -9,14 +9,15 @@ window.__bg=()=>bgA?{t:bgA.currentTime,paused:bgA.paused,err:!!bgA.error,routed:
 window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,streak,timer,round}},update,held,buf,set level(v){level=v}};
 (async function(){
   const fontsP=Promise.all(["20px 'Pretendard'","20px 'Bungee'","20px 'IBM Plex Sans KR'","600 20px 'IBM Plex Sans KR'"].map(f=>document.fonts.load(f,'가A'))).catch(()=>{});
-  loadTotal++;fontsP.then(()=>{loadDone++;loadProgress()});
+  loadTotal+=250000;fontsP.then(()=>{loadDone+=250000;loadProgress()});
   const jobs=ORDER.map(k=>loadImg(k+'_face',av('assets/faces/'+k+'_face.webp')));
   for(const k of [...Object.keys(FAMILIES),...ORDER.filter(k=>!FAMILIES[k])])jobs.push(loadImg(k,av('assets/characters/'+k+'.webp'),45000,SHEET_SCALE));
+  jobs.push(loadImg('D',av('assets/characters/D.webp'),45000,SHEET_SCALE),loadImg('D_face',av('assets/faces/D_face.webp')));
   jobs.push(loadImg('ostrichR',av('assets/characters/ostrich-r.webp'),45000));
-  for(const s of STAGES){BG_WANT[s.id]=1;jobs.push(loadImg('bg_'+s.id,av('assets/backgrounds/bg_'+s.id+'.jpg'),45000))}
+  for(const s of STAGES){BG_WANT[s.id]=1;jobs.push(loadImg('bg_'+s.id,av('assets/backgrounds/bg_'+s.id+'.webp'),45000))}
   await Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,90000))]);
   await Promise.race([fontsP,new Promise(r=>setTimeout(r,3000))]);
-  loadDone=loadTotal;loadProgress();await new Promise(r=>setTimeout(r,150));
+  loadDone=loadTotal;loadProgress();for(let i=0;i<80&&loadShown<99.9;i++)await new Promise(r=>setTimeout(r,25));await new Promise(r=>setTimeout(r,150));
   mkVids();buildSelect();fit();$('load').style.display='none';show('sTitle');requestAnimationFrame(loop);
   netRejoin();
   primeBgm();

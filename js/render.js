@@ -199,7 +199,7 @@ function hud(tm){
     cx.fillStyle='rgba(255,255,255,.35)';cx.fillRect(left?x+w-hw:x,y+2,hw,4);
     const name=net
       ? (left===net.host?playerName:(net.match?.opponent || net.remoteName || '상대'))
-      : (left?playerName:'CPU');
+      : (left?playerName:(practice?'DUMMY':'CPU'));
     cx.font="700 18px 'IBM Plex Sans KR', sans-serif";
     cx.textAlign=left?'left':'right';
     cx.textBaseline='middle';
@@ -221,7 +221,7 @@ function hud(tm){
   };
   bar(P,true);bar(C,false);
   cx.fillStyle='rgba(11,10,28,.82)';cx.beginPath();cx.arc(VW/2,36,30,0,6.283);cx.fill();cx.lineWidth=3;cx.strokeStyle=holo(VW/2-30,VW/2+30);cx.stroke();
-  txt(String(Math.ceil(timer)),VW/2,38,26,timer<10?'#ff4d6a':'#fff');
+  txt(practice?'∞':String(Math.ceil(timer)),VW/2,38,26,!practice&&timer<10?'#ff4d6a':'#fff');
   if(combo.n>1&&combo.t>0){const left=combo.who===P;txt(combo.n+' HIT',left?130:VW-130,150,34,'#fff3b0','center',0,7)}
 }
 function drawAmb(tm){
@@ -238,7 +238,7 @@ function drawAmb(tm){
 }
 function render(tm){
   cx.setTransform(cv.width/VW,0,0,cv.height/VH,0,0);
-  if(mode!=='fight'||!P){cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);return}
+  if((mode!=='fight'&&mode!=='paused')||!P){cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);return}
   cx.save();const sk=shake>.5?shake:0;cx.translate((Math.random()-.5)*sk,(Math.random()-.5)*sk);
   const bg=IMG['bg_'+stage.id];cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);if(!bg)needBg(stage);if(bg){const r=bg.width/WW;cx.drawImage(bg,camX*r,0,VW*r,bg.height,-8,-8,VW+16,VH+16)}
   drawAmb(tm);
