@@ -522,3 +522,10 @@
 - 공지 이미지 `notice/move-list.png`(큐오파 기술표), `notice/update-notice.png`(큐오파 업데이트 안내) 제목 갱신
 - 게임 동작은 바뀌지 않아 빌드 번호는 그대로(20261115212649). 서버도 같은 번호로 바로 배포
 - 미정: 큐오파 오프닝 영상과 음성을 새로 만들지. 주소(`/qddup-fight`), 저장소 이름, 랭킹 서버 이름은 그대로 (바꾸면 로그인·랭킹에 영향)
+
+**표지·썸네일·공지에서 "큐떱"과 "BUSAN" 표기 제거 (2026-11-15 배포)**
+- 사용자 지적: 큐떱부산 말고 큐오파로. 표지 그림 안에 부제 "큐떱 오브 파이터즈"와 "BUSAN '26"이 남아 있었음
+- 썸네일·표지·미리보기를 제목 "큐오파"와 "'26"만 남기고 다시 만듦: `notice/qofa-thumbnail.jpg`(대표, A안), `qofa-thumbnail-a.jpg`, `qofa-thumbnail-b.jpg`, `assets/ui/qofa-cover.jpg`
+- 링크 미리보기 그림은 새 이름 `assets/ui/qofa-preview.jpg`로 올리고 `og:image` 변경 (메신저 캐시 회피). 이전 `qofa-share.jpg`는 삭제
+- `notice/open-notice.png`: "큐오파 새롭게 오픈!"으로 바꾸고 위쪽 그림도 큐오파 표지로 교체
+- 게임 동작은 그대로라 빌드 번호 유지(20261115212649)
