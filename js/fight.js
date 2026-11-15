@@ -189,10 +189,10 @@ function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0
   else if(c==='R'){f.vx=0} }
 const canCrouch=f=>!!META[f.ch]?.frames?.crouch;
 const CHAIN_ROUTES={
-  Q:[{name:'비트 러시',seq:['punch','punch','kick']},{name:'로우 비트',seq:['cpunch','punch','ckick']}],
-  W:[{name:'슬랩 대시',seq:['kick','kick','punch']},{name:'스텝 슬라이드',seq:['punch','kick','ckick']}],
-  E:[{name:'파워 코드',seq:['punch','kick','kick']},{name:'다운 스트로크',seq:['cpunch','cpunch','kick']}],
-  R:[{name:'하이노트',seq:['punch','punch','punch']},{name:'스텝 턴',seq:['kick','cpunch','kick']}]
+  Q:[{name:'비트 러시',seq:['punch','punch','kick']},{name:'로우 비트',seq:['kick','kick','punch']}],
+  W:[{name:'슬랩 대시',seq:['kick','kick','punch']},{name:'스텝 슬라이드',seq:['punch','kick','kick']}],
+  E:[{name:'파워 코드',seq:['punch','kick','kick']},{name:'다운 스트로크',seq:['kick','punch','punch']}],
+  R:[{name:'하이노트',seq:['punch','punch','punch']},{name:'스텝 턴',seq:['kick','punch','kick']}]
 };
 const CHAIN_DEFAULT=[{name:'연속 공격',seq:['punch','punch','kick']}];
 const chainRoutes=f=>CHAIN_ROUTES[BASE_CHARACTER[f.ch]]||CHAIN_DEFAULT;
