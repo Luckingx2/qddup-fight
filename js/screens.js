@@ -27,6 +27,7 @@ function canPickCharacter(id,kind=net?.match?.kind){
 function chooseCharacter(id,fromVariant=false){
   if(net?.pk||!canPickCharacter(id))return;
   pick=id;
+  sayVoice(BASE_CHARACTER[id],'select');
   syncCharacterPicker();
   if(fromVariant)$('selectVariants').querySelector('[aria-pressed="true"]')?.focus();
   $('go').disabled=false;
