@@ -26,9 +26,9 @@ const BUILD=document.querySelector('meta[name="build"]')?.content||'';
 async function checkBuild(){
   try{
     const latest=await fetch(ONLINE_API+'/build',{cache:'no-store'}).then(r=>r.ok?r.text():'');
-    if(latest&&BUILD&&latest!==BUILD){
+    if(latest&&BUILD&&latest>BUILD){
       netBox('<h3>새 버전이 있어요</h3><p>상대와 같은 버전이어야 대전할 수 있어요.<br>새로고침한 뒤 다시 시도해 주세요.</p><button class="btn" id="nReload">새로고침</button><button class="btn ghost" id="nX">닫기</button>');
-      $('nReload').onclick=()=>location.reload();
+      $('nReload').onclick=()=>{const u=new URL(location.href);u.searchParams.set('b',latest);fetch(location.pathname,{cache:'reload'}).catch(()=>{}).finally(()=>location.replace(u.href))};
       return false;
     }
   }catch(e){}
