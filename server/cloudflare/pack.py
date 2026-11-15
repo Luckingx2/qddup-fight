@@ -43,16 +43,13 @@ def pack(ch):
 
 
 def write_meta(updates):
-    src = open(DATA, encoding='utf-8', newline='').read().replace('
-', '
-')
+    src = open(DATA, encoding='utf-8', newline='').read().replace('\r\n', '\n')
     m = re.search(r'const META=(\{.*?\});\n', src, re.S)
     meta = json.loads(m.group(1))
     for ch, frames in updates.items():
         meta.setdefault(ch, {})['frames'] = frames
     src = src[:m.start(1)] + json.dumps(meta, separators=(',', ':'), ensure_ascii=False) + src[m.end(1):]
-    open(DATA, 'w', encoding='utf-8', newline='
-').write(src)
+    open(DATA, 'w', encoding='utf-8', newline='\n').write(src)
 
 
 def main():
@@ -67,8 +64,7 @@ def main():
         print('packed', ch, len(updates[ch]), 'frames', os.path.getsize(os.path.join(OUT, ch + '.webp')) // 1024, 'KB')
     if updates:
         write_meta(updates)
-        json.dump(state, open(STATE, 'w', newline='
-'), indent=1)
+        json.dump(state, open(STATE, 'w', newline='\n'), indent=1)
     else:
         print('sheets up to date')
 

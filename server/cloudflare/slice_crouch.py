@@ -60,8 +60,7 @@ def main(ch, sheet_path, crouch_height):
         small.save(os.path.join(folder, name + '.png'))
         anchors[name] = round(foot_x(small) + OFFSET[name], 1)
         print(ch, name, small.size, 'anchor', anchors[name])
-    json.dump(anchors, open(anchors_path, 'w', encoding='utf-8', newline='
-'), indent=1)
+    json.dump(anchors, open(anchors_path, 'w', encoding='utf-8', newline='\n'), indent=1)
 
 
 if __name__ == '__main__':
