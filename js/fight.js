@@ -41,6 +41,7 @@ function applyHit(f,o,a){
   const big=damage>=10,kind=a.kind||(big?'k':'p');impact(hx,hy,f.face,a.sp?120:big?92:62,a.sp?'#ff9a3c':big?'#ffd24a':'#fff6c8');ring(hx,hy,'#fff',big?60:40);spark(hx,hy,big?'#ffe27a':'#fff',big?16:9,big?420:300);spark(hx,hy,CH[f.ch].col,6,260);if(kind==='l')dust(o.x);
   shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8,kind);
   fx.push({k:'d',x:o.x,y:GROUND-o.y-250,t:0,d:.7,txt:Math.round(damage*10)/10});
+  if(a.fin){fx.push({k:'d',x:o.x,y:GROUND-o.y-310,t:0,d:1,txt:a.fin});ring(hx,hy,CH[f.ch].col,110);shake=Math.max(shake,16)}
   if(o.hp<=0&&phase==='fight'){setSt(o,'ko');o.down=false;o.vy=Math.max(o.vy,460);o.y=Math.max(o.y,.01);o.vx=f.face*Math.max(a.push,330);
     phase='ko';pt=0;slow=1.0;flash=.5;sfx.ko();shake=22;say('K.O.',2.2);f.wins++;f.winner=true;o.winner=false;if(bgm)setMusicGain(.2)}
 }
@@ -187,6 +188,33 @@ function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0
   else if(c==='Q'){f.vx=f.face*CLOSE_SPECIALS.Q.speed}
   else if(c==='R'){f.vx=0} }
 const canCrouch=f=>!!META[f.ch]?.frames?.crouch;
+const CHAIN_ROUTES={
+  Q:[{name:'비트 러시',seq:['punch','punch','kick'],fin:{dmg:1,lift:430,push:260,stun:.5}},{name:'로우 비트',seq:['cpunch','punch','ckick'],fin:{dmg:1.15,push:300}}],
+  W:[{name:'슬랩 대시',seq:['kick','kick','punch'],fin:{dmg:1.6,push:640,stun:.45}},{name:'스텝 슬라이드',seq:['punch','kick','ckick'],fin:{dmg:1.15,push:320}}],
+  E:[{name:'파워 코드',seq:['punch','kick','kick'],fin:{dmg:1.15,push:400,stun:.7}},{name:'다운 스트로크',seq:['cpunch','cpunch','kick'],fin:{dmg:1,lift:480,push:200,stun:.5}}],
+  R:[{name:'하이노트',seq:['punch','punch','punch'],fin:{dmg:2.2,lift:560,push:160,stun:.5}},{name:'스텝 턴',seq:['kick','cpunch','kick'],fin:{dmg:1.05,lift:300,push:440,stun:.5}}]
+};
+const CHAIN_DEFAULT=[{name:'연속 공격',seq:['punch','punch','kick'],fin:{dmg:1,push:420,stun:.45}}];
+const chainRoutes=f=>CHAIN_ROUTES[BASE_CHARACTER[f.ch]]||CHAIN_DEFAULT;
+const chainFits=(f,seq)=>chainRoutes(f).find(r=>seq.length<=r.seq.length&&seq.every((s,i)=>r.seq[i]===s));
+function chainStep(f){
+  const seq=(f.cs||'').split('>');if(seq.length<2||seq[seq.length-1]!==f.st)return null;
+  const route=chainFits(f,seq);return route?{route,last:seq.length===route.seq.length}:null}
+function chainHit(f,a){
+  const c=chainStep(f);if(!c)return a;
+  if(!c.last)return{...a,dmg:a.dmg*.45,stun:Math.max(a.stun,.3),push:a.push*.5,reach:a.reach+40,kd:0};
+  const x=c.route.fin,h={...a,dmg:a.dmg*x.dmg*.55,reach:a.reach+40,fin:c.route.name};
+  if(x.push)h.push=x.push;if(x.stun)h.stun=x.stun;if(x.lift)h.lift=x.lift;return h}
+function chainTime(f){const c=chainStep(f);return c&&!c.last?.8:1}
+function chainRec(f){const c=chainStep(f);return c&&c.last?1.25:1}
+function chainNext(f,button,down){
+  const seq=(f.cs||f.st).split('>'),order=button==='p'?(down?['cpunch','punch']:['punch','cpunch']):(down?['ckick','kick']:['kick','ckick']);
+  for(const next of order){if(next[0]==='c'&&!canCrouch(f))continue;const cand=seq.concat(next);if(chainFits(f,cand))return cand}
+  return null}
+function tryChain(f,I){
+  if(!f.hitDone||!(I.p||I.k))return false;
+  const cand=chainNext(f,I.p?'p':'k',I.down);if(!cand)return false;
+  setSt(f,cand[cand.length-1]);f.cs=cand.join('>');f.vx=f.face*260;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0;return true}
 function stepF(f,o,dt){
   const I=f.inp,K=CH[f.ch];f.t+=dt;const gr=f.y<=0&&f.vy<=0;f.slip=Math.max(0,(f.slip||0)-dt);f.rev=Math.max(0,(f.rev||0)-dt);f.dizzy=Math.max(0,(f.dizzy||0)-dt);if(f.rev>0){const q=I.l;I.l=I.r;I.r=q}
   if(phase!=='fight'&&(f.st==='idle'||f.st==='walk'||f.st==='guard'||f.st==='crouch')){f.vx=0;if(f.st!=='idle')setSt(f,'idle')}
@@ -196,11 +224,11 @@ function stepF(f,o,dt){
       if((I.s||(I.t&&!f.tagUsed&&TAG[f.ch]))&&f.meter>=100){const tg=I.t&&!f.tagUsed&&TAG[f.ch];f.meter=0;setSt(f,'charge');f.vx=0;if(f.buf)f.buf.s=f.buf.t=0;if(tg){f.sv=2;f.tagUsed=true}else f.sv=SPV[f.ch]||0;if(window.__sv!==undefined)f.sv=(window.__sv===1&&SPN[f.ch]<2)?0:window.__sv;startCut(f)}
       else if(I.g&&BASE_CHARACTER[f.ch]==='R'){setSt(f,'throw');f.vx=0;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
       else if(I.down&&canCrouch(f)){
-        if(I.p){setSt(f,'cpunch');f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
-        else if(I.k){setSt(f,'ckick');f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
+        if(I.p){setSt(f,'cpunch');f.cs='';f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
+        else if(I.k){setSt(f,'ckick');f.cs='';f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
         else{f.vx=0;if(f.st!=='crouch')setSt(f,'crouch')}}
-      else if(I.p){setSt(f,'punch');f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
-      else if(I.k){setSt(f,'kick');f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
+      else if(I.p){setSt(f,'punch');f.cs='';f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
+      else if(I.k){setSt(f,'kick');f.cs='';f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
       else if(I.up){f.vy=K.jump;f.y=.01;setSt(f,'jump');f.airAtk=false;f.vx=(I.r-I.l)*K.speed*.95;sfx.jump()}
       else if(f.slip<=0&&(!net&&f.cpu?I.gd:(f.face>0?I.l&&!I.r:I.r&&!I.l))){
         if(f.st!=='guard')setSt(f,'guard');
@@ -210,10 +238,10 @@ function stepF(f,o,dt){
   }
   else if(f.st==='jump'){ if((I.p||I.k)&&!f.airAtk&&f.t>.08){f.airAtk=true;f.atkT=0;f.hitDone=false;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0}
     if(f.airAtk){f.atkT+=dt;if(f.atkT<.4)tryHit(f,o,{reach:122,dmg:K.kd-1,stun:.3,push:240,vr:150,hy:140})} }
-  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);if(f.t>.07*K.timing&&f.t<.18*K.timing)tryHit(f,o,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150,kind:'p',high:1});if(f.t>.3*K.timing)setSt(f,'idle')}
-  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);if(f.t>.13*K.timing&&f.t<.28*K.timing)tryHit(f,o,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135,kind:'k',high:1});if(f.t>.47*K.timing)setSt(f,'idle')}
-  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);if(f.t>.06*K.timing&&f.t<.16*K.timing)tryHit(f,o,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'});if(f.t>.28*K.timing)setSt(f,I.down?'crouch':'idle')}
-  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);if(f.t>.12*K.timing&&f.t<.26*K.timing)tryHit(f,o,{reach:150,dmg:K.kd*.8,stun:.34,push:220,hy:55,kind:'l',kd:1});if(f.t>.46*K.timing)setSt(f,I.down?'crouch':'idle')}
+  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.07*T&&f.t<.18*T)tryHit(f,o,chainHit(f,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150,kind:'p',high:1}));if(f.t>.3*T*chainRec(f))setSt(f,'idle')}}
+  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.13*T&&f.t<.28*T)tryHit(f,o,chainHit(f,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135,kind:'k',high:1}));if(f.t>.47*T*chainRec(f))setSt(f,'idle')}}
+  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.06*T&&f.t<.16*T)tryHit(f,o,chainHit(f,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'}));if(f.t>.28*T*chainRec(f))setSt(f,I.down?'crouch':'idle')}}
+  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.12*T&&f.t<.26*T)tryHit(f,o,chainHit(f,{reach:150,dmg:K.kd*.8,stun:.34,push:220,hy:55,kind:'l',kd:1}));if(f.t>.46*T*chainRec(f))setSt(f,I.down?'crouch':'idle')}}
   else if(f.st==='throw'){
     if(!f.hitDone&&f.t>=R_THROW.startup){
       f.hitDone=true;

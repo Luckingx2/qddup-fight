@@ -9,6 +9,12 @@ FAMILIES = [
     ('E', '불주먹. 느리지만 한 방과 연타가 강한 계열', ['E', 'Eb', 'Ec']),
     ('R', '보컬. 높은 점프와 가드를 뚫는 잡기를 가진 계열', ['R', 'Rb', 'Rd', 'Rc']),
 ]
+CHAINS = {
+    'Q': ['비트 러시: 펀치 → 펀치 → 킥 (띄우기)', '로우 비트: 앉아 펀치 → 펀치 → 다리 걸기 (넘어뜨리기)'],
+    'W': ['슬랩 대시: 킥 → 킥 → 펀치 (멀리 밀기)', '스텝 슬라이드: 펀치 → 킥 → 다리 걸기 (넘어뜨리기)'],
+    'E': ['파워 코드: 펀치 → 킥 → 킥 (긴 경직)', '다운 스트로크: 앉아 펀치 → 앉아 펀치 → 킥 (띄우기)'],
+    'R': ['하이노트: 펀치 → 펀치 → 펀치 (높이 띄우기)', '스텝 턴: 킥 → 앉아 펀치 → 킥 (밀며 띄우기)'],
+}
 SPECIALS = {
     'Q': ('불꽃 복싱 3연타', '앞으로 파고들어 불꽃 주먹을 세 번 이어 칩니다. 첫 타가 닿아야 다음 타로 이어지고, 마지막 타는 상대를 띄워 날립니다.', '근접 연타'),
     'Qb': ('드럼롤', '제자리에서 음파를 쏩니다. 발동 뒤에 공격 버튼을 연타한 만큼 음파가 더 나갑니다.', '원거리 · 연타'),
@@ -64,6 +70,9 @@ def card(key, ch, tag, lo, hi):
         extra.append('<li><span>공중 기동</span><b>특화</b></li>')
     partner = tag.get(key)
     notes = [f'<p class="tagline"><b>태그기</b> {html.escape(ch_all[partner]["name"])}와 함께 · 게이지 100%, 라운드당 1회</p>'] if partner else []
+    chains = CHAINS.get(key[0])
+    if chains:
+        notes.append('<p class="tagline"><b>연계 기술</b> ' + ' · '.join(chains) + '</p>')
     if key in ('R', 'Rb', 'Rd', 'Rc'):
         notes.append('<p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>')
     return f'''<article class="fighter" id="{key}" style="--c:{ch['col']}">
