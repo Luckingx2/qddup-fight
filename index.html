@@ -2,29 +2,31 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="online-api" content="https://qddup-online-api.gary00.chatgpt.site">
+<meta name="online-api" content="https://qddup-fight-online.cloudflare-example.workers.dev">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>큐떱인천</title>
+<title>큐떱부산</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="큐떱인천">
+<meta property="og:title" content="큐떱부산">
 <meta property="og:description" content="Q·W·E·R과 함께하는 아케이드 격투 게임">
-<meta property="og:image" content="https://luckingx2.github.io/qddup-fight/assets/ui/qddup-incheon-share.jpg">
+<meta property="og:image" content="https://luckingx2.github.io/qddup-fight/assets/ui/qddup-busan-share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bungee&family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=incheon-net-recovery">
+<link rel="stylesheet" href="css/style.css?v=center-v9">
+<link rel="stylesheet" href="css/select.css?v=balance-v4">
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V</div></div>
+  <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><div id="cutT">재뿌리기!!</div><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 가드 상대 반대 방향 · 펀치 Z / J · 킥 X / K · 필살기 C / L · 태그 V<span id="throwKey" hidden> · 잡아 던지기 G</span></div></div>
   <div id="pad">
     <div id="dpad" class="pb"><i class="u">점프</i><i class="l">◀</i><i class="r">▶</i><div id="knob"></div></div>
     <div id="bP" class="pb" data-k="p">P</div>
     <div id="bK" class="pb" data-k="k">K</div>
     <div id="bS" class="pb" data-k="s">필살</div>
     <div id="bT" class="pb" data-k="t">태그</div>
+    <button id="bG" class="pb" type="button" data-k="g" aria-label="잡아 던지기" hidden>잡기</button>
     <div id="hint">왼쪽 패드: 이동 · 위 점프 · 상대 반대 방향 가드<br>P 펀치 · K 킥 · 게이지가 차면 필살 또는 태그(라운드당 1회)</div>
   </div>
 </div>
@@ -32,6 +34,11 @@
 <dialog id="audioSettings" aria-labelledby="audioHeading">
   <form method="dialog">
     <h2 id="audioHeading">소리 설정</h2>
+    <div class="track-settings">
+      <label for="musicTrack">배경음악 선택</label>
+      <select id="musicTrack"><option value="shuffle">랜덤 재생</option></select>
+      <p>현재 재생 · <span id="nowPlaying" role="status">대기 중</span></p>
+    </div>
     <div>
       <label for="musicVolume">배경음악 <output id="musicValue" for="musicVolume">100%</output></label>
       <input id="musicVolume" type="range" min="0" max="100" value="100">
@@ -44,9 +51,9 @@
   </form>
 </dialog>
 
-<section id="sTitle" class="scr"><img id="ttl" src="assets/ui/qddup-incheon.jpg" alt="큐떱인천"><form id="titleForm"><label for="nick">닉네임</label><input id="nick" type="text" minlength="2" maxlength="16" required autocomplete="nickname" placeholder="2~16자"><button class="btn" id="tGo">시작하기</button></form></section>
+<section id="sTitle" class="scr"><video id="ttl" src="assets/ui/qddup-busan-title.mp4?v=center-v9" poster="assets/ui/qddup-busan-cover.jpg?v=center-v9" preload="none" muted playsinline aria-label="큐떱부산 오프닝"></video><form id="titleForm"><div class="title-tools"><label for="nick">닉네임</label><button id="titleVoice" type="button" aria-label="오프닝 음성 재생">▶ 음성 듣기</button></div><input id="nick" type="text" minlength="2" maxlength="16" required autocomplete="nickname" placeholder="2~16자"><button class="btn" id="tGo">시작하기</button></form></section>
 <section id="sHome" class="scr">
-  <h1 class="logo">큐떱인천</h1>
+  <h1 class="logo">큐떱부산</h1>
   <div class="menuTiles">
     <button class="btn" id="openBattle"><span aria-hidden="true">⚔</span>대전</button>
     <button class="btn ghost" id="leaderboard"><span aria-hidden="true">🏆</span>순위</button>
@@ -72,13 +79,34 @@
   </div>
 </section>
 <section id="sSel" class="scr">
-  <h1 class="logo">큐떱인천<small>캐릭터를 고르세요</small></h1>
-  <div class="pv"><canvas id="pv" width="540" height="600"></canvas><div id="pvN"></div></div>
-  <div class="cards" id="cards" aria-label="캐릭터"></div>
-  <div class="row variants" id="variants" aria-label="캐릭터 스타일" hidden></div>
-  <button class="btn" id="go" disabled>대전 시작</button>
-  <p class="sub" id="best"></p>
-  <button class="btn ghost" id="selectBack">뒤로</button>
+  <div class="select-shell">
+    <header class="select-header">
+      <div class="preview-caption"><span>PLAYER 1</span><strong id="pvN" aria-live="polite"></strong></div>
+      <div class="select-logo"><span>큐떱부산</span><h1>CHARACTER SELECT</h1></div>
+      <div class="opponent-caption"><span id="opponentRole"></span><strong id="opponentName">?</strong></div>
+    </header>
+    <div class="select-body">
+      <div class="select-preview">
+        <img id="selectPoster" alt="">
+        <button id="replayIntro" class="select-replay" type="button" aria-expanded="false" hidden>▶ 소개 영상</button>
+      </div>
+      <div class="select-roster">
+        <div class="cards" id="cards" aria-label="캐릭터"></div>
+        <div id="selectVariants" class="select-variants" aria-label="캐릭터 스타일" hidden></div>
+        <div id="fighterStats" class="fighter-stats" aria-live="polite" hidden></div>
+        <video id="selectIntro" muted playsinline preload="none" aria-label="캐릭터 소개 영상" controls></video>
+      </div>
+      <aside class="select-opponent">
+        <img id="opponentPoster" alt="" hidden>
+        <span id="opponentHint" role="status"></span>
+      </aside>
+    </div>
+    <footer class="select-footer">
+      <button class="btn" id="go" disabled>READY!</button>
+      <div class="select-plate"><span aria-hidden="true">∞</span><p class="sub" id="best"></p></div>
+      <div class="select-controls"><button class="select-back" id="selectBack">‹ 뒤로</button><span id="selectMode"></span></div>
+    </footer>
+  </div>
 </section>
 <section id="sNet" class="scr"><div class="nbox" id="netBox"></div></section>
 
@@ -100,17 +128,17 @@
 <div id="netNotice" role="status" hidden>연결이 불안정해 잠시 멈췄어요. 상대가 돌아오거나 연결이 복구되면 이어집니다.</div>
 <div id="load">LOADING</div>
 
-<script src="js/data.js?v=incheon-net-recovery"></script>
-<script src="js/audio.js?v=incheon-bgm-shuffle"></script>
-<script src="js/screens.js?v=incheon-net-recovery"></script>
-<script src="js/online.js?v=incheon-net-recovery"></script>
-<script src="js/matchmaking.js?v=incheon-net-recovery"></script>
-<script src="js/input.js?v=back-guard"></script>
-<script src="js/cutin.js?v=panda-finishers"></script>
-<script src="js/fight.js?v=back-guard"></script>
-<script src="js/ai.js?v=incheon-net-recovery"></script>
-<script src="js/update.js?v=incheon-net-recovery"></script>
-<script src="js/render.js?v=incheon-net-recovery"></script>
-<script src="js/main.js?v=incheon-bgm-shuffle"></script>
+<script src="js/data.js?v=special-sync-v10"></script>
+<script src="js/audio.js?v=bgm-v5"></script>
+<script src="js/screens.js?v=busan-v6"></script>
+<script src="js/online.js?v=special-sync-v10"></script>
+<script src="js/matchmaking.js?v=special-sync-v10"></script>
+<script src="js/input.js?v=balance-v4"></script>
+<script src="js/cutin.js?v=special-sync-v10"></script>
+<script src="js/fight.js?v=special-sync-v10"></script>
+<script src="js/ai.js?v=balance-v4"></script>
+<script src="js/update.js?v=balance-v4"></script>
+<script src="js/render.js?v=special-sync-v10"></script>
+<script src="js/main.js?v=special-sync-v10"></script>
 </body>
 </html>

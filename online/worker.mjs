@@ -1,7 +1,7 @@
 const QUEUE_TTL = 20_000;
 const MATCH_TTL = 30 * 60_000;
 const RANKING_SEASON = 1;
-const MATCH_CLIENT = 2;
+const MATCH_CLIENT = 5;
 
 function respond(data, status = 200) {
   return Response.json(data, {status, headers: {'Cache-Control': 'no-store'}});
@@ -18,7 +18,7 @@ async function matchmake(db, id, kind, now) {
   const stale = now - QUEUE_TTL;
   const expired = now - MATCH_TTL;
   const statements = [
-    db.prepare(`DELETE FROM queue WHERE (match_id IS NULL AND (seen_at < ? OR client_version <> ?))
+    db.prepare(`DELETE FROM queue WHERE (match_id IS NULL AND seen_at < ?) OR client_version <> ?
       OR match_id IN (SELECT id FROM matches WHERE created_at < ?
         OR (kind = 'ranked' AND ranking_season <> ?))`).bind(stale, MATCH_CLIENT, expired, RANKING_SEASON),
     db.prepare(`INSERT INTO queue (player,kind,joined_at,seen_at,client_version) VALUES (?,?,?,?,?)
@@ -33,6 +33,7 @@ async function matchmake(db, id, kind, now) {
       LEFT JOIN ranking_scores p ON p.player_id = me.player AND p.season = ?
       LEFT JOIN ranking_scores op ON op.player_id = opponent.player AND op.season = ?
       WHERE me.player = ? AND me.match_id IS NULL AND opponent.match_id IS NULL
+        AND opponent.client_version = me.client_version
         AND (me.kind = 'quick' OR ABS(COALESCE(p.points, 1000) - COALESCE(op.points, 1000)) <=
           150 + MAX(0, ((? - MIN(me.joined_at, opponent.joined_at)) / 10000)) * 100)
       ORDER BY opponent.joined_at, opponent.player LIMIT 1`).bind(crypto.randomUUID(), now, RANKING_SEASON, RANKING_SEASON, RANKING_SEASON, id, now),

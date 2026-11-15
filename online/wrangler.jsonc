@@ -6,6 +6,6 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "qddup-fight",
-    "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    "database_id": "ac548d34-ac73-46b7-a4f6-76895d82bc13"
   }]
 }

@@ -1,7 +1,7 @@
 /* 닉네임, 빠른 대전·랭킹전 매칭, 랭킹 */
 'use strict';
 /* ---------- public matchmaking ---------- */
-const MATCH_CLIENT=2;
+const MATCH_CLIENT=5;
 const ONLINE_API=document.querySelector('meta[name="online-api"]')?.content.replace(/\/$/,'');
 let playerName='', playerToken='', queueSearch=null, lastOnlineKind=null, lastOnlineMatch=null;
 try{

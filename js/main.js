@@ -29,7 +29,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.s
 window.__bg=()=>bgA?{t:bgA.currentTime,paused:bgA.paused,err:!!bgA.error,routed:!!bgSrc,gain:musG?musG.gain.value:null}:null;
 window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,streak,timer,round}},update,held,buf,set level(v){level=v}};
 (async function(){
-  const jobs=[];for(const k of ORDER){jobs.push(loadImg(k,'assets/characters/'+k+'.webp'),loadImg(k+'_face','assets/faces/'+k+'_face.webp'))}
+  const jobs=[loadImg('ostrichR','assets/characters/ostrich-r.webp')];for(const k of ORDER){jobs.push(loadImg(k,'assets/characters/'+k+'.webp'),loadImg(k+'_face','assets/faces/'+k+'_face.webp'))}
   for(const s of STAGES)jobs.push(loadImg('bg_'+s.id,'assets/backgrounds/bg_'+s.id+'.jpg'));
   await Promise.all(jobs);try{await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))])}catch(e){}
   mkVids();buildSelect();fit();$('load').style.display='none';show('sTitle');requestAnimationFrame(loop);

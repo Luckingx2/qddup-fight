@@ -1,8 +1,8 @@
 /* 키보드, 터치 입력 */
 'use strict';
 /* ---------- input ---------- */
-const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0};
-const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t'};
+const held={l:0,r:0,up:0,down:0},buf={p:0,k:0,s:0,t:0,g:0};
+const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'up',KeyW:'up',KeyZ:'p',KeyJ:'p',KeyX:'k',KeyK:'k',KeyC:'s',KeyL:'s',KeyV:'t',Semicolon:'t',KeyG:'g'};
 addEventListener('keydown',e=>{if(mode!=='fight'||audioSettings.open||e.isComposing||e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.target.closest?.('input, textarea, select, [contenteditable]'))return;const k=KM[e.code];if(!k)return;e.preventDefault();if(k in held)held[k]=1;else if(!e.repeat)buf[k]=.16});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 document.querySelectorAll('.pb[data-k]').forEach(b=>{
@@ -22,7 +22,7 @@ $('app').addEventListener('contextmenu',e=>e.preventDefault());
   ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,pv,opt));
   app.addEventListener('dblclick',pv,opt);
   let lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&!(e.target.closest&&e.target.closest('.scr')))pv(e);lt=n},opt);
-  const reset=()=>{held.l=held.r=held.up=held.down=0;buf.p=buf.k=buf.s=buf.t=0;document.querySelectorAll('.pb.on').forEach(b=>b.classList.remove('on'));$('knob').style.transform=''};
+  const reset=()=>{held.l=held.r=held.up=held.down=0;for(const key in buf)buf[key]=0;document.querySelectorAll('.pb.on').forEach(b=>b.classList.remove('on'));$('knob').style.transform=''};
   addEventListener('blur',reset);addEventListener('pagehide',reset);document.addEventListener('visibilitychange',()=>{if(document.hidden)reset()});
   $('dpad').addEventListener('lostpointercapture',reset)})();
 
