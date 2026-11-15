@@ -38,7 +38,7 @@ function update(dt){
   if(P.y<60&&C.y<60&&P.st!=='ko'&&C.st!=='ko'&&!(P.st==='special'||C.st==='special')){const dx=C.x-P.x,m=78-Math.abs(dx);if(m>0){const s=(dx>=0?1:-1)*m/2;P.x-=s;C.x+=s;P.x=Math.max(70,Math.min(WW-70,P.x));C.x=Math.max(70,Math.min(WW-70,C.x))}}
   // projectiles
   for(const p of proj){p.t+=sdt;p.x+=p.vx*sdt;p.vy-=p.g*sdt;p.y-=p.vy*sdt;const o=p.o===P?C:P;
-    if(!p.hit&&Math.abs(p.x-o.x)<(p.big?70:54)&&o.y<190&&p.y>GROUND-o.y-290&&o.st!=='ko'){p.hit=true;const f=p.o,sf=f.face;f.face=p.vx>0?1:-1;applyHit(f,o,{dmg:p.dmg,stun:p.stun,push:p.push,lift:p.lift,sp:1,hy:GROUND-o.y-p.y});f.face=sf;
+    if(!p.hit&&Math.abs(p.x-o.x)<(p.big?70:54)&&o.y<190&&p.y>GROUND-o.y-290&&o.st!=='ko'){p.hit=true;const f=p.o,sf=f.face;f.face=p.vx>0?1:-1;applyHit(f,o,{dmg:p.dmg,stun:p.stun,push:p.push,lift:p.lift,sp:1,pj:1,hy:GROUND-o.y-p.y});f.face=sf;
       if(p.kind==='rocket'){shake=20;flash=.25;ring(p.x,p.y,'#ffb3e1',120);ring(p.x,p.y,'#fff',80);spark(p.x,p.y,'#ffcf5a',26,560);spark(p.x,p.y,'#ff6b8e',20,420);for(let i=0;i<8;i++)fx.push({k:'n',x:p.x,y:p.y,vx:(Math.random()-.5)*500,vy:-100-Math.random()*300,t:0,d:.8,s:18+Math.random()*14})}
       else if(p.heart){hearts(p.x,p.y,18);sfx.kiss()}
       else if(p.kind==='wave')ring(p.x,p.y,'#fff',50)
