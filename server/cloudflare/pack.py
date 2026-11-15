@@ -1,10 +1,10 @@
 import hashlib, json, os, re, sys
 from PIL import Image
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 ART = os.path.join(ROOT, 'art', 'characters')
-OUT = os.path.join(ROOT, 'public', 'assets', 'characters')
-DATA = os.path.join(ROOT, 'public', 'js', 'data.js')
+OUT = os.path.join(ROOT, 'assets', 'characters')
+DATA = os.path.join(ROOT, 'js', 'data.js')
 STATE = os.path.join(ROOT, 'art', '.packed.json')
 WIDTH, PAD, SCALE, QUALITY = 2040, 2, .75, 86
 
@@ -43,13 +43,16 @@ def pack(ch):
 
 
 def write_meta(updates):
-    src = open(DATA, encoding='utf-8').read()
+    src = open(DATA, encoding='utf-8', newline='').read().replace('
+', '
+')
     m = re.search(r'const META=(\{.*?\});\n', src, re.S)
     meta = json.loads(m.group(1))
     for ch, frames in updates.items():
         meta.setdefault(ch, {})['frames'] = frames
     src = src[:m.start(1)] + json.dumps(meta, separators=(',', ':'), ensure_ascii=False) + src[m.end(1):]
-    open(DATA, 'w', encoding='utf-8').write(src)
+    open(DATA, 'w', encoding='utf-8', newline='
+').write(src)
 
 
 def main():
@@ -64,7 +67,8 @@ def main():
         print('packed', ch, len(updates[ch]), 'frames', os.path.getsize(os.path.join(OUT, ch + '.webp')) // 1024, 'KB')
     if updates:
         write_meta(updates)
-        json.dump(state, open(STATE, 'w'), indent=1)
+        json.dump(state, open(STATE, 'w', newline='
+'), indent=1)
     else:
         print('sheets up to date')
 

@@ -10,5 +10,8 @@
  "charge": 112.5,
  "special": 153.5,
  "ko": 240,
- "win": 109
+ "win": 109,
+ "crouch": 111.5,
+ "cpunch": 102.5,
+ "ckick": 91.0
 }

@@ -11,5 +11,8 @@
  "special": 153,
  "ko": 265.5,
  "win": 102.5,
- "special2": 194
+ "special2": 194,
+ "crouch": 107.0,
+ "cpunch": 100.0,
+ "ckick": 97.0
 }
