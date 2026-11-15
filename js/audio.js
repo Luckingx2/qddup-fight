@@ -92,7 +92,8 @@ const BGM_TRACKS=[
   {id:'d-day', title:'D-Day', file:'qwer-d-day.mp3'},
   {id:'fireworks', title:'불꽃놀이', file:'qwer-fireworks.mp3'},
   {id:'fake-idol', title:'가짜 아이돌', file:'qwer-fake-idol.mp3'},
-  {id:'ferris-wheel', title:'대관람차', file:'qwer-ferris-wheel.mp3'}
+  {id:'ferris-wheel', title:'대관람차', file:'qwer-ferris-wheel.mp3'},
+  {id:'extra-1', title:'추가곡 1', file:'extra-1.mp3'}
 ];
 const bgA=new Audio();
 bgA.preload='none';
