@@ -19,13 +19,8 @@ const MENUS={
   settings:{title:'설정',back:'main',panel:'settingsPanel'}
 };
 let menuAt='main';
-function dressMenu(){
-  const pool=['Q','W','E','R'],left=pool.splice(Math.floor(Math.random()*pool.length),1)[0],right=pool[Math.floor(Math.random()*pool.length)];
-  $('menuArtL').src=av('assets/ui/menu/'+left+'.webp');$('menuArtR').src=av('assets/ui/menu/'+right+'.webp');
-}
 function openMenu(id){
   const m=MENUS[id];menuAt=id;
-  if(id==='main')dressMenu();
   $('menuSub').textContent=m.title;
   const list=$('menuList');list.innerHTML='';
   for(const [label,act] of m.items||[]){

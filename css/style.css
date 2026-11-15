@@ -343,12 +343,9 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 .champName{display:inline-flex;align-items:center;gap:5px;max-width:100%;vertical-align:bottom}.champName>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .champ{flex:none;display:inline-block;width:1.1em;height:1.32em}.champ svg{display:block;width:100%;height:100%;font-family:'Pretendard',sans-serif}
 #menuArt{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-#menuArt::before{content:'';position:absolute;inset:0;background:url(../assets/ui/qofa-bg.jpg?v=f1b137ff) center/cover;filter:blur(9px) brightness(.36) saturate(1.15);transform:scale(1.08);animation:menuDrift 24s ease-in-out infinite alternate}
-#menuArt::after{content:'';position:absolute;inset:0;background:radial-gradient(60% 55% at 50% 50%,rgba(7,6,15,.78),rgba(7,6,15,.2) 70%,rgba(7,6,15,.55))}
-#menuArt img{position:absolute;z-index:1;bottom:max(8px,4vh);height:min(38vh,52vw);width:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}
-#menuArt img:not([src]){display:none}
-#menuArtL{left:0}
-#menuArtR{right:0;transform:scaleX(-1)}
-@media (min-width:860px){#menuArt img{bottom:auto;top:50%;height:min(74vh,620px);translate:0 -50%}#menuArtL{left:auto;right:calc(50% + 130px)}#menuArtR{right:auto;left:calc(50% + 130px)}}
-@keyframes menuDrift{from{transform:scale(1.08) translateX(-1.5%)}to{transform:scale(1.14) translateX(1.5%)}}
+#menuArt::before{content:'';position:absolute;inset:-4%;background:url(../assets/ui/qofa-bg.jpg?v=f1b137ff) center/cover;filter:brightness(.7) saturate(1.1);animation:menuDrift 26s ease-in-out infinite alternate}
+#menuArt::after{content:'';position:absolute;inset:0;background:radial-gradient(48% 46% at 50% 52%,rgba(7,6,15,.74),rgba(7,6,15,.18) 78%),linear-gradient(rgba(7,6,15,.35),rgba(7,6,15,0) 30%,rgba(7,6,15,.5))}
+@keyframes menuDrift{from{transform:scale(1) translate(-1.6%,-.8%)}to{transform:scale(1.09) translate(1.6%,.8%)}}
+@media (orientation:portrait){#menuArt::before{inset:0;animation:menuPan 32s ease-in-out infinite alternate}}
+@keyframes menuPan{from{background-position:6% 50%}to{background-position:94% 50%}}
 @media (prefers-reduced-motion:reduce){#menuArt::before{animation:none}}
