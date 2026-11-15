@@ -1,7 +1,16 @@
 'use strict';
 /* ---------- public matchmaking ---------- */
 const ONLINE_API=document.querySelector('meta[name="online-api"]')?.content.replace(/\/$/,'');
-let playerName='', playerToken='', queueSearch=null, lastOnlineKind=null, lastOnlineMatch=null;
+let playerName='', playerToken='', playerTitles=0, queueSearch=null, lastOnlineKind=null, lastOnlineMatch=null;
+function champBadge(titles){
+  const badge=document.createElement('span');badge.className='champ';badge.textContent=titles>1?'★'+titles:'★';
+  badge.title='일일 랭킹 우승 '+titles+'회';badge.setAttribute('aria-label',badge.title);
+  return badge;
+}
+function nameWithBadge(el,name,titles){
+  el.textContent=name;
+  if(titles>0)el.append(' ',champBadge(titles));
+}
 try{
   playerName=localStorage.getItem('qddup_nickname') || '';
   playerToken=localStorage.getItem('qddup_player_token') || '';
@@ -178,7 +187,7 @@ async function showLeaderboard(){
   onlineMessage('랭킹순위',ONLINE_API?'불러오는 중…':'랭킹 서버 연결이 준비되면 이용할 수 있습니다.');
   if(!ONLINE_API)return;
   const status=$('netBox').querySelector('p');
-  const note=document.createElement('p');note.className='rankNote';note.textContent='랭킹은 매일 밤 12시(한국 시간)에 초기화돼요.';status.before(note);
+  const note=document.createElement('p');note.className='rankNote';note.textContent='랭킹은 매일 밤 12시(한국 시간)에 초기화돼요. 그날 1위는 이름 옆에 우승 뱃지 ★가 붙어요.';status.before(note);
   try{
     const {players,season,me}=await onlineApi('/leaderboard');
     if(!status.isConnected||!$('sNet').classList.contains('show'))return;
@@ -197,6 +206,7 @@ async function showLeaderboard(){
       const mine=table.createTBody();mine.className='rankMe';
       const row=mine.insertRow();
       for(const value of [me.rank||'-',me.nickname,me.points,me.wins,me.losses])row.insertCell().textContent=value;
+      nameWithBadge(row.cells[1],me.nickname,me.titles);playerTitles=me.titles||0;
     }
     const rows=table.createTBody();
     players.forEach((player,index)=>{
@@ -204,6 +214,7 @@ async function showLeaderboard(){
       for(const value of [index+1,player.nickname,player.points,player.wins,player.losses]){
         row.insertCell().textContent=value;
       }
+      nameWithBadge(row.cells[1],player.nickname,player.titles);
     });
     const wrap=document.createElement('div');wrap.className='rankWrap';wrap.append(table);status.replaceWith(wrap);
   }catch(e){status.textContent='순위표를 불러오지 못했어요. 다시 시도해 주세요.'}

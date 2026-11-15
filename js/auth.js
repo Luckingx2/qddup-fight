@@ -15,6 +15,7 @@ function setSession(token,name){
 }
 function clearSession(){
   playerToken='';playerName='';
+  playerTitles=0;
   try{localStorage.removeItem('qddup_player_token');localStorage.removeItem('qddup_nickname')}catch(e){}
 }
 function showAuth(){
@@ -49,6 +50,7 @@ async function submitAuth(path){
   try{
     const reply=await onlineApi(path,legacyPlayerToken?{nickname,password,legacy:legacyPlayerToken}:{nickname,password});
     setSession(reply.token,reply.nickname);
+    playerTitles=0;onlineApi('/me').then(me=>{playerTitles=me.titles||0}).catch(()=>{});
     getIce();
     showAuth();authMessage('');
     enterGame();
@@ -70,7 +72,7 @@ $('nick').value=playerName;
 showAuth();
 if(playerToken){
   onlineApi('/me').then(me=>{
-    setSession(playerToken,me.nickname);showAuth();getIce();
+    playerTitles=me.titles||0;setSession(playerToken,me.nickname);showAuth();getIce();
   }).catch(e=>{
     if(e.status===401){clearSession();showAuth();authMessage(AUTH_MSG.session_expired)}
   });

@@ -197,9 +197,10 @@ function hud(tm){
     const maxHp=CH[f.ch].hp,dw=w*f.dhp/maxHp,hw=w*f.hp/maxHp;cx.fillStyle='#ff4d6a';rr(left?x+w-dw:x,y,Math.max(0,dw),h,5);cx.fill();
     cx.fillStyle=f.hp<maxHp*.25?'#ffcf5a':holo(x,x+w);if(hw>1){rr(left?x+w-hw:x,y,hw,h,5);cx.fill()}
     cx.fillStyle='rgba(255,255,255,.35)';cx.fillRect(left?x+w-hw:x,y+2,hw,4);
+    const star=n=>n>1?'★'+n+' ':n>0?'★ ':'';
     const name=net
-      ? (left===net.host?playerName:(net.match?.opponent || net.remoteName || '상대'))
-      : (left?playerName:(practice?'DUMMY':'CPU'));
+      ? (left===net.host?star(playerTitles)+playerName:(net.match?star(net.match.titles)+net.match.opponent:(net.remoteName || '상대')))
+      : (left?star(playerTitles)+playerName:(practice?'DUMMY':'CPU'));
     cx.font="700 18px 'IBM Plex Sans KR', sans-serif";
     cx.textAlign=left?'left':'right';
     cx.textBaseline='middle';

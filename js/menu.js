@@ -31,7 +31,7 @@ function openMenu(id){
   for(const p of document.querySelectorAll('.menuPanel'))p.hidden=p.id!==m.panel;
   if(m.panel==='settingsPanel'){syncAudioSettings();syncEmoteUI()}
   $('menuBack').hidden=!m.back;
-  $('accName').textContent=playerName;
+  nameWithBadge($('accName'),playerName,playerTitles);
   syncBack();
 }
 function toMenu(id){if(!pauseSettings)practice=false;const fresh=!isShown('sMenu');mode='menu';show('sMenu');playBgm('menu');openMenu(id||'main');if(fresh)refreshOnline()}

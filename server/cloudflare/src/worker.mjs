@@ -1,5 +1,5 @@
 export {Hub} from './hub.mjs';
-import {season} from './hub.mjs';
+import {season, CHAMPIONS} from './hub.mjs';
 
 const QUEUE_TTL = 20_000;
 const MATCH_TTL = 30 * 60_000;
@@ -212,17 +212,19 @@ async function handle(request, env) {
   const db = env.DB;
   const path = new URL(request.url).pathname.replace(/^\/api/, '');
   if (request.method === 'GET' && path === '/leaderboard') {
-    const {results} = await db.prepare(`SELECT nickname, points, wins, losses FROM (
-        SELECT p.nickname, s.points, s.wins, s.losses
-          FROM ranking_scores s JOIN players p ON p.id = s.player_id WHERE s.season = ?
+    const {results} = await db.prepare(`SELECT nickname, points, wins, losses, titles FROM (
+        SELECT p.nickname, s.points, s.wins, s.losses, COALESCE(c.titles, 0) AS titles
+          FROM ranking_scores s JOIN players p ON p.id = s.player_id
+          LEFT JOIN (${CHAMPIONS}) c ON c.player_id = p.id WHERE s.season = ?
         UNION ALL
-        SELECT nickname, points, wins, losses FROM legacy_scores WHERE season = ? AND claimed_by IS NULL)
-      ORDER BY points DESC, wins DESC, losses ASC, nickname LIMIT 50`).bind(seasonNow, seasonNow).all();
+        SELECT nickname, points, wins, losses, 0 FROM legacy_scores WHERE season = ? AND claimed_by IS NULL)
+      ORDER BY points DESC, wins DESC, losses ASC, nickname LIMIT 50`).bind(seasonNow, seasonNow, seasonNow).all();
     const me = await sessionPlayer(db, request);
     let mine = null;
     if (me) {
       const r = await db.prepare(`SELECT points, wins, losses FROM ranking_scores WHERE season = ? AND player_id = ?`).bind(seasonNow, me.id).first();
-      mine = {nickname: me.nickname, points: r?.points ?? 1000, wins: r?.wins ?? 0, losses: r?.losses ?? 0, rank: null};
+      const won = await db.prepare(`SELECT titles FROM (${CHAMPIONS}) WHERE player_id = ?`).bind(seasonNow, me.id).first();
+      mine = {nickname: me.nickname, points: r?.points ?? 1000, wins: r?.wins ?? 0, losses: r?.losses ?? 0, rank: null, titles: won?.titles ?? 0};
       if (r) mine.rank = 1 + (await db.prepare(`SELECT COUNT(*) AS n FROM (
           SELECT p.nickname, s.points, s.wins, s.losses
             FROM ranking_scores s JOIN players p ON p.id = s.player_id WHERE s.season = ?
@@ -249,7 +251,8 @@ async function handle(request, env) {
   if (request.method === 'GET' && path === '/me') {
     const me = await sessionPlayer(db, request);
     if (!me) return respond({error: 'not_logged_in'}, 401);
-    return respond({nickname: me.nickname, season: seasonNow, points: me.points, wins: me.wins, losses: me.losses});
+    const won = await db.prepare(`SELECT titles FROM (${CHAMPIONS}) WHERE player_id = ?`).bind(seasonNow, me.id).first();
+    return respond({nickname: me.nickname, season: seasonNow, points: me.points, wins: me.wins, losses: me.losses, titles: won?.titles ?? 0});
   }
   if (request.method !== 'POST') return respond({error: 'not_found'}, 404);
   const text = await request.text();

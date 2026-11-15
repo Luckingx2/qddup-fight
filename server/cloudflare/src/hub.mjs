@@ -1,6 +1,11 @@
 import {DurableObject} from 'cloudflare:workers';
 
 export const season = () => Number(new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10).replace(/-/g, ''));
+export const CHAMPIONS = `SELECT player_id, COUNT(*) AS titles FROM (
+    SELECT s.player_id, ROW_NUMBER() OVER (PARTITION BY s.season ORDER BY s.points DESC, s.wins DESC, s.losses ASC, p.nickname) AS place
+      FROM ranking_scores s JOIN players p ON p.id = s.player_id
+      WHERE s.season >= 20000000 AND s.season < ? AND s.wins > 0)
+  WHERE place = 1 GROUP BY player_id`;
 const enc = new TextEncoder();
 const hex = buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
 const sha256 = async text => hex(await crypto.subtle.digest('SHA-256', enc.encode(text)));
@@ -99,13 +104,14 @@ export class Hub extends DurableObject {
 
   async auth(ws, m) {
     if (typeof m.token !== 'string' || !/^[a-f0-9]{64}$/.test(m.token)) return this.reject(ws);
-    const me = await this.env.DB.prepare(`SELECT p.id, p.nickname, COALESCE(r.points, 1000) AS points FROM sessions s
+    const me = await this.env.DB.prepare(`SELECT p.id, p.nickname, COALESCE(r.points, 1000) AS points, COALESCE(c.titles, 0) AS titles FROM sessions s
       JOIN players p ON p.id = s.player
       LEFT JOIN ranking_scores r ON r.player_id = p.id AND r.season = ?
+      LEFT JOIN (${CHAMPIONS}) c ON c.player_id = p.id
       WHERE s.token_hash = ? AND s.expires_at > ?`)
-      .bind(season(this.env), await sha256(m.token), Date.now()).first();
+      .bind(season(this.env), season(this.env), await sha256(m.token), Date.now()).first();
     if (!me) return this.reject(ws);
-    ws.serializeAttachment({k: 'l', player: me.id, nick: me.nickname, points: me.points, q: null});
+    ws.serializeAttachment({k: 'l', player: me.id, nick: me.nickname, points: me.points, titles: me.titles, q: null});
     send(ws, {t: 'ok'});
   }
 
@@ -170,8 +176,8 @@ export class Hub extends DurableObject {
         send(y.ws, {t: 'err', code: 'server_error'});
         continue;
       }
-      send(x.ws, {t: 'match', match: {id, kind, host: true, opponent: y.a.nick}});
-      send(y.ws, {t: 'match', match: {id, kind, host: false, opponent: x.a.nick}});
+      send(x.ws, {t: 'match', match: {id, kind, host: true, opponent: y.a.nick, titles: y.a.titles || 0}});
+      send(y.ws, {t: 'match', match: {id, kind, host: false, opponent: x.a.nick, titles: x.a.titles || 0}});
     }
     const rankedLeft = waiting.some((x, i) => !used.has(i) && x.a.q.kind === 'ranked');
     if (rankedLeft && !(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(now + 1000);
