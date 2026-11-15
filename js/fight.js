@@ -5,7 +5,7 @@ function mkF(ch,x,face,cpu){return{ch,x,y:0,vx:0,vy:0,face,cpu,hp:CH[ch].hp,dhp:
 function setSt(f,s){f.st=s;f.t=0;f.hitDone=false;f.thrown=false}
 function startMatch(){
   needBg(stage);show(null);level=Math.min(6,streak);usedSp={};
-  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;round=1;amb=[];
+  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);
   for(let i=0;i<26;i++)amb.push({x:Math.random()*VW,y:Math.random()*VH,s:.5+Math.random(),p:Math.random()*6.28});
   const canThrow=BASE_CHARACTER[ME().ch]==='R';
   $('bG').hidden=$('throwKey').hidden=!canThrow;
@@ -20,6 +20,7 @@ function startRound(){
 function say(txt,dur,sub){msg={txt,sub:sub||'',t:0,dur}}
 function spark(x,y,col,n,sp){for(let i=0;i<n;i++){const a=Math.random()*6.28,v=(.4+Math.random())*sp;fx.push({k:'p',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-60,t:0,d:.25+Math.random()*.3,col,s:3+Math.random()*5})}}
 function ring(x,y,col,r){fx.push({k:'r',x,y,t:0,d:.28,col,r})}
+function voice(f,kind,chance=1){const base=BASE_CHARACTER[f.ch];if(!VOICE_SET[base]||Math.random()>chance)return;const now=performance.now();if(kind==='attack'&&now-(f.vAt||0)<700)return;f.vAt=now;sfx.voice(base,kind)}
 function impact(x,y,dir,r,col){fx.push({k:'hit',x,y,t:0,d:.2,dir,r,col,rot:Math.random()*6.28})}
 function block(x,y,dir){fx.push({k:'block',x,y,t:0,d:.22,dir})}
 function star(x,y,r){fx.push({k:'s',x,y,t:0,d:.16,r,rot:Math.random()*3})}
@@ -38,7 +39,7 @@ function applyHit(f,o,a){
   f.meter=Math.min(100,f.meter+a.dmg*1.8);o.meter=Math.min(100,o.meter+a.dmg*1.2);
   if(combo.who===f&&combo.t>0)combo.n++;else combo.n=1;combo.who=f;combo.t=1.1;
   const big=damage>=10,kind=a.kind||(big?'k':'p');impact(hx,hy,f.face,a.sp?120:big?92:62,a.sp?'#ff9a3c':big?'#ffd24a':'#fff6c8');ring(hx,hy,'#fff',big?60:40);spark(hx,hy,big?'#ffe27a':'#fff',big?16:9,big?420:300);spark(hx,hy,CH[f.ch].col,6,260);if(kind==='l')dust(o.x);
-  shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8,kind);
+  shake=Math.max(shake,big?12:6);hitstop=a.sp?.11:big?.085:.055;sfx.hit(a.sp?1.5:big?1.15:.8,kind);voice(o,a.sp||big?'heavy-hit':'hit');
   fx.push({k:'d',x:o.x,y:GROUND-o.y-250,t:0,d:.7,txt:Math.round(damage*10)/10});
   if(o.hp<=0&&phase==='fight'){setSt(o,'ko');o.down=false;o.vy=Math.max(o.vy,460);o.y=Math.max(o.y,.01);o.vx=f.face*Math.max(a.push,330);
     phase='ko';pt=0;slow=1.0;flash=.5;sfx.ko();shake=22;say('K.O.',2.2);f.wins++;f.winner=true;o.winner=false;if(bgm)setMusicGain(.2)}
@@ -195,11 +196,11 @@ function stepF(f,o,dt){
       if((I.s||(I.t&&!f.tagUsed&&TAG[f.ch]))&&f.meter>=100){const tg=I.t&&!f.tagUsed&&TAG[f.ch];f.meter=0;setSt(f,'charge');f.vx=0;if(f.buf)f.buf.s=f.buf.t=0;if(tg){f.sv=2;f.tagUsed=true}else{let v=Math.random()<.5?0:1;if(v===f.lastSv&&Math.random()<.65)v=1-v;if(SPN[f.ch]<2)v=0;f.sv=f.lastSv=v}if(window.__sv!==undefined)f.sv=(window.__sv===1&&SPN[f.ch]<2)?0:window.__sv;startCut(f)}
       else if(I.g&&BASE_CHARACTER[f.ch]==='R'){setSt(f,'throw');f.vx=0;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
       else if(I.down&&canCrouch(f)){
-        if(I.p){setSt(f,'cpunch');f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
-        else if(I.k){setSt(f,'ckick');f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
+        if(I.p){setSt(f,'cpunch');voice(f,'attack',.55);f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
+        else if(I.k){setSt(f,'ckick');voice(f,'attack',.55);f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
         else{f.vx=0;if(f.st!=='crouch')setSt(f,'crouch')}}
-      else if(I.p){setSt(f,'punch');f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
-      else if(I.k){setSt(f,'kick');f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
+      else if(I.p){setSt(f,'punch');voice(f,'attack',.55);f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
+      else if(I.k){setSt(f,'kick');voice(f,'attack',.55);f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
       else if(I.up){f.vy=K.jump;f.y=.01;setSt(f,'jump');f.airAtk=false;f.vx=(I.r-I.l)*K.speed*.95;sfx.jump()}
       else if(f.slip<=0&&(!net&&f.cpu?I.gd:(f.face>0?I.l&&!I.r:I.r&&!I.l))){
         if(f.st!=='guard')setSt(f,'guard');

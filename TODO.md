@@ -4,6 +4,7 @@
 - 정식 전환: 기존 랭킹을 한 번 더 옮기고(`server/cloudflare/import-legacy.mjs`), 게임 파일을 GitHub Pages(`luckingx2.github.io/qddup-fight`)에 올리기
 - 최종 승리 때 승리 애니메이션(영상): 한두 명 시범부터
 - 승리 모션의 재생 속도와 발 위치를 실제 대전에서 확인하기
+- 캐릭터 음성: E 계열만 있음. Q·W·R·EGG·BING 음성을 받으면 `assets/audio/voices/`에 넣고 `audio.js`의 `VOICE_SET`에 추가
 - 모바일 화면: 새 캐릭터 선택 화면의 세로·가로 배치 점검
 - 추가된 배경음악 6곡을 96kbps로 줄이기
 - 끊김 판정을 남은 체력 숫자가 아니라 최대 체력 대비 비율로 바꾸기 (캐릭터마다 최대 체력이 다름)
@@ -79,3 +80,10 @@
 - 동작: W 하트, E 고양이 손, R 도넛, EGG 수염·선글라스·팔짱, BING 카메라, Q2 드럼스틱·토끼 손, W2 손가락 하트, E2 더블 브이, R2 외치기, Q3 인사, W3 페인트 롤러, E3 주먹 불기, R3 통굽 구르기, R4 눈물 닦고 브이
 - Q의 승리 동작 크기를 서 있는 키 기준으로 다시 맞춤
 - `slice_motion.py`: 그림 주변의 옅은 잔상과 후광을 지운 뒤 자르도록 수정 (`HALO_CUT`), 서 있는 자세 키 기준 크기 맞춤(`stand`) 추가
+
+**캐릭터 음성 (E 계열)**
+- `assets/audio/voices/`에 `E-attack.mp3`, `E-hit.mp3`, `E-heavy-hit.mp3`, `E-win.mp3` 추가. E·E2·E3가 함께 사용
+- `audio.js`: `VOICE_SET`, `loadVoices`, `sfx.voice` 추가. 효과음 음량을 따르고, 온라인에서는 다른 효과음처럼 상대 화면에도 전달됨
+- `fight.js`: 주먹·킥·앉아 공격을 시작할 때 55% 확률로 공격 음성(0.7초 간격 제한), 맞을 때 피격 음성(강한 공격·필살기는 강한 피격 음성), 대전 시작 때 두 캐릭터 음성 미리 받기
+- `update.js`: 라운드 승리 포즈에 들어갈 때 승리 음성
+- 쓰이지 않는 `assets/audio/voices/R-select.mp3` 삭제

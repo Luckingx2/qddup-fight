@@ -36,7 +36,21 @@ function tone(f,dur,type,vol,dest,t0,f2){ if(!AC)return; const t=t0||AC.currentT
 function noise(dur,vol,fq,ft,t0,dest,fq2){ if(!AC)return; const t=t0||AC.currentTime,s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=nbuf;s.loop=true;
   f.type=ft||'lowpass';f.frequency.setValueAtTime(fq,t);if(fq2)f.frequency.exponentialRampToValueAtTime(fq2,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
   s.connect(f);f.connect(g);g.connect(dest||sfxG);s.start(t,Math.random()*.5);s.stop(t+dur+.03)}
+const VOICE_SET={E:['attack','hit','heavy-hit','win']};
+const voiceBuf={},voiceLive={};
+function loadVoices(base){
+  if(!AC||!VOICE_SET[base])return;
+  for(const kind of VOICE_SET[base]){
+    const key=base+'-'+kind;
+    if(voiceBuf[key]!==undefined)continue;
+    voiceBuf[key]=null;
+    fetch(av('assets/audio/voices/'+key+'.mp3')).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>{voiceBuf[key]=buf}).catch(()=>{delete voiceBuf[key]});
+  }
+}
 const sfx={
+  voice(base,kind){ const buf=voiceBuf[base+'-'+kind]; if(!AC||!buf)return;
+    try{voiceLive[base]?.stop()}catch(e){}
+    const s=AC.createBufferSource(),g=AC.createGain();s.buffer=buf;g.gain.value=1.6;s.connect(g);g.connect(sfxG);s.start();voiceLive[base]=s},
   whoosh(v){noise(.13,.22*v,900,'bandpass',0,0,2600)},
   hit(s,kind){ if(!AC)return; const t=AC.currentTime;
     if(kind==='k'){noise(.16,.6*s,1400,'lowpass',t,0,180);tone(110*s+40,.2,'sine',.75,0,t,38);tone(240,.05,'square',.14,0,t,90);noise(.03,.35,5200,'highpass',t)}

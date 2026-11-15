@@ -20,7 +20,7 @@ function update(dt){
       if(P.winner)P.wins++;
       if(C.winner)C.wins++}}
   else if(phase==='ko'||phase==='time'){
-    if(pt>1.5&&pt-dt<=1.5){for(const f of[P,C])if(f.winner&&f.st!=='ko'){setSt(f,'win');f.vx=0;if(f.hp>=CH[f.ch].hp)say('PERFECT',1.2)}}
+    if(pt>1.5&&pt-dt<=1.5){for(const f of[P,C])if(f.winner&&f.st!=='ko'){setSt(f,'win');voice(f,'win');f.vx=0;if(f.hp>=CH[f.ch].hp)say('PERFECT',1.2)}}
     if(pt>3.3){ setMusicGain(.5); if(P.wins>=2||C.wins>=2){result(P.wins>C.wins);return} round++;startRound();return } }
   // inputs
   const I=P.inp;I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;I.g=buf.g>0?1:0;
