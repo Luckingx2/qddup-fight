@@ -5,7 +5,7 @@ function mkF(ch,x,face,cpu){return{ch,x,y:0,vx:0,vy:0,face,cpu,hp:CH[ch].hp,dhp:
 function setSt(f,s){f.st=s;f.t=0;f.hitDone=false;f.thrown=false}
 function startMatch(){
   needBg(stage);show(null);level=Math.min(6,streak);usedSp={};
-  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);warmCeremony(pick);warmCeremony(opp);
+  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;if(net)C.buf=rbuf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);warmCeremony(pick);warmCeremony(opp);
   for(let i=0;i<26;i++)amb.push({x:Math.random()*VW,y:Math.random()*VH,s:.5+Math.random(),p:Math.random()*6.28});
   const canThrow=BASE_CHARACTER[ME().ch]==='R';
   $('bG').hidden=$('throwKey').hidden=$('pkG').hidden=!canThrow;
@@ -210,14 +210,14 @@ const FINISHERS={
 const finisherOf=f=>FINISHERS[f.fn]||FINISHERS.X0;
 function startFinisher(f,route){
   const base=BASE_CHARACTER[f.ch],list=CHAIN_ROUTES[base];
-  setSt(f,'fin');f.fn=list?base+list.indexOf(route):'X0';f.cs='';f.cw=0;f.trail=[];
+  setSt(f,'fin');f.fn=list?base+list.indexOf(route):'X0';f.cs='';f.cw=0;f.cb='';f.trail=[];
   const d=finisherOf(f);f.vx=f.face*d.vx;if(d.vy){f.vy=d.vy;f.y=Math.max(f.y,.01)}
-  sfx.whoosh(1.3);if(f.buf)f.buf.p=f.buf.k=0}
+  sfx.whoosh(1.3)}
 const chainFits=(f,seq)=>chainRoutes(f).find(r=>seq.length<=r.seq.length&&seq.every((s,i)=>r.seq[i]===s));
 function chainEnter(f,cand){
   const route=chainFits(f,cand);
   if(cand.length===route.seq.length){startFinisher(f,route);return}
-  setSt(f,cand[cand.length-1]);f.cs=cand.join('>');f.cw=0;f.vx=f.face*260;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0}
+  setSt(f,cand[cand.length-1]);f.cs=cand.join('>');f.cw=0;f.vx=f.face*260;sfx.whoosh(1)}
 function chainStep(f){
   const seq=(f.cs||'').split('>');if(seq.length<2||seq[seq.length-1]!==f.st)return null;
   return chainFits(f,seq)||null}
@@ -225,18 +225,23 @@ function chainHit(f,a){
   if(!chainStep(f))return chainFits(f,[f.st])?{...a,stun:Math.max(a.stun,.36)}:a;
   return{...a,dmg:a.dmg*.6,stun:Math.max(a.stun,.42),push:a.push*.5,reach:a.reach+40,kd:0}}
 function chainTime(f){return chainStep(f)?.8:1}
-function chainNext(f,button,down){
-  const seq=(f.cs||f.st).split('>'),order=button==='p'?(down?['cpunch','punch']:['punch','cpunch']):(down?['ckick','kick']:['kick','ckick']);
+function chainNext(f,button,down,from){
+  const seq=(from||f.cs||f.st).split('>'),order=button==='p'?(down?['cpunch','punch']:['punch','cpunch']):(down?['ckick','kick']:['kick','ckick']);
   for(const next of order){if(next[0]==='c'&&!canCrouch(f))continue;const cand=seq.concat(next);if(chainFits(f,cand))return cand}
   return null}
+function chainPress(f,I,from){
+  for(const button of ['p','k']){if(!I[button])continue;const next=chainNext(f,button,I.down,from);if(next){if(f.buf)f.buf[button]=0;return next}}
+  return null}
 function chainResume(f,I){
-  if(!(f.cw>0)||!f.cs||!(I.p||I.k))return false;
-  const cand=chainNext(f,I.p?'p':'k',I.down);if(!cand)return false;
+  if(!(f.cw>0)||!f.cs)return false;
+  const cand=chainPress(f,I);if(!cand)return false;
   chainEnter(f,cand);return true}
-function tryChain(f,I){
-  if(!f.hitDone||!(I.p||I.k))return false;
-  const cand=chainNext(f,I.p?'p':'k',I.down);if(!cand)return false;
-  chainEnter(f,cand);return true}
+function tryChain(f,I,ready){
+  const next=chainPress(f,I,f.cb);if(next)f.cb=next.join('>');
+  if(!f.cb||!ready)return false;
+  const done=(f.cs||f.st).split('>').length,target=f.cb.split('>');if(target.length<=done){f.cb='';return false}
+  const cand=target.slice(0,done+1);if(cand.length===target.length)f.cb='';chainEnter(f,cand);return true}
+function chainEnd(f){f.cw=Math.max(f.cw||0,.3);f.cb=''}
 function stepF(f,o,dt){
   const I=f.inp,K=CH[f.ch];f.t+=dt;f.cw=Math.max(0,(f.cw||0)-dt);const gr=f.y<=0&&f.vy<=0;f.slip=Math.max(0,(f.slip||0)-dt);f.rev=Math.max(0,(f.rev||0)-dt);f.dizzy=Math.max(0,(f.dizzy||0)-dt);if(f.rev>0){const q=I.l;I.l=I.r;I.r=q}
   if(phase!=='fight'&&(f.st==='idle'||f.st==='walk'||f.st==='guard'||f.st==='crouch')){f.vx=0;if(f.st!=='idle')setSt(f,'idle')}
@@ -247,11 +252,11 @@ function stepF(f,o,dt){
       else if(I.g&&BASE_CHARACTER[f.ch]==='R'){setSt(f,'throw');f.vx=0;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
       else if(chainResume(f,I)){}
       else if(I.down&&canCrouch(f)){
-        if(I.p){setSt(f,'cpunch');f.cs='cpunch';f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
-        else if(I.k){setSt(f,'ckick');f.cs='ckick';f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
+        if(I.p){setSt(f,'cpunch');f.cs='cpunch';f.cb='';f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
+        else if(I.k){setSt(f,'ckick');f.cs='ckick';f.cb='';f.vx=f.face*20;sfx.whoosh(.9);if(f.buf)f.buf.k=0}
         else{f.vx=0;if(f.st!=='crouch')setSt(f,'crouch')}}
-      else if(I.p){setSt(f,'punch');f.cs='punch';f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
-      else if(I.k){setSt(f,'kick');f.cs='kick';f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
+      else if(I.p){setSt(f,'punch');f.cs='punch';f.cb='';f.vx=f.face*40*(K.lunge||1);sfx.whoosh(.8);if(f.buf)f.buf.p=0}
+      else if(I.k){setSt(f,'kick');f.cs='kick';f.cb='';f.vx=f.face*30*(K.lunge||1);sfx.whoosh(1);if(f.buf)f.buf.k=0}
       else if(I.up){f.vy=K.jump;f.y=.01;setSt(f,'jump');f.airAtk=false;f.vx=(I.r-I.l)*K.speed*.95;sfx.jump()}
       else if(f.slip<=0&&(!net&&f.cpu?I.gd:(f.face>0?I.l&&!I.r:I.r&&!I.l))){
         if(f.st!=='guard')setSt(f,'guard');
@@ -261,10 +266,10 @@ function stepF(f,o,dt){
   }
   else if(f.st==='jump'){ if((I.p||I.k)&&!f.airAtk&&f.t>.08){f.airAtk=true;f.atkT=0;f.hitDone=false;sfx.whoosh(1);if(f.buf)f.buf.p=f.buf.k=0}
     if(f.airAtk){f.atkT+=dt;if(f.atkT<.4)tryHit(f,o,{reach:122,dmg:K.kd-1,stun:.3,push:240,vr:150,hy:140})} }
-  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.07*T&&f.t<.18*T)tryHit(f,o,chainHit(f,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150,kind:'p',high:1}));if(f.t>.3*T)setSt(f,'idle')}}
-  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.13*T&&f.t<.28*T)tryHit(f,o,chainHit(f,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135,kind:'k',high:1}));if(f.t>.47*T)setSt(f,'idle')}}
-  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.06*T&&f.t<.16*T)tryHit(f,o,chainHit(f,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'}));if(f.t>.28*T)setSt(f,I.down?'crouch':'idle')}}
-  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);if(!tryChain(f,I)){const T=K.timing*chainTime(f);if(f.t>.12*T&&f.t<.26*T)tryHit(f,o,chainHit(f,{reach:150,dmg:K.kd*.8,stun:.34,push:220,hy:55,kind:'l',kd:1}));if(f.t>.46*T)setSt(f,I.down?'crouch':'idle')}}
+  else if(f.st==='punch'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.18*T)){if(f.t>.07*T&&f.t<.18*T)tryHit(f,o,chainHit(f,{reach:112,dmg:K.pd,stun:.22,push:150,hy:150,kind:'p',high:1}));if(f.t>.3*T){chainEnd(f);setSt(f,'idle')}}}
+  else if(f.st==='kick'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.28*T)){if(f.t>.13*T&&f.t<.28*T)tryHit(f,o,chainHit(f,{reach:136,dmg:K.kd,stun:.32,push:290,hy:135,kind:'k',high:1}));if(f.t>.47*T){chainEnd(f);setSt(f,'idle')}}}
+  else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.16*T)){if(f.t>.06*T&&f.t<.16*T)tryHit(f,o,chainHit(f,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'}));if(f.t>.28*T){chainEnd(f);setSt(f,I.down?'crouch':'idle')}}}
+  else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.26*T)){if(f.t>.12*T&&f.t<.26*T)tryHit(f,o,chainHit(f,{reach:150,dmg:K.kd*.8,stun:.34,push:220,hy:55,kind:'l',kd:1}));if(f.t>.46*T){chainEnd(f);setSt(f,I.down?'crouch':'idle')}}}
   else if(f.st==='throw'){
     if(!f.hitDone&&f.t>=R_THROW.startup){
       f.hitDone=true;
@@ -312,7 +317,7 @@ function stepF(f,o,dt){
     if(!d.vy)f.vx=f.t<d.dur&&!f.hitDone?f.face*d.vx:f.vx*Math.pow(.001,dt);
     if(d.dust&&f.t<d.dur&&Math.random()<.5)dust(f.x-f.face*40);
     if(f.t>d.from&&f.t<d.to)tryHit(f,o,{...d.hit,dmg:K.kd*d.dmg,fin:d.name,col:d.col});
-    if(d.vy?(f.t>.12&&f.y<=0):f.t>d.dur+.16){f.vx=0;setSt(f,'rec')}}
+    if(d.vy?(f.t>.12&&f.y<=0):f.t>d.dur+.16){const whiff=!f.hitDone;f.vx=0;setSt(f,'rec');if(whiff)f.t=-.25}}
   else if(f.st==='rec'){f.vx*=Math.pow(.0005,dt);if(f.t>.26&&f.y<=0)setSt(f,'idle')}
   else if(f.st==='hit'){f.stun-=dt;if(f.stun<=0&&f.y<=0)setSt(f,'idle')}
   else if(f.st==='kd'){f.stun-=dt;if(f.y<=0&&!f.down){f.down=true;dust(f.x);shake=Math.max(shake,5)}if(f.stun<=0&&f.y<=0){f.down=false;setSt(f,'idle')}}
