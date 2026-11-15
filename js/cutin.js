@@ -1,7 +1,7 @@
 'use strict';
 /* ---------- special cut-in video ---------- */
 const FIRE_CUTINS={E:"E_fire",Eb:"Eb_fire",Ec:"Ec_fire"};
-const WIN_CEREMONY=['Q'];
+const WIN_CEREMONY=['Q','W','E','R','Qb','Wb','Eb','Rb','Qc','Wc','Ec','Rd','Rc'];
 const winCeremonyUrl=ch=>av('assets/videos/win_'+ch+'.mp4');
 function warmCeremony(ch){if(WIN_CEREMONY.includes(ch))fetch(winCeremonyUrl(ch)).catch(()=>{})}
 function playCeremony(ch){
@@ -10,6 +10,7 @@ function playCeremony(ch){
   const done=()=>{v.onended=v.onerror=box.onclick=null;removeEventListener('keydown',key,true);try{v.pause()}catch(e){}box.classList.remove('on')};
   const skip=()=>{if(performance.now()-started>700)done()};
   const key=e=>{if(e.key==='Escape'||e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();skip()}};
+  try{voiceLive[BASE_CHARACTER[ch]]?.stop()}catch(e){}
   v.src=winCeremonyUrl(ch);v.muted=effectsLevel===0;v.volume=effectsLevel;
   box.classList.add('on');box.onclick=skip;v.onended=done;v.onerror=done;addEventListener('keydown',key,true);
   const p=v.play();if(p&&p.catch)p.catch(done);
