@@ -11,8 +11,8 @@ window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,s
   const fontsP=Promise.all(["20px 'Pretendard'","20px 'Bungee'","20px 'IBM Plex Sans KR'","600 20px 'IBM Plex Sans KR'"].map(f=>document.fonts.load(f,'가A'))).catch(()=>{});
   loadTotal++;fontsP.then(()=>{loadDone++;loadProgress()});
   const jobs=ORDER.map(k=>loadImg(k+'_face',av('assets/faces/'+k+'_face.webp')));
-  for(const t of BGM_TRACKS)jobs.push(loadFile(av(t),45000,5));
   for(const k of [...Object.keys(FAMILIES),...ORDER.filter(k=>!FAMILIES[k])])jobs.push(loadImg(k,av('assets/characters/'+k+'.webp'),45000,SHEET_SCALE));
+  jobs.push(loadImg('ostrichR',av('assets/characters/ostrich-r.webp'),45000));
   for(const s of STAGES){BG_WANT[s.id]=1;jobs.push(loadImg('bg_'+s.id,av('assets/backgrounds/bg_'+s.id+'.jpg'),45000))}
   await Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,90000))]);
   await Promise.race([fontsP,new Promise(r=>setTimeout(r,3000))]);

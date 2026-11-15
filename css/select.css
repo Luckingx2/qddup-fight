@@ -1,0 +1,188 @@
+#sSel {
+  --pick-color:#66dbff;
+  --p1:#66dbff;
+  --p2:#ff6b99;
+  background:#030715;
+  padding:0;
+  overflow:auto;
+}
+#sSel [hidden] {display:none}
+#sSel .select-shell {
+  isolation:isolate;
+  container-type:inline-size;
+  width:min(100%,calc(100dvh * 16 / 9),1440px);
+  aspect-ratio:16/9;
+  margin:auto;
+  position:relative;
+  display:grid;
+  grid-template-rows:22% 66% 12%;
+  background:#080d24 url("../assets/ui/roster-energy.webp") center / cover;
+  box-shadow:0 0 70px #02040d;
+}
+.select-header,.select-body,.select-footer {
+  display:grid;
+  grid-template-columns:minmax(0,20%) minmax(0,60%) minmax(0,20%);
+  align-items:center;
+  min-height:0;
+}
+.select-header {padding-top:1.25%;align-items:start}
+.select-logo {text-align:center;align-self:center;transform:skew(-7deg);display:grid;gap:.1em}
+.select-logo span {
+  font:400 7.1cqw/.93 'Black Han Sans',sans-serif;
+  letter-spacing:-.075em;
+  color:#fff;
+  text-shadow:-.026em .035em #193a98,.024em .045em #92124a,0 .07em .28em #07051c;
+}
+.select-logo h1 {
+  font:700 1.83cqw/1.12 'IBM Plex Sans KR',sans-serif;
+  letter-spacing:.18em;
+  margin:.55em 0 0;
+  color:#e7edff;
+}
+.preview-caption,.opponent-caption {
+  display:grid;
+  gap:.26em;
+  min-width:0;
+  padding:.5em .32em;
+  text-align:center;
+  color:#fff;
+  background:#061021ad;
+  border-top:1px solid var(--side);
+  font-size:1.8cqw;
+}
+.preview-caption {--side:var(--p1)}
+.opponent-caption {--side:var(--p2)}
+.preview-caption span,.opponent-caption span {
+  color:var(--side);font-size:.78em;font-weight:700;letter-spacing:.1em;white-space:nowrap;
+}
+#sSel #pvN,.opponent-caption strong {
+  font:400 2.95cqw/1.1 'Black Han Sans','Bungee',sans-serif;
+  margin:0;color:#fff;text-shadow:0 2px #060926;
+}
+.select-body {align-items:stretch}
+.select-preview,.select-opponent {
+  position:relative;
+  min-height:0;
+  display:grid;
+  justify-items:center;
+  align-items:end;
+}
+#selectPoster,#opponentPoster {
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 0 1cqw #8fe9ffb3);
+}
+#opponentPoster {filter:drop-shadow(0 0 1cqw #ff569cb0)}
+.select-roster {position:relative;min-width:0;min-height:0;padding:0 .45cqw}
+#sSel .cards {
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));
+  width:100%;height:100%;max-width:none;gap:.44cqw;
+}
+#sSel .card {
+  position:relative;min-width:0;min-height:0;isolation:isolate;
+  border:1px solid #6b9bcc;border-radius:.55cqw;
+  background:linear-gradient(0deg,#0b1d44,#1e5591);
+  box-shadow:inset 0 0 .6cqw #52d9ff53,0 .14cqw .38cqw #0009;
+}
+#sSel .card:nth-child(n+6) {
+  border-color:#d07591;background:linear-gradient(0deg,#36112b,#8f3053);
+  box-shadow:inset 0 0 .6cqw #ff689a59,0 .14cqw .38cqw #0009;
+}
+#sSel .card img {
+  width:100%;height:100%;object-fit:cover;object-position:50% 36%!important;aspect-ratio:auto!important;
+}
+#sSel .card b {
+  position:absolute;inset:auto 0 0;
+  min-height:1.65em;display:grid;place-items:center;
+  padding:.15em .08em;background:#041123e8;
+  color:#fff;font-size:clamp(9px,1.2cqw,18px);line-height:1;
+}
+#sSel .card:nth-child(n+6) b {background:#28091ce8}
+#sSel .card.sel {
+  transform:none;outline:2px solid #94f6ff;outline-offset:-2px;
+  border-color:#dcffff;z-index:2;box-shadow:0 0 1.1cqw #68e9ff;
+}
+#sSel .card:focus-visible,.select-controls button:focus-visible,.select-replay:focus-visible,#sSel #go:focus-visible {outline:2px solid #fff;outline-offset:-2px}
+#sSel .random-card span {
+  display:grid;place-items:center;height:100%;color:#fff;text-shadow:0 0 1cqw #ff5d9c;
+  font:400 5cqw/1 'Bungee',sans-serif;padding:0 0 .3em;
+}
+#selectIntro {
+  display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#050b19;z-index:5;
+  border:1px solid var(--p1);
+}
+#selectIntro.playing {display:block}
+.select-footer {align-items:center;padding:0 .9cqw;gap:0}
+.select-controls {display:flex;align-items:center;gap:.45cqw;min-width:0}
+.select-controls span {color:#c4e0ff;font-size:1.1cqw;white-space:nowrap}
+.select-back,.select-replay {
+  border:1px solid #8cccff99;background:#092251e8;color:#fff;
+  border-radius:4px;padding:.35em .58em;min-height:30px;
+  font:700 clamp(10px,1.18cqw,17px)/1.12 'IBM Plex Sans KR',sans-serif;cursor:pointer;
+}
+.select-replay {position:relative;z-index:2;margin-bottom:.65cqw}
+#opponentHint {
+  position:relative;margin:0 0 .65cqw;background:#4d102fed;color:#fff;border:1px solid #ff84af;
+  border-radius:4px;padding:.35em .52em;text-align:center;font-size:clamp(9px,1.2cqw,17px);
+}
+.select-plate {min-width:0;text-align:center;align-self:stretch;display:grid;place-content:center}
+.select-plate>span {color:#fff;font:700 5.7cqw/.77 system-ui;text-shadow:0 0 1.04cqw #f54488}
+.select-plate #best {font-size:1.02cqw;margin:.19em 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55cqw}
+#sSel #go {
+  justify-self:center;border-radius:5px;background:#172e62;color:#fff;border:1px solid #b4ebff;
+  min-height:30px;padding:.35em .68em;font:400 clamp(12px,2.05cqw,27px)/1.1 'Bungee',sans-serif;
+  text-shadow:0 1px #112a6a;box-shadow:0 0 .7cqw #7adfff82;max-width:100%;
+}
+#sSel #go:disabled {opacity:.58}
+#sVs {background:linear-gradient(120deg,#081f40,#0a1022 49%,#40152b);gap:clamp(10px,2vh,18px)}
+#sVs .slot .face {border-radius:7px;border-color:#6bc5ff}
+#sVs .slot:last-child .face {border-color:#ff637e}
+#sVs .vs {color:#fff;text-shadow:2px 3px #ac385a}
+@media(max-width:650px) and (orientation:portrait) {
+  #sSel .select-shell {width:100%;height: min(84dvh,680px);min-height:350px;aspect-ratio:auto;grid-template-rows:20% 66% 14%}
+  .select-header {grid-template-columns:21% 58% 21%;align-items:end;padding-bottom:2%}
+  .select-body,.select-footer {grid-template-columns:16% 68% 16%}
+  #sSel .cards {grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+  .select-logo span {font-size:10cqw}
+  .select-logo h1 {font-size:2.7cqw}
+  .preview-caption,.opponent-caption {font-size:2.8cqw}
+  #sSel #pvN,.opponent-caption strong {font-size:3.5cqw}
+  .select-controls span,.select-plate #best {display:none}
+  .select-replay {max-width:98%}
+  .select-plate>span {font-size:10cqw}
+  #sSel #go {font-size:10px;padding:.5em .2em}
+}
+
+.select-controls {justify-content:flex-end}
+.select-roster:has(.select-variants:not([hidden])) {display:grid;grid-template-rows:minmax(0,1fr) auto;gap:.35cqw}
+.select-variants {display:flex;justify-content:center;gap:.45cqw}
+.select-variants button {min-width:3em;min-height:26px;background:#101b42;color:#eaf5ff;border:1px solid #7b9dc880;border-radius:4px;cursor:pointer;font:400 clamp(10px,1.25cqw,16px) 'Bungee',sans-serif}
+.select-variants button[aria-pressed="true"] {background:#9beeff;color:#071735;border-color:white}
+.roster-slot {border:1px solid #b861834d;border-radius:.55cqw;background:#2110298a}
+@media(max-width:650px) and (orientation:portrait) {
+ #sSel .select-shell {height:min(70dvh,440px)}
+ .select-replay {font-size:8px;padding:2px}
+ #opponentHint {font-size:8px;padding:2px}
+}
+
+#sSel .roster-slot-hidden {visibility:hidden}
+
+.select-roster:has(.fighter-stats:not([hidden])) {
+  display:grid;grid-template-rows:minmax(0,1fr) auto;gap:.35cqw;
+}
+.select-roster:has(.select-variants:not([hidden])):has(.fighter-stats:not([hidden])) {
+  grid-template-rows:minmax(0,1fr) auto auto;
+}
+.fighter-stats {
+  display:flex;justify-content:center;flex-wrap:wrap;gap:.15em .7em;
+  padding:.42em .5em;border:1px solid #8cccff99;border-radius:5px;
+  color:#eaf5ff;background:#07152de8;font-size:clamp(9px,1.05cqw,14px);
+  line-height:1.2;text-align:center;
+}
+.fighter-stats[hidden] {display:none}
+.fighter-stats strong {color:#a0ecff}
+.fighter-stats span:last-child {flex-basis:100%}
+#sVs .stages {grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+#sVs .stg span {font-size:clamp(8px,1.5vmin,11px)}
+@media (max-width:650px) and (orientation:portrait) {
+  #sVs .stages {grid-template-columns:repeat(3,minmax(0,1fr))}
+}

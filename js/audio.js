@@ -3,11 +3,6 @@
 let AC=null,master,musG,sfxG,videoG,nbuf,bgm=null;
 let musicLevel=1, effectsLevel=1, musicGain=.5;
 const videoSources=new WeakSet();
-try{
-  const saved=JSON.parse(localStorage.getItem('qddup_audio'));
-  if(Number.isInteger(saved?.music)&&saved.music>=0&&saved.music<=100)musicLevel=saved.music/100;
-  if(Number.isInteger(saved?.effects)&&saved.effects>=0&&saved.effects<=100)effectsLevel=saved.effects/100;
-}catch(e){}
 function setMusicGain(gain){
   musicGain=gain;
   if(musG)musG.gain.value=gain*musicLevel;
@@ -63,15 +58,35 @@ const sfx={
   lose(){ if(!AC)return; const t=AC.currentTime;[392,330,262,196].forEach((f,i)=>tone(f,.3,'triangle',.24,0,t+i*.2))}
 };
 const BGM_TRACKS=[
-  'assets/audio/bgm.mp3',
-  'assets/audio/qwer-tb-h.mp3',
-  'assets/audio/qwer-soda.mp3',
-  'assets/audio/qwer-my-name-is-malguem.mp3'
+  {id:'sonyeon-manhwa', title:'소년만화', file:'bgm.mp3'},
+  {id:'tb-h', title:'고민중독', file:'qwer-tb-h.mp3'},
+  {id:'soda', title:'SODA', file:'qwer-soda.mp3'},
+  {id:'my-name-is-malguem', title:'내 이름 맑음', file:'qwer-my-name-is-malguem.mp3'},
+  {id:'goodbye-sorrow', title:'안녕, 나의 슬픔', file:'qwer-goodbye-sorrow.mp3'},
+  {id:'search-qwer', title:'검색어는 QWER', file:'qwer-search-qwer.mp3'},
+  {id:'d-day', title:'D-Day', file:'qwer-d-day.mp3'},
+  {id:'fireworks', title:'불꽃놀이', file:'qwer-fireworks.mp3'},
+  {id:'fake-idol', title:'가짜 아이돌', file:'qwer-fake-idol.mp3'},
+  {id:'ferris-wheel', title:'대관람차', file:'qwer-ferris-wheel.mp3'}
 ];
 const bgA=new Audio();
 bgA.preload='none';
 bgA.volume=.6;
-let bgSrc=null, currentTrack=null, remainingTracks=[];
+let bgSrc=null, currentTrack=null, remainingTracks=[], selectedTrack='shuffle';
+try{
+  const saved=JSON.parse(localStorage.getItem('qddup_audio'));
+  if(Number.isInteger(saved?.music)&&saved.music>=0&&saved.music<=100)musicLevel=saved.music/100;
+  if(Number.isInteger(saved?.effects)&&saved.effects>=0&&saved.effects<=100)effectsLevel=saved.effects/100;
+  if(BGM_TRACKS.some(track=>track.id===saved?.track))selectedTrack=saved.track;
+}catch(e){}
+
+function startTrack(track,play=true){
+  currentTrack=track;
+  bgA.loop=selectedTrack!=='shuffle';
+  bgA.src=av('assets/audio/'+track.file);
+  $('nowPlaying').textContent=track.title;
+  if(play)resumeBgm();
+}
 
 function startNextTrack(play=true){
   if(!remainingTracks.length){
@@ -85,21 +100,23 @@ function startNextTrack(play=true){
       [remainingTracks[0],remainingTracks[j]]=[remainingTracks[j],remainingTracks[0]];
     }
   }
-  currentTrack=remainingTracks.shift();
-  bgA.src=av(currentTrack);
-  if(play)resumeBgm();
+  startTrack(remainingTracks.shift(),play);
+}
+function startSelectedTrack(play=true){
+  if(selectedTrack==='shuffle')startNextTrack(play);
+  else startTrack(BGM_TRACKS.find(track=>track.id===selectedTrack),play);
 }
 function primeBgm(){
   if(currentTrack)return;
   bgA.preload='auto';
-  startNextTrack(false);
+  startSelectedTrack(false);
   try{bgA.load()}catch(e){}
 }
 function resumeBgm(){
   if(currentTrack&&!document.hidden&&bgA.paused)bgA.play().catch(()=>{});
 }
-bgA.addEventListener('ended',()=>startNextTrack());
-bgA.addEventListener('error',()=>{if(currentTrack)setTimeout(()=>startNextTrack(),1500)});
+bgA.addEventListener('ended',()=>{if(selectedTrack==='shuffle')startNextTrack()});
+bgA.addEventListener('error',()=>{if(currentTrack&&selectedTrack==='shuffle')setTimeout(()=>startNextTrack(),1500)});
 for(const ev of ['pointerdown','keydown','touchend'])addEventListener(ev,()=>{if(AC&&AC.state!=='running')AC.resume().catch(()=>{});if(bgm)resumeBgm()},{capture:true,passive:true});
 function playBgm(id){
   if(!bgSrc&&AC){
@@ -107,12 +124,32 @@ function playBgm(id){
   }
   setMusicGain(.5);
   if(!bgm||bgm.id!==id)bgm={id,beat:0};
-  if(!currentTrack)startNextTrack();
+  if(!currentTrack)startSelectedTrack();
   else resumeBgm();
 }
-const audioSettings=$('audioSettings');
+const audioSettings=$('audioSettings'), musicTrack=$('musicTrack');
+for(const track of BGM_TRACKS){
+  const option=document.createElement('option');
+  option.value=track.id;
+  option.textContent=track.title;
+  musicTrack.append(option);
+}
+musicTrack.onchange=()=>{
+  const choice=musicTrack.value;
+  if(choice!=='shuffle'&&!BGM_TRACKS.some(track=>track.id===choice))return;
+  selectedTrack=choice;
+  remainingTracks=[];
+  saveAudio();
+  if(currentTrack?.id===choice){
+    bgA.loop=true;
+    resumeBgm();
+  }else{
+    startSelectedTrack();
+  }
+};
 function syncAudioSettings(){
   const music=Math.round(musicLevel*100), effects=Math.round(effectsLevel*100);
+  musicTrack.value=selectedTrack;
   const v={music,effects};
   for(const el of document.querySelectorAll('[data-vol]'))el.value=v[el.dataset.vol];
   for(const el of document.querySelectorAll('[data-volout]'))el.value=v[el.dataset.volout]+'%';
@@ -130,7 +167,7 @@ function changeAudioSettings(event){
 }
 let prevMusic=1,prevEffects=1;
 try{const s=JSON.parse(localStorage.getItem('qddup_audio'));if(s?.pm>0)prevMusic=s.pm/100;if(s?.pe>0)prevEffects=s.pe/100}catch(e){}
-function saveAudio(){try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100),pm:Math.round(prevMusic*100),pe:Math.round(prevEffects*100)}))}catch(e){}}
+function saveAudio(){try{localStorage.setItem('qddup_audio',JSON.stringify({music:Math.round(musicLevel*100),effects:Math.round(effectsLevel*100),pm:Math.round(prevMusic*100),pe:Math.round(prevEffects*100),track:selectedTrack}))}catch(e){}}
 function syncSndButtons(){
   const m=musicLevel===0,e=effectsLevel===0;
   $('sndM').classList.toggle('off',m);$('sndM').setAttribute('aria-pressed',m);$('sndM').setAttribute('aria-label',m?'배경음악 켜기':'배경음악 끄기');

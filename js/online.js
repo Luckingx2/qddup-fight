@@ -1,6 +1,6 @@
 'use strict';
 /* ---------- online ---------- */
-let net=null,dropResult=false;const rh={l:0,r:0,up:0,down:0},rbuf={p:0,k:0,s:0,t:0},NQ=new URLSearchParams(location.search);
+let net=null,dropResult=false;const rh={l:0,r:0,up:0,down:0},rbuf={p:0,k:0,s:0,t:0,g:0},NQ=new URLSearchParams(location.search);
 const ME=()=>net&&!net.host?C:P;
 const IS_PC=matchMedia('(hover:hover) and (pointer:fine)').matches;
 for(const k in sfx){const o=sfx[k];sfx[k]=(...a)=>{if(net&&net.host&&mode==='fight'&&net.ev.length<40)net.ev.push([k,...a]);return o(...a)}}
@@ -258,36 +258,46 @@ async function dropJudge(state,body,show2){
   if(here()&&$('resT').textContent==='판정 중'){$('resT').textContent='판정 실패';$('resS').textContent='서버에 연결하지 못해 결과를 확인하지 못했어요'}
   releaseQueue(id);
 }
-function netUI(){const on=!!(net&&net.ok);if(!on){$('go').disabled=!pick;$('go').textContent=pick?'준비 완료':'캐릭터를 고르세요'}}
-function netLobby(){netUI();if(net.my&&!pick)pick=net.my;syncCharacterPicker();$('go').disabled=!pick;$('go').textContent=pick?'준비 완료':'캐릭터를 고르세요';$('best').textContent=net.match?((net.match.kind==='ranked'?'랭킹대전':'일반대전')+' · '+net.match.opponent+(net.rpk?' 준비 완료':'')):'온라인 대전 · 방 '+net.code+(net.rpk?' · 상대 준비 완료':' · 상대 연결됨')}
-function netTry(){if(!net||!net.host||net.rpc===undefined||!net.pk||!net.rpk||mode!=='menu'||!$('sSel').classList.contains('show'))return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
-function netBegin(m){shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
+function netUI(){const on=!!(net&&net.ok);if(!on){$('go').disabled=!pick;$('go').textContent='READY!'}}
+function netLobby(){netUI();if(net.my&&!pick)pick=net.my;syncCharacterPicker();$('go').disabled=!pick||!!net.pk;$('go').textContent=net.pk?'상대를 기다리는 중':'READY!';$('best').textContent=net.match?((net.match.kind==='ranked'?'랭킹대전':'일반대전')+' · '+net.match.opponent+(net.rpk?' 준비 완료':'')):'온라인 대전 · 방 '+net.code+(net.rpk?' · 상대 준비 완료':' · 상대 연결됨')}
+function netTry(){if(!net||!net.host||net.rpc===undefined||!canPickCharacter(net.pk)||!canPickCharacter(net.rpk)||mode!=='menu'||!$('sSel').classList.contains('show'))return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
+function netBegin(m){shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
 function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}if(!m||typeof m!=='object')return;
   if(m.t==='s'){if(!net.host&&mode==='fight'&&!(m.q<=net.rq)){net.rq=m.q;if(net.snap){m.fx=(net.snap.fx||[]).concat(m.fx||[]);m.ev=(net.snap.ev||[]).concat(m.ev||[])}net.snap=m}}
-  else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,4))if('pkst'.includes(k))rbuf[k]=.16}}
+  else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,5))if('pkstg'.includes(k))rbuf[k]=.16}}
   else if(m.t==='hi'&&!net.t0){net.rpc=!!m.pc;net.host=IS_PC!==net.rpc?IS_PC:net.lead;netTry()}
-  else if(m.t==='pick'&&ORDER.includes(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
-  else if(m.t==='start'){if(!net.host&&ORDER.includes(m.p)&&ORDER.includes(m.c)&&Number.isInteger(m.stg)&&STAGES[m.stg]){initAudio();netBegin(m)}}
+  else if(m.t==='pick'&&canPickCharacter(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
+  else if(m.t==='start'){if(!net.host&&canPickCharacter(m.p)&&canPickCharacter(m.c)&&Number.isInteger(m.stg)&&STAGES[m.stg]){initAudio();netBegin(m)}}
   else if(m.t==='em'&&typeof m.e==='string')recvEmote(m.e)
   else if(m.t==='emk')recvEmoteKit(m.s)
   else if(m.t==='dq'){if(mode==='fight'&&net.t0)netFightDrop('odq')}
   else if(m.t==='bye'){if(mode==='fight'&&net.t0){net.bye=true;net.alive=true}netGiveUp()}
   else if(m.t==='res'){if(!net.host&&mode==='fight'&&typeof m.w==='boolean'){if(net.snap){netApply(net.snap);net.snap=null}if(net.match?.kind==='ranked'&&!((phase==='ko'||phase==='time')&&(P.wins>=2||C.wins>=2)&&m.w===(P.wins>C.wins)))return;if(cut)endCut();result(!m.w)}}}
 function netClose(){const n=net;if(n)netSend({t:'bye'});net=null;if(!n)return;if(n.match)releaseQueue(n.match.id);setTimeout(()=>{try{if(n.st)n.st.close()}catch(e){}try{if(n.conn)n.conn.close()}catch(e){}try{n.pr.destroy()}catch(e){}},400);if(cut)endCut();netUI()}
-function netLeave(){netClose();$('best').textContent=best?('최고 연승 '+best):''}
+function netLeave(){netClose();$('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다'}
 function netDrop(){if(!net)return;const showingResult=$('sRes').classList.contains('show'),matched=!!net.match;netClose();if(showingResult){resultOnline=dropResult=false;if(matched){$('resB').textContent='메뉴로'}else toMenu('main');netBox('<h3>상대가 방을 나갔어요</h3>');const box=$('netBox').innerHTML;setTimeout(()=>{if($('sNet').classList.contains('show')&&$('netBox').innerHTML===box)netBox()},1800);return}toMenu('multi');netBox('<h3>연결 끊김</h3><p>상대와의 연결이 끊어졌습니다.</p><button class="btn ghost" id="nX">확인</button>')}
 function netSnap(){const F=f=>{const o={};for(const k in f){const v=f[k];if(v===null||typeof v==='number'||typeof v==='string'||typeof v==='boolean')o[k]=v}o.assist=f.assist||null;o.trail=f.trail;return o},W=o=>o===P?0:1;
   const m={t:'s',P:F(P),C:F(C),ph:phase,pt,rd:round,tm:timer,cam:camX,sh:shake,hs:hitstop,sl:slow,fl:flash,msg,cb:[combo.n,combo.t,combo.who?W(combo.who):-1],pj:proj.map(p=>Object.assign({},p,{o:W(p.o)})),fx:fx.filter(e=>!e.ns&&(e.ns=1)),q:net.sq=(net.sq||0)+1,
-    zn:zone&&Object.assign({},zone,{o:W(zone.o)}),fd:flood&&Object.assign({},flood,{o:W(flood.o)}),fz:freeze&&{t:freeze.t,f:W(freeze.f)},cu:cut?W(cut.f):-1,cn:net.cn,ev:net.ev};
+    zn:zone&&Object.assign({},zone,{o:W(zone.o)}),fd:flood&&Object.assign({},flood,{o:W(flood.o)}),fz:freeze&&{t:freeze.t,f:W(freeze.f)},cu:cut?W(cut.f):-1,ct:cut?cut.v.currentTime:0,cn:net.cn,ev:net.ev};
   net.ev=[];netSendState(JSON.stringify(m,(k,v)=>typeof v==='number'?Math.round(v*100)/100:v))}
 function netApply(m){const A=(f,o)=>{for(const k in o)f[k]=o[k]},R=i=>i?C:P;A(P,m.P);A(C,m.C);phase=m.ph;pt=m.pt;round=m.rd;timer=m.tm;camX=m.cam;shake=m.sh;hitstop=m.hs;slow=m.sl;flash=m.fl;msg=m.msg;combo.n=m.cb[0];combo.t=m.cb[1];combo.who=m.cb[2]<0?null:R(m.cb[2]);
   proj=m.pj;for(const p of proj)p.o=R(p.o);for(const e of m.fx||[])fx.push(e);zone=m.zn||null;if(zone)zone.o=R(zone.o);flood=m.fd||null;if(flood)flood.o=R(flood.o);freeze=m.fz?{t:m.fz.t,f:R(m.fz.f)}:null;
   for(const e of m.ev)if(sfx[e[0]])try{sfx[e[0]].apply(null,e.slice(1))}catch(_){}
-  if(m.cn!==net.cn){net.cn=m.cn;if(m.cu>=0&&!cut)startCut(R(m.cu))}else if(m.cu<0&&cut)endCut()}
+  if(m.cn!==net.cn){
+    net.cn=m.cn;
+    if(cut)endCut();
+    if(m.cu>=0){
+      startCut(R(m.cu));
+      if(cut&&Number.isFinite(m.ct)&&m.ct>0){
+        try{cut.v.currentTime=m.ct}catch(_){}
+      }
+    }
+  }else if(m.cu<0&&cut)endCut()
+}
 function netGuest(dt){if(net.snap){netApply(net.snap);net.snap=null}
   if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>3.0&&cut.v.currentTime<4.7);if(cut.t>cut.max)endCut()}
   else if(!(hitstop>0)&&!freeze&&P){const k=slow>0?.28:1;for(const f of[P,C]){f.t+=dt*k;f.x+=f.vx*dt*k;if(f.y>0||f.vy>0){f.vy-=G*dt*k;f.y=Math.max(0,f.y+f.vy*dt*k)}}for(const p of proj){p.t+=dt*k;p.x+=p.vx*dt*k;p.vy-=p.g*dt*k;p.y-=p.vy*dt*k}pt+=dt}
-  let pr='';for(const k of 'pkst')if(buf[k]>0){pr+=k;buf[k]=0}const h=''+held.l+held.r+held.up+held.down;net.it+=dt;
+  let pr='';for(const k of 'pkstg')if(buf[k]>0){pr+=k;buf[k]=0}const h=''+held.l+held.r+held.up+held.down;net.it+=dt;
   if(pr||h!==net.lh||net.it>.2){net.lh=h;net.it=0;netSend({t:'i',h:[held.l,held.r,held.up,held.down],p:pr})}}
 setInterval(()=>{
   const n=net;
