@@ -7,7 +7,7 @@ function frameOf(f){
   if(s==='punch')return f.t<.05?'idle':'punch';
   if(s==='kick')return f.t<.08?'idle':'kick';
   if(s==='throw')return f.t<R_THROW.startup?'charge':f.t<.30?'special':'idle';
-  if(s==='ko')return f.down?'ko':'hit';
+  if(s==='ko'||s==='kd')return f.down?'ko':'hit';
   if(s==='rec')return'idle';
   if(s==='crouch')return'crouch';
   if(s==='cpunch')return f.t<.04?'crouch':'cpunch';

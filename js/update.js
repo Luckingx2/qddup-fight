@@ -25,7 +25,7 @@ function update(dt){
   // inputs
   const I=P.inp;I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;I.g=buf.g>0?1:0;
   if(net){const J=C.inp;J.l=rh.l;J.r=rh.r;J.up=rh.up;J.down=rh.down;J.p=rbuf.p>0?1:0;J.k=rbuf.k>0?1:0;J.s=rbuf.s>0?1:0;J.t=rbuf.t>0?1:0;J.g=rbuf.g>0?1:0}
-  else if(phase==='fight')think(C,P,sdt);else{const J=C.inp;J.l=J.r=J.up=J.down=J.p=J.k=J.s=J.t=J.g=0}
+  else if(phase==='fight')think(C,P,sdt);else{const J=C.inp;J.l=J.r=J.up=J.down=J.gd=J.p=J.k=J.s=J.t=J.g=0}
   stepF(P,C,sdt);stepF(C,P,sdt);
   if(zone){zone.t-=sdt;const o=zone.o===P?C:P;if(o.y<=0&&Math.abs(o.x-zone.x)<zone.w/2&&o.st!=='ko')o.slip=.3;if(zone.t<=0)zone=null}
   if(flood){flood.t-=sdt;if(phase==='fight'&&flood.o.hp>0)flood.o.hp=Math.min(CH[flood.o.ch].hp,flood.o.hp+5*sdt);if(flood.t<=0)flood=null}
