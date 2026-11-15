@@ -43,7 +43,7 @@ const cv=$('cv'),cx=cv.getContext('2d');
 const IMG={};
 const MISSING=[];let loadDone=0,loadTotal=0;
 function loadProgress(){const el=$('load');if(!el||el.style.display==='none')return;const p=Math.min(100,Math.round(loadDone/Math.max(1,loadTotal)*100));$('loadFill').style.width=p+'%';$('loadPct').textContent=p+'%'}
-const av=p=>{const v=window.ASSET_V&&ASSET_V[p];return v?p+'?v='+v:p};
+const av=p=>{const v=typeof ASSET_V!=='undefined'&&ASSET_V[p];return v?p+'?v='+v:p};
 const SHEET_SCALE=.75;
 function frameFits(im,fr){const s=im.sheetScale||1;return (fr[0]+fr[2])*s<=im.naturalWidth+1&&(fr[1]+fr[3])*s<=im.naturalHeight+1}
 function checkSheets(){
