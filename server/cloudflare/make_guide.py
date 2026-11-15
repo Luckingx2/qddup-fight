@@ -73,8 +73,8 @@ def card(key, ch, tag, lo, hi):
     chains = CHAINS.get(key[0])
     if chains:
         notes.append('<p class="tagline"><b>연계 기술</b> ' + ' · '.join(chains) + '</p>')
-    if key in ('R', 'Rb', 'Rd', 'Rc'):
-        notes.append('<p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대에게 피해 4, 가드 통과</p>')
+    grab = 9 if key in ('R', 'Rb', 'Rd', 'Rc') else 7
+    notes.append('<p class="tagline"><b>잡아 던지기</b> G 키 / 잡기 버튼 · 가까운 지상의 상대를 붙잡아 멀리 던짐 · 피해 %d, 가드 통과 · 뒤 방향을 누르면 뒤로 던짐</p>' % grab)
     return f'''<article class="fighter" id="{key}" style="--c:{ch['col']}">
   <div class="portrait"><img src="{asset('assets/ui/roster/' + key + '.webp')}" alt="{html.escape(ch['name'])}" loading="lazy"></div>
   <div class="info">

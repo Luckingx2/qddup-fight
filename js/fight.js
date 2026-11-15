@@ -7,8 +7,7 @@ function startMatch(){
   needBg(stage);show(null);level=Math.min(6,streak);usedSp={};
   P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;if(net)C.buf=rbuf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);warmCeremony(pick);warmCeremony(opp);
   for(let i=0;i<26;i++)amb.push({x:Math.random()*VW,y:Math.random()*VH,s:.5+Math.random(),p:Math.random()*6.28});
-  const canThrow=BASE_CHARACTER[ME().ch]==='R';
-  $('bG').hidden=$('throwKey').hidden=$('pkG').hidden=!canThrow;
+  $('bG').hidden=$('throwKey').hidden=$('pkG').hidden=false;
   mode='fight';playBgm(stage.id);startRound();syncBack()
 }
 function startRound(){
@@ -249,7 +248,7 @@ function stepF(f,o,dt){
     if(f.st==='guard'&&f.stun>0){f.stun-=dt}
     else{ f.face=o.x>=f.x?1:-1;
       if((I.s||(I.t&&!f.tagUsed&&TAG[f.ch]))&&f.meter>=100){const tg=I.t&&!f.tagUsed&&TAG[f.ch];f.meter=0;setSt(f,'charge');f.vx=0;if(f.buf)f.buf.s=f.buf.t=0;if(tg){f.sv=2;f.tagUsed=true}else f.sv=SPV[f.ch]||0;if(window.__sv!==undefined)f.sv=(window.__sv===1&&SPN[f.ch]<2)?0:window.__sv;startCut(f)}
-      else if(I.g&&BASE_CHARACTER[f.ch]==='R'){setSt(f,'throw');f.vx=0;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
+      else if(I.g){setSt(f,'throw');f.grab=0;f.vx=f.face*220;if(f.buf)f.buf.g=0;sfx.whoosh(.8)}
       else if(chainResume(f,I)){}
       else if(I.down&&canCrouch(f)){
         if(I.p){setSt(f,'cpunch');f.cs='cpunch';f.cb='';f.vx=0;sfx.whoosh(.7);if(f.buf)f.buf.p=0}
@@ -271,17 +270,32 @@ function stepF(f,o,dt){
   else if(f.st==='cpunch'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.16*T)){if(f.t>.06*T&&f.t<.16*T)tryHit(f,o,chainHit(f,{reach:108,dmg:K.pd,stun:.2,push:120,hy:105,kind:'p'}));if(f.t>.28*T){chainEnd(f);setSt(f,I.down?'crouch':'idle')}}}
   else if(f.st==='ckick'){f.vx*=Math.pow(.001,dt);const T=K.timing*chainTime(f);if(!tryChain(f,I,f.hitDone||f.t>.26*T)){if(f.t>.12*T&&f.t<.26*T)tryHit(f,o,chainHit(f,{reach:150,dmg:K.kd*.8,stun:.34,push:220,hy:55,kind:'l',kd:1}));if(f.t>.46*T){chainEnd(f);setSt(f,I.down?'crouch':'idle')}}}
   else if(f.st==='throw'){
-    if(!f.hitDone&&f.t>=R_THROW.startup){
+    f.vx*=Math.pow(.001,dt);
+    if(!f.hitDone&&f.t>=THROW.startup){
       f.hitDone=true;
       const distance=(o.x-f.x)*f.face;
-      if(phase==='fight'&&distance>=0&&distance<=R_THROW.reach&&o.y<=0&&o.st!=='ko'&&o.st!=='win'){
-        applyHit(f,o,{dmg:R_THROW.damage,stun:.32,push:470,lift:320,ub:1,hy:140,kind:'g'});
-        o.thrown=o.st==='hit';
-        ring(o.x,GROUND-135,CH[f.ch].col,70);
+      if(phase==='fight'&&distance>=0&&distance<=THROW.reach&&o.y<=0&&!['ko','win','kd','hit','held','fin','special','charge'].includes(o.st)){
+        f.grab=1;f.back=f.face>0?I.l&&!I.r:I.r&&!I.l;f.vx=0;setSt(o,'held');o.vx=o.vy=0;o.face=-f.face;
+        ring(o.x,GROUND-135,CH[f.ch].col,70);sfx.guard(1.2);
       }
     }
-    if(f.t>=R_THROW.recovery)setSt(f,'idle');
+    if(f.grab===1){
+      const k=Math.min(1,(f.t-THROW.startup)/THROW.hold);
+      if(o.st==='held'){o.x=f.x+f.face*(74-150*k*(f.back?1:0));o.y=40+70*k;o.vy=0;o.vx=0;o.t=0}
+      if(k>=1||o.st!=='held'){
+        if(o.st==='held'){
+          const facing=f.face;if(f.back)f.face=-facing;
+          o.y=Math.max(o.y,.01);applyHit(f,o,{dmg:throwDamage(f.ch),stun:.9,push:780,lift:560,ub:1,kd:1,hy:140,kind:'g',fin:'잡아 던지기',col:CH[f.ch].col});
+          if(o.st==='kd'){o.vy=560;o.thrown=true}
+          f.face=facing;
+        }
+        f.grab=2;f.t=0;
+      }
+    }
+    else if(f.grab===2){if(f.t>=THROW.recovery)setSt(f,'idle')}
+    else if(f.t>=THROW.whiff)setSt(f,'idle');
   }
+  else if(f.st==='held'){f.vx=0;if(f.t>.6){f.y=Math.max(f.y,.01);setSt(f,'hit');f.stun=.2}}
   else if(f.st==='charge'){f.vx=0;if(f.t>.5)fire(f)}
   else if(f.st==='special'){ const c=f.ch;f.trail.push({x:f.x,y:f.y});if(f.trail.length>6)f.trail.shift();
     if(f.sv)spAlt(f,o,dt);

@@ -37,7 +37,8 @@ const SPECIAL_NAMES={
   R:'도넛 난사',R2:'타조 돌진',Rb:'고음 샤우팅',Rd:'통굽 내려찍기',Rc:'뿌앵 울기',
   G:'재뿌리기',B:'카메라 내려찍기'
 };
-const R_THROW={reach:106, damage:4, startup:.14, recovery:.58};
+const THROW={reach:150, damage:7, strong:9, startup:.14, hold:.3, recovery:.34, whiff:.58};
+const throwDamage=ch=>BASE_CHARACTER[ch]==='R'?THROW.strong:THROW.damage;
 const VW=960,VH=540,GROUND=470,WW=1260,SC=0.571,G=2300;
 const $=id=>document.getElementById(id);
 const cv=$('cv'),cx=cv.getContext('2d');

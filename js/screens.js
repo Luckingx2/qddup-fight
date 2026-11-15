@@ -52,7 +52,7 @@ function syncCharacterPicker(){
     const tradeoff=document.createElement('span');
     tradeoff.textContent=stats.tradeoff;
     statsBox.replaceChildren(role,numbers);
-    if(BASE_CHARACTER[pick]==='R')numbers.textContent+=' · 잡기 '+R_THROW.damage;
+    numbers.textContent+=' · 잡기 '+throwDamage(pick);
     statsBox.append(tradeoff);
   }
   $('sSel').style.setProperty('--pick-color',pick?CH[pick].col:'#70c7ff');

@@ -4,7 +4,7 @@ function think(f,o,dt){
   if(A.t<=0){ const react=Math.max(.13,.34-level*.035),gp=Math.min(.74,.2+level*.09),ag=Math.min(.92,.5+level*.07);
     A.t=react*(.7+Math.random()*.6);A.mv=0;A.down=0;A.up=0;A.crouch=0;
     const threat=((o.st==='punch'||o.st==='kick'||(o.st==='jump'&&o.y>40&&d<230)||(o.st==='special'&&(o.ch==='Q'||o.ch==='E')))&&d<230)||o.st==='charge'&&level>1||proj.some(p=>p.o===o&&Math.abs(p.x-f.x)<300);
-    if(BASE_CHARACTER[f.ch]==='R'&&d<=R_THROW.reach&&o.st==='guard'&&o.y<=0&&Math.random()<.4)I.g=1;
+    if(d<=THROW.reach&&o.st==='guard'&&o.y<=0&&Math.random()<(BASE_CHARACTER[f.ch]==='R'?.4:.22))I.g=1;
     else if(threat&&(o.st==='punch'||o.st==='kick')&&canCrouch(f)&&Math.random()<Math.min(.3,.06+level*.05)){A.crouch=1;A.t=.3}
     else if(threat&&Math.random()<gp){A.down=1;A.t=.34}
     else if(f.meter>=100&&d>100&&d<({W:640,R:640,E:300,G:250,B:210,Qb:640,Wb:640,Eb:270,Rb:520,Rc:260,Qc:560,Wc:640,Ec:250,Rd:640}[f.ch]||420)&&Math.random()<.55){if(TAG[f.ch]&&!f.tagUsed&&Math.random()<.35)I.t=1;else I.s=1}
