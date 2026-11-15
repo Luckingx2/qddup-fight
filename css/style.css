@@ -340,4 +340,5 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 #vloadPct{font-family:'Bungee',sans-serif;font-size:13px;color:var(--dim)}
 .kc[hidden]{display:none}
 .rankNote{margin:0;font-size:12.5px;color:#fff3b0}
-.champ{display:inline-block;padding:0 6px;border-radius:999px;background:linear-gradient(180deg,#ffe98a,#f5b21a);color:#3a2500;font:700 .78em/1.5 'Pretendard',sans-serif;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.champName{display:inline-flex;align-items:center;gap:5px;max-width:100%;vertical-align:bottom}.champName>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.champ{flex:none;display:inline-block;width:1.1em;height:1.32em}.champ svg{display:block;width:100%;height:100%;font-family:'Pretendard',sans-serif}

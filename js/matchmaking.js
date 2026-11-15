@@ -3,13 +3,19 @@
 const ONLINE_API=document.querySelector('meta[name="online-api"]')?.content.replace(/\/$/,'');
 let playerName='', playerToken='', playerTitles=0, queueSearch=null, lastOnlineKind=null, lastOnlineMatch=null;
 function champBadge(titles){
-  const badge=document.createElement('span');badge.className='champ';badge.textContent=titles>1?'★'+titles:'★';
+  const badge=document.createElement('span');badge.className='champ';
+  const mark=titles>1
+    ? '<text x="10" y="16.5" text-anchor="middle" font-size="'+(titles>9?10:12)+'" font-weight="700" fill="#3a2500">'+Math.min(99,titles)+'</text>'
+    : '<path d="M10 5.5l1.7 3.5 3.8.5-2.8 2.7.7 3.8-3.4-1.9-3.4 1.9.7-3.8-2.8-2.7 3.8-.5z" fill="#3a2500"/>';
+  badge.innerHTML='<svg viewBox="0 0 20 24" aria-hidden="true"><path d="M1 1h18v11c0 6-5 9.5-9 11-4-1.5-9-5-9-11z" fill="#f5b21a" stroke="#fff3c4" stroke-width="1.2"/>'+mark+'</svg>';
   badge.title='일일 랭킹 우승 '+titles+'회';badge.setAttribute('aria-label',badge.title);
   return badge;
 }
 function nameWithBadge(el,name,titles){
   el.textContent=name;
-  if(titles>0)el.append(' ',champBadge(titles));
+  if(!(titles>0))return;
+  const wrap=document.createElement('span'),text=document.createElement('span');
+  wrap.className='champName';text.textContent=name;wrap.append(text,champBadge(titles));el.replaceChildren(wrap);
 }
 try{
   playerName=localStorage.getItem('qddup_nickname') || '';
@@ -187,7 +193,7 @@ async function showLeaderboard(){
   onlineMessage('랭킹순위',ONLINE_API?'불러오는 중…':'랭킹 서버 연결이 준비되면 이용할 수 있습니다.');
   if(!ONLINE_API)return;
   const status=$('netBox').querySelector('p');
-  const note=document.createElement('p');note.className='rankNote';note.textContent='랭킹은 매일 밤 12시(한국 시간)에 초기화돼요. 그날 1위는 이름 옆에 우승 뱃지 ★가 붙어요.';status.before(note);
+  const note=document.createElement('p');note.className='rankNote';note.textContent='랭킹은 매일 밤 12시(한국 시간)에 초기화돼요. 그날 1위는 이름 옆에 우승 방패가 붙어요.';status.before(note);
   try{
     const {players,season,me}=await onlineApi('/leaderboard');
     if(!status.isConnected||!$('sNet').classList.contains('show'))return;
