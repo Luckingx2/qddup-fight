@@ -1,5 +1,6 @@
 'use strict';
 /* ---------- render ---------- */
+const finFrame=f=>{const own='fin'+String(f.fn||'').slice(-1);return META[f.ch]?.frames?.[own]?own:null};
 function frameOf(f){
   const s=f.st;
   if(s==='walk')return['walk1','idle','walk2','idle'][Math.floor(f.walkD/38)%4];
@@ -10,7 +11,7 @@ function frameOf(f){
   if(s==='throw')return f.t<R_THROW.startup?'charge':f.t<.30?'special':'idle';
   if(s==='ko'||s==='kd')return f.down?'ko':'hit';
   if(s==='rec')return'idle';
-  if(s==='fin')return finisherOf(f).frame;
+  if(s==='fin')return finFrame(f)||finisherOf(f).frame;
   if(s==='crouch')return'crouch';
   if(s==='cpunch')return f.t<.04?'crouch':'cpunch';
   if(s==='ckick')return f.t<.07?'crouch':'ckick';
@@ -52,7 +53,7 @@ function drawF(f,tm){
     cx.drawImage(IMG.ostrichR,362*stride,0,362,246,-156,-229,353,240);
     cx.restore();
   }else{
-    drawSprite(f.ch,name,sx+jx,y+(name==='ko'?6:bob),f.face,undefined,1,f.thrown?-Math.sin(Math.min(1,f.t/.32)*Math.PI)*.95:f.st==='fin'?(finisherOf(f).spin?f.t*finisherOf(f).spin:finisherOf(f).tilt||0):0);
+    drawSprite(f.ch,name,sx+jx,y+(name==='ko'?6:bob),f.face,undefined,1,f.thrown?-Math.sin(Math.min(1,f.t/.32)*Math.PI)*.95:f.st==='fin'&&!finFrame(f)?(finisherOf(f).spin?f.t*finisherOf(f).spin:finisherOf(f).tilt||0):0);
   }
   if(f.st==='special'&&f.ch==='Wc'&&!f.sv)drawPaintRoller(f,sx,y);
   if(f.st==='special'&&f.ch==='Rc'&&!f.sv)drawTears(f,sx,y);

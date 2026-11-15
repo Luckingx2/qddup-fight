@@ -309,7 +309,7 @@ function stepF(f,o,dt){
       if(f.t>.9)setSt(f,'rec')}
   }
   else if(f.st==='fin'){const d=finisherOf(f);f.trail.push({x:f.x,y:f.y});if(f.trail.length>6)f.trail.shift();
-    if(!d.vy)f.vx=f.t<d.dur?f.face*d.vx:f.vx*Math.pow(.001,dt);
+    if(!d.vy)f.vx=f.t<d.dur&&!f.hitDone?f.face*d.vx:f.vx*Math.pow(.001,dt);
     if(d.dust&&f.t<d.dur&&Math.random()<.5)dust(f.x-f.face*40);
     if(f.t>d.from&&f.t<d.to)tryHit(f,o,{...d.hit,dmg:K.kd*d.dmg,fin:d.name,col:d.col});
     if(d.vy?(f.t>.12&&f.y<=0):f.t>d.dur+.16){f.vx=0;setSt(f,'rec')}}
