@@ -10,6 +10,7 @@ function frameOf(f){
   if(s==='throw')return f.t<R_THROW.startup?'charge':f.t<.30?'special':'idle';
   if(s==='ko'||s==='kd')return f.down?'ko':'hit';
   if(s==='rec')return'idle';
+  if(s==='fin')return finisherOf(f).frame;
   if(s==='crouch')return'crouch';
   if(s==='cpunch')return f.t<.04?'crouch':'cpunch';
   if(s==='ckick')return f.t<.07?'crouch':'ckick';
@@ -40,7 +41,7 @@ function drawF(f,tm){
   const sx=f.x-camX,name=frameOf(f);let y=GROUND-f.y,bob=0;
   if(f.st==='idle')bob=Math.sin(tm*5+(f.cpu?1.5:0))*2.2;
   const sh=Math.max(.35,1-f.y/420);cx.fillStyle='rgba(10,8,30,.34)';cx.beginPath();cx.ellipse(sx,GROUND+4,(name==='ko'?120:62)*sh,13*sh,0,0,6.283);cx.fill();
-  if(f.st==='special'&&Math.abs(f.vx)>200)f.trail.forEach((t,i)=>drawSprite(f.ch,name,t.x-camX,GROUND-t.y,f.face,.08+i*.05));
+  if(f.st==='fin'||f.st==='special'&&Math.abs(f.vx)>200)f.trail.forEach((t,i)=>drawSprite(f.ch,name,t.x-camX,GROUND-t.y,f.face,.08+i*.05));
   if(f.st==='special'&&f.assist){const a=f.assist.ch;drawSprite(a,a==='R'?(Math.floor(f.t/.1)%2?'charge':'special'):a==='B'?'charge':a==='G'?'idle':'punch',sx+f.face*(f.assist.front?80:-95),GROUND,f.face,Math.min(1,f.t*8))}
   if(f.st==='charge'){const a=Math.min(1,f.t/.3);cx.save();cx.globalCompositeOperation='lighter';const g=cx.createRadialGradient(sx,y-120,10,sx,y-120,190);g.addColorStop(0,CH[f.ch].col);g.addColorStop(1,'rgba(0,0,0,0)');cx.globalAlpha=.55+.3*Math.sin(tm*40);cx.fillStyle=g;cx.fillRect(sx-200,y-320,400,400);
     cx.globalAlpha=1-a;cx.strokeStyle='#fff';cx.lineWidth=5;cx.beginPath();cx.ellipse(sx,GROUND,180*(1-a)+30,(180*(1-a)+30)*.25,0,0,6.283);cx.stroke();cx.restore()}
@@ -51,7 +52,7 @@ function drawF(f,tm){
     cx.drawImage(IMG.ostrichR,362*stride,0,362,246,-156,-229,353,240);
     cx.restore();
   }else{
-    drawSprite(f.ch,name,sx+jx,y+(name==='ko'?6:bob),f.face,undefined,1,f.thrown?-Math.sin(Math.min(1,f.t/.32)*Math.PI)*.95:0);
+    drawSprite(f.ch,name,sx+jx,y+(name==='ko'?6:bob),f.face,undefined,1,f.thrown?-Math.sin(Math.min(1,f.t/.32)*Math.PI)*.95:f.st==='fin'?(finisherOf(f).spin?f.t*finisherOf(f).spin:finisherOf(f).tilt||0):0);
   }
   if(f.st==='special'&&f.ch==='Wc'&&!f.sv)drawPaintRoller(f,sx,y);
   if(f.st==='special'&&f.ch==='Rc'&&!f.sv)drawTears(f,sx,y);
