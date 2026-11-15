@@ -13,6 +13,6 @@ function think(f,o,dt){
     else{const q=Math.random();if(q<ag*.42)I.p=1;else if(q<ag*.86)I.k=1;else if(q<ag*.86+.1){A.mv=-tw;A.t=.26}else if(q<ag*.86+.16){A.up=1;A.mv=tw}else{A.down=1;A.t=.22}} }
   I.l=A.mv<0?1:0;I.r=A.mv>0?1:0;I.down=A.crouch;I.gd=A.down;I.up=A.up;
   if(f.hitDone&&(f.st==='punch'||f.st==='kick'||f.st==='cpunch'||f.st==='ckick')&&Math.random()<dt*(.8+level*1.1)){
-    for(const button of Math.random()<.5?['p','k']:['k','p']){const cand=chainNext(f,button,0);if(cand){const next=cand[cand.length-1];I[button]=1;I.down=next[0]==='c'?1:0;break}}}
+    for(const button of Math.random()<.5?['p','k']:['k','p']){const cand=chainNext(f,button,0);if(cand&&chainRoutes(f).some(r=>!r.hidden&&cand.every((s,i)=>r.seq[i]===s))){const next=cand[cand.length-1];I[button]=1;I.down=next[0]==='c'?1:0;break}}}
  if(A.up&&f.st==='jump'&&f.vy<0&&d<150&&!f.airAtk)I.k=1;
 }

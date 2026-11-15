@@ -1,6 +1,6 @@
 'use strict';
 /* ---------- render ---------- */
-const finFrame=f=>{const own='fin'+String(f.fn||'').slice(-1);return META[f.ch]?.frames?.[own]?own:null};
+const finFrame=f=>{const own='fin'+String(finKey(f)||'').slice(-1);return META[f.ch]?.frames?.[own]?own:null};
 function frameOf(f){
   const s=f.st;
   if(s==='walk')return['walk1','idle','walk2','idle'][Math.floor(f.walkD/38)%4];
