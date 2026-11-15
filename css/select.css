@@ -74,16 +74,18 @@
 #opponentPoster {filter:drop-shadow(0 0 1cqw #ff569cb0)}
 .select-roster {position:relative;min-width:0;min-height:0;padding:0 .45cqw}
 #sSel .cards {
-  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));
-  width:100%;height:100%;max-width:none;gap:.44cqw;
+  --gap:.44cqw;
+  display:flex;flex-wrap:wrap;justify-content:center;align-content:stretch;
+  width:100%;height:100%;max-width:none;gap:var(--gap);
 }
 #sSel .card {
+  flex:0 0 calc((100% - var(--gap) * 3) / 4);height:calc((100% - var(--gap)) / 2);
   position:relative;min-width:0;min-height:0;isolation:isolate;
   border:1px solid #6b9bcc;border-radius:.55cqw;
   background:linear-gradient(0deg,#0b1d44,#1e5591);
   box-shadow:inset 0 0 .6cqw #52d9ff53,0 .14cqw .38cqw #0009;
 }
-#sSel .card:nth-child(n+6) {
+#sSel .card:nth-child(n+5) {
   border-color:#d07591;background:linear-gradient(0deg,#36112b,#8f3053);
   box-shadow:inset 0 0 .6cqw #ff689a59,0 .14cqw .38cqw #0009;
 }
@@ -96,30 +98,24 @@
   padding:.15em .08em;background:#041123e8;
   color:#fff;font-size:clamp(9px,1.2cqw,18px);line-height:1;
 }
-#sSel .card:nth-child(n+6) b {background:#28091ce8}
+#sSel .card:nth-child(n+5) b {background:#28091ce8}
 #sSel .card.sel {
   transform:none;outline:2px solid #94f6ff;outline-offset:-2px;
   border-color:#dcffff;z-index:2;box-shadow:0 0 1.1cqw #68e9ff;
 }
-#sSel .card:focus-visible,.select-controls button:focus-visible,.select-replay:focus-visible,#sSel #go:focus-visible {outline:2px solid #fff;outline-offset:-2px}
+#sSel .card:focus-visible,.select-controls button:focus-visible,#sSel #go:focus-visible {outline:2px solid #fff;outline-offset:-2px}
 #sSel .random-card span {
   display:grid;place-items:center;height:100%;color:#fff;text-shadow:0 0 1cqw #ff5d9c;
   font:400 5cqw/1 'Bungee',sans-serif;padding:0 0 .3em;
 }
-#selectIntro {
-  display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#050b19;z-index:5;
-  border:1px solid var(--p1);
-}
-#selectIntro.playing {display:block}
 .select-footer {align-items:center;padding:0 .9cqw;gap:0}
 .select-controls {display:flex;align-items:center;gap:.45cqw;min-width:0}
 .select-controls span {color:#c4e0ff;font-size:1.1cqw;white-space:nowrap}
-.select-back,.select-replay {
+.select-back {
   border:1px solid #8cccff99;background:#092251e8;color:#fff;
   border-radius:4px;padding:.35em .58em;min-height:30px;
   font:700 clamp(10px,1.18cqw,17px)/1.12 'IBM Plex Sans KR',sans-serif;cursor:pointer;
 }
-.select-replay {position:relative;z-index:2;margin-bottom:.65cqw}
 #opponentHint {
   position:relative;margin:0 0 .65cqw;background:#4d102fed;color:#fff;border:1px solid #ff84af;
   border-radius:4px;padding:.35em .52em;text-align:center;font-size:clamp(9px,1.2cqw,17px);
@@ -141,13 +137,11 @@
   #sSel .select-shell {width:100%;height: min(84dvh,680px);min-height:350px;aspect-ratio:auto;grid-template-rows:20% 66% 14%}
   .select-header {grid-template-columns:21% 58% 21%;align-items:end;padding-bottom:2%}
   .select-body,.select-footer {grid-template-columns:16% 68% 16%}
-  #sSel .cards {grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
   .select-logo span {font-size:10cqw}
   .select-logo h1 {font-size:2.7cqw}
   .preview-caption,.opponent-caption {font-size:2.8cqw}
   #sSel #pvN,.opponent-caption strong {font-size:3.5cqw}
   .select-controls span,.select-plate #best {display:none}
-  .select-replay {max-width:98%}
   .select-plate>span {font-size:10cqw}
   #sSel #go {font-size:10px;padding:.5em .2em}
 }
@@ -157,14 +151,12 @@
 .select-variants {display:flex;justify-content:center;gap:.45cqw}
 .select-variants button {min-width:3em;min-height:26px;background:#101b42;color:#eaf5ff;border:1px solid #7b9dc880;border-radius:4px;cursor:pointer;font:400 clamp(10px,1.25cqw,16px) 'Bungee',sans-serif}
 .select-variants button[aria-pressed="true"] {background:#9beeff;color:#071735;border-color:white}
-.roster-slot {border:1px solid #b861834d;border-radius:.55cqw;background:#2110298a}
 @media(max-width:650px) and (orientation:portrait) {
  #sSel .select-shell {height:min(70dvh,440px)}
- .select-replay {font-size:8px;padding:2px}
  #opponentHint {font-size:8px;padding:2px}
 }
 
-#sSel .roster-slot-hidden {visibility:hidden}
+#sSel .roster-slot-hidden {display:none}
 
 .select-roster:has(.fighter-stats:not([hidden])) {
   display:grid;grid-template-rows:minmax(0,1fr) auto;gap:.35cqw;

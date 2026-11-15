@@ -15,7 +15,6 @@ titleVideo.addEventListener('ended',()=>{
   if($('sTitle').classList.contains('show'))startTitleVideo(false);
 });
 function show(id){
-  if(id!=='sSel')stopSelectionIntro();
   const b=$('snd');if(id){b.classList.remove('in');document.body.appendChild(b)}else{b.classList.add('in');$('stage').appendChild(b)}
   ['sTitle','sMenu','sSel','sVs','sRes'].forEach(s=>$(s).classList.toggle('show',s===id));
   if(id==='sTitle')startTitleVideo(false);
@@ -28,35 +27,12 @@ function canPickCharacter(id,kind=net?.match?.kind){
 function chooseCharacter(id,fromVariant=false){
   if(net?.pk||!canPickCharacter(id))return;
   pick=id;
-  syncCharacterPicker(true);
+  syncCharacterPicker();
   if(fromVariant)$('selectVariants').querySelector('[aria-pressed="true"]')?.focus();
   $('go').disabled=false;
   $('go').textContent='READY!';
-  if(id==='R')playSelectionIntro();
 }
-let introRequest=0;
-function stopSelectionIntro(){
-  introRequest++;
-  const video=$('selectIntro');
-  video.pause();
-  video.classList.remove('playing');
-  $('replayIntro').setAttribute('aria-expanded','false');
-}
-function playSelectionIntro(){
-  stopSelectionIntro();
-  if(!pick)return;
-  const video=$('selectIntro');
-  const src=av(pick==='R'?'assets/intros/R-select.mp4':'assets/intros/'+pick+'.mp4');
-  const request=introRequest;
-  if(video.getAttribute('src')!==src)video.src=src;
-  else video.currentTime=0;
-  if(pick==='R'){initAudio();setVideoVolume(video)}
-  else video.muted=true;
-  video.play().then(()=>{
-    if(request===introRequest){video.classList.add('playing');$('replayIntro').setAttribute('aria-expanded','true')}
-  }).catch(()=>{});
-}
-function syncCharacterPicker(closeIntro=false){
+function syncCharacterPicker(){
   if(!canPickCharacter(pick))pick=null;
   document.querySelectorAll('#cards [data-c]').forEach(card=>{
     card.classList.toggle('roster-slot-hidden',!canPickCharacter(card.dataset.c));
@@ -82,7 +58,6 @@ function syncCharacterPicker(closeIntro=false){
   const poster=$('selectPoster');
   poster.hidden=!pick;
   if(pick)poster.src=av('assets/ui/roster/'+pick+'.webp');
-  $('replayIntro').hidden=!pick;
   const opponent=canPickCharacter(net?.rpk)?net.rpk:null;
   $('opponentName').textContent=opponent?CH[opponent].name:'?';
   $('opponentHint').textContent=net?(opponent?'준비 완료':'상대 선택 대기'):'상대 무작위 선택';
@@ -102,7 +77,6 @@ function syncCharacterPicker(closeIntro=false){
     button.onclick=()=>{sfx.sel();chooseCharacter(id,true)};
     variants.append(button);
   }
-  if(closeIntro)stopSelectionIntro();
 }
 function buildSelect(){
   $('cards').innerHTML=Object.keys(FAMILIES).map(k=>`<button type="button" class="card" data-c="${k}" aria-pressed="false" style="--fighter-color:${CH[k].col}"><img src="${av(`assets/faces/${k}_face.webp`)}" alt=""><b>${CH[k].name}</b></button>`).join('');
@@ -112,24 +86,16 @@ function buildSelect(){
   random.className='card random-card';
   random.innerHTML='<span aria-hidden="true">?</span><b>랜덤</b>';
   random.onclick=()=>{const bases=Object.keys(FAMILIES).filter(id=>canPickCharacter(id));sfx.sel();chooseCharacter(bases[Math.floor(Math.random()*bases.length)])};
-  for(let i=0;i<3;i++){
-    const slot=document.createElement('div');
-    slot.className='roster-slot';
-    slot.setAttribute('aria-hidden','true');
-    $('cards').append(slot);
-  }
   $('cards').appendChild(random);
-  $('replayIntro').onclick=()=>$('selectIntro').classList.contains('playing')?stopSelectionIntro():playSelectionIntro();
-  $('selectIntro').addEventListener('ended',stopSelectionIntro);
   $('stages').innerHTML=STAGES.map(s=>`<div class="stg" data-s="${s.id}"><img src="${av(`assets/thumbnails/th_${s.id}.jpg`)}" alt=""><span>${s.name}</span></div>`).join('');
-  $('go').onclick=()=>{stopSelectionIntro();initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else roulette()};
+  $('go').onclick=()=>{initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else roulette()};
   $('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다';
 }
 function toSelect(){
   mode='menu';show('sSel');playBgm('menu');
   $('selectMode').textContent=net?.match?.kind==='ranked'?'랭킹대전':net?.match?'일반대전':net?'친선대전':'CPU 대전';
   $('opponentRole').textContent=net?'PLAYER 2':'PLAYER 2 · CPU';
-  syncCharacterPicker(true);
+  syncCharacterPicker();
   $('go').disabled=!pick;
   $('go').textContent='READY!';
   $('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다';
