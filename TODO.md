@@ -4,7 +4,7 @@
 - 정식 전환: 기존 랭킹을 한 번 더 옮기고(`server/cloudflare/import-legacy.mjs`), 게임 파일을 GitHub Pages(`luckingx2.github.io/qddup-fight`)에 올리기
 - 최종 승리 때 승리 애니메이션(영상): 한두 명 시범부터
 - 승리 모션의 재생 속도와 발 위치를 실제 대전에서 확인하기
-- 캐릭터 음성: E·W 계열만 있음. Q·R·EGG·BING 음성을 받으면 `assets/audio/voices/`에 넣고 `audio.js`의 `VOICE_SET`에 추가. E는 선택 음성(`select`)이 없음
+- 캐릭터 음성: E·W 계열만 있음. Q·R·EGG·BING 음성을 받으면 `assets/audio/voices/`에 넣고 `audio.js`의 `VOICE_SET`에 추가.
 - 모바일 화면: 새 캐릭터 선택 화면의 세로·가로 배치 점검
 - 추가된 배경음악 6곡을 96kbps로 줄이기
 - 끊김 판정을 남은 체력 숫자가 아니라 최대 체력 대비 비율로 바꾸기 (캐릭터마다 최대 체력이 다름)
@@ -108,3 +108,7 @@
 - 받은 원본이 E 음성보다 20dB쯤 작아서 최대 음량을 -6dB로 맞춰 다시 저장 (파일마다 +19~25dB)
 - `audio.js`: `VOICE_SET`에 W 추가, 선택 음성용 `sayVoice` 추가 (음성을 아직 받지 않았으면 받은 뒤 재생)
 - `screens.js`: 캐릭터 선택 화면에서 캐릭터나 변형을 고를 때 선택 음성 재생
+
+**E 선택 음성 추가**
+- `assets/audio/voices/E-select.mp3` 추가, `audio.js`의 `VOICE_SET`에서 E에 `select` 등록. 캐릭터 선택 화면에서 E·E2·E3를 고를 때 재생
+- 함께 받은 공격·피격·강한 피격·승리 파일은 이미 넣은 것과 같은 파일이라 그대로 둠
