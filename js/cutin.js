@@ -1,6 +1,19 @@
 'use strict';
 /* ---------- special cut-in video ---------- */
 const FIRE_CUTINS={E:"E_fire",Eb:"Eb_fire",Ec:"Ec_fire"};
+const WIN_CEREMONY=['Q'];
+const winCeremonyUrl=ch=>av('assets/videos/win_'+ch+'.mp4');
+function warmCeremony(ch){if(WIN_CEREMONY.includes(ch))fetch(winCeremonyUrl(ch)).catch(()=>{})}
+function playCeremony(ch){
+  if(!WIN_CEREMONY.includes(ch))return;
+  const box=$('winCut'),v=$('winVid'),started=performance.now();
+  const done=()=>{v.onended=v.onerror=box.onclick=null;removeEventListener('keydown',key,true);try{v.pause()}catch(e){}box.classList.remove('on')};
+  const skip=()=>{if(performance.now()-started>700)done()};
+  const key=e=>{if(e.key==='Escape'||e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();skip()}};
+  v.src=winCeremonyUrl(ch);v.muted=effectsLevel===0;v.volume=effectsLevel;
+  box.classList.add('on');box.onclick=skip;v.onended=done;v.onerror=done;addEventListener('keydown',key,true);
+  const p=v.play();if(p&&p.catch)p.catch(done);
+}
 const VID={};let cut=null,usedSp={},vUn=false;
 function mkVids(){for(const sk of SVK)for(const c of ORDER){if(sk==='2'&&SPN[c]<2)continue;if(sk==='T'&&!TAG[c])continue;const k=c+sk,v=document.createElement('video');v.preload=sk||!IS_PC?'metadata':'auto';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.src=av('assets/videos/sp_'+(FIRE_CUTINS[k]||VAL[k]||k)+'.mp4');$('cut').insertBefore(v,$('cutH'));VID[k]=v}
   $('cut').addEventListener('pointerdown',e=>{e.preventDefault();if(cut&&cut.t>.5&&!net)endCut()})}

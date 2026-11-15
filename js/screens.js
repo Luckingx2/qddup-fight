@@ -124,6 +124,7 @@ function stageSpin(){
       if(last){stage=STAGES[fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(startMatch,1100)} },t) }
 }
 function result(win){
+  const mine=net?ME():P;playCeremony((win?mine:(mine===P?C:P)).ch);
   dropResult=false;$('resA').style.display='';resultOnline=!!net;
   lastOnlineKind=net?.match?.kind || null;
   lastOnlineMatch=net?.match?.id || null;

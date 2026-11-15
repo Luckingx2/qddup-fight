@@ -5,7 +5,7 @@ function mkF(ch,x,face,cpu){return{ch,x,y:0,vx:0,vy:0,face,cpu,hp:CH[ch].hp,dhp:
 function setSt(f,s){f.st=s;f.t=0;f.hitDone=false;f.thrown=false}
 function startMatch(){
   needBg(stage);show(null);level=Math.min(6,streak);usedSp={};
-  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);
+  P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);warmCeremony(pick);warmCeremony(opp);
   for(let i=0;i<26;i++)amb.push({x:Math.random()*VW,y:Math.random()*VH,s:.5+Math.random(),p:Math.random()*6.28});
   const canThrow=BASE_CHARACTER[ME().ch]==='R';
   $('bG').hidden=$('throwKey').hidden=!canThrow;

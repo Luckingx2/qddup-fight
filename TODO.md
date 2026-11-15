@@ -2,7 +2,7 @@
 
 ## 남은 일
 - 정식 전환: 기존 랭킹을 한 번 더 옮기고(`server/cloudflare/import-legacy.mjs`), 게임 파일을 GitHub Pages(`luckingx2.github.io/qddup-fight`)에 올리기
-- 최종 승리 때 승리 애니메이션(영상): 한두 명 시범부터
+- 최종 승리 세리머니 영상: Q 시범 완료. 나머지 12명(W·E·R과 변형들, EGG·BING 제외)은 `assets/videos/win_<키>.mp4`로 넣고 `cutin.js`의 `WIN_CEREMONY`에 추가
 - 승리 모션의 재생 속도와 발 위치를 실제 대전에서 확인하기
 - 캐릭터 음성: Q·W·E·R 계열 완료. EGG·BING 음성을 받으면 `assets/audio/voices/`에 넣고 `audio.js`의 `VOICE_SET`에 추가
 - 모바일 화면: 새 캐릭터 선택 화면의 세로·가로 배치 점검
@@ -129,3 +129,11 @@
 - `audio.js`의 `VOICE_SET`을 Q·W·E·R 모두 `win`, `select`만 남김
 - `assets/audio/voices/`에서 `*-attack.mp3`, `*-hit.mp3`, `*-heavy-hit.mp3` 12개 삭제. 남은 파일은 캐릭터별 `-select`, `-win` 8개
 - 선택 음성은 캐릭터 선택 화면에서 고를 때, 승리 음성은 라운드를 이겨 승리 포즈에 들어갈 때 재생
+
+**최종 승리 세리머니 영상 (Q 시범)**
+- `assets/videos/win_Q.mp4` 추가 (6초, 720p, 소리 없음, 약 2MB)
+- `index.html`, `style.css`: 화면 전체를 덮는 `#winCut` 영상 레이어 추가
+- `cutin.js`: `WIN_CEREMONY` 목록, `playCeremony`, `warmCeremony` 추가. 화면을 누르거나 Enter·Space·Esc로 건너뛰기, 끝나면 결과 화면이 보임
+- `screens.js`: 경기가 끝나 결과 화면으로 갈 때 이긴 캐릭터의 세리머니 재생 (진 쪽 화면에도 상대의 세리머니가 나옴)
+- `fight.js`: 대전 시작 때 두 캐릭터의 세리머니 영상을 미리 받아 둠
+- 연결 끊김으로 판정된 경기에서는 재생하지 않음
