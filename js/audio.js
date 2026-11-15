@@ -36,7 +36,7 @@ function tone(f,dur,type,vol,dest,t0,f2){ if(!AC)return; const t=t0||AC.currentT
 function noise(dur,vol,fq,ft,t0,dest,fq2){ if(!AC)return; const t=t0||AC.currentTime,s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=nbuf;s.loop=true;
   f.type=ft||'lowpass';f.frequency.setValueAtTime(fq,t);if(fq2)f.frequency.exponentialRampToValueAtTime(fq2,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
   s.connect(f);f.connect(g);g.connect(dest||sfxG);s.start(t,Math.random()*.5);s.stop(t+dur+.03)}
-const VOICE_SET={E:['attack','hit','heavy-hit','win','select'],W:['attack','hit','heavy-hit','win','select'],R:['attack','hit','heavy-hit','win','select'],Q:['attack','hit','heavy-hit','win','select']};
+const VOICE_SET={E:['win','select'],W:['win','select'],R:['win','select'],Q:['win','select']};
 const voiceBuf={},voiceLoad={},voiceLive={};
 function loadVoices(base){
   if(!AC||!VOICE_SET[base])return;

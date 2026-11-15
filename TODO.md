@@ -123,3 +123,9 @@
 - `assets/audio/voices/`에 `R-*.mp3`, `Q-*.mp3` 각 5개(`attack`, `hit`, `heavy-hit`, `win`, `select`) 추가. R·R2·R3·R4와 Q·Q2·Q3가 각각 함께 사용
 - `audio.js`의 `VOICE_SET`에 R, Q 등록
 - 다른 캐릭터와 크기가 비슷하도록 최대 음량을 -6dB로 맞춰 다시 저장. R의 스테레오 파일은 모노로 변환
+
+**캐릭터 음성을 선택·승리만 남김**
+- 공격·피격·강한 피격 음성을 쓰지 않기로 함. `fight.js`에서 공격을 시작할 때와 맞을 때의 음성 호출 삭제
+- `audio.js`의 `VOICE_SET`을 Q·W·E·R 모두 `win`, `select`만 남김
+- `assets/audio/voices/`에서 `*-attack.mp3`, `*-hit.mp3`, `*-heavy-hit.mp3` 12개 삭제. 남은 파일은 캐릭터별 `-select`, `-win` 8개
+- 선택 음성은 캐릭터 선택 화면에서 고를 때, 승리 음성은 라운드를 이겨 승리 포즈에 들어갈 때 재생
