@@ -14,5 +14,8 @@
  "special2": 320,
  "crouch": 100.5,
  "cpunch": 92.5,
- "ckick": 55.0
+ "ckick": 55.0,
+ "win1": 102.5,
+ "win2": 96.0,
+ "win3": 93.0
 }

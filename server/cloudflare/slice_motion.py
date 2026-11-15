@@ -3,6 +3,9 @@ from PIL import Image
 from slice_crouch import ART, ALPHA_CUT, clean, columns, foot_x
 
 
+HALO_CUT = int(os.environ.get('HALO_CUT', '100'))
+
+
 def split(sheet, count):
     cols = columns(sheet.getchannel('A'))
     runs, start = [], None
@@ -31,13 +34,17 @@ def head_width(im, top):
 
 def main(ch, sheet_path, names, scale_arg):
     sheet = Image.open(sheet_path).convert('RGBA')
+    r, g, b, a = sheet.split()
+    sheet = Image.merge('RGBA', (r, g, b, a.point(lambda v: 0 if v < HALO_CUT else v)))
     full = sheet.getbbox()
     poses = split(sheet.crop((0, full[1], sheet.width, full[3])), len(names))
     boxes = [p.getbbox() for p in poses]
     base = max(b[3] for b in boxes)
     folder = os.path.join(ART, ch)
     idle = Image.open(os.path.join(folder, 'idle.png')).convert('RGBA')
-    if scale_arg == 'auto':
+    if scale_arg == 'stand':
+        scale = idle.height / clean(poses[-1]).height
+    elif scale_arg == 'auto':
         firsts = [clean(p) for p in poses]
         scale = head_width(idle, .35) / max(head_width(p, .35) for p in firsts)
     else:
