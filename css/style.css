@@ -317,3 +317,23 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 @keyframes menuPan{from{background-position:6% 50%}to{background-position:94% 50%}}
 @media (prefers-reduced-motion:reduce){#menuArt::before{animation:none}}
 .logo .qofa-logo{display:block;height:2.5em;width:auto;max-width:92vw;margin:0 auto;object-fit:contain}
+/* 조작 버튼 모양·배치 (2026-11-16): 버튼마다 색을 주고, 잡기 버튼이 방향 패드와 겹치지 않게 다시 배치 */
+#pad .pb{--c:#b9b3ff;--c2:#2b2568;border:2px solid var(--c);background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.34),rgba(255,255,255,0) 46%),linear-gradient(165deg,var(--c2),#141130 88%);box-shadow:0 5px 0 rgba(0,0,0,.38),0 0 16px -2px var(--c),inset 0 -7px 12px rgba(0,0,0,.4);text-shadow:0 2px 0 rgba(0,0,0,.45);transition:transform .05s}
+#pad .pb.on{background:radial-gradient(circle at 32% 24%,#fff,rgba(255,255,255,.5) 50%),var(--c);color:#15132e;text-shadow:none;transform:translateY(3px) scale(.96);box-shadow:0 2px 0 rgba(0,0,0,.38),0 0 22px var(--c)}
+#pad #bP{--c:#ff8fc4;--c2:#7a2358}
+#pad #bK{--c:#7fe3ff;--c2:#1d5a86}
+#pad #bS{--c:#ffd76a;--c2:#7a5a12}
+#pad #bT{--c:#c9a6ff;--c2:#4a2c8c}
+#pad #bG{--c:#8ff0b4;--c2:#1c6a48;font-family:'Pretendard',sans-serif;font-weight:800}
+#pad #dpad{--c:#b9b3ff;border-width:3px;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.06) 0 36%,rgba(20,17,48,.82) 37% 100%);box-shadow:0 5px 0 rgba(0,0,0,.38),0 0 18px -4px var(--c),inset 0 0 22px rgba(255,255,255,.1)}
+#pad #dpad.on{background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.1) 0 36%,rgba(20,17,48,.82) 37% 100%);color:#fff;transform:none}
+#pad #dpad i{opacity:.8}
+#pad #knob{box-shadow:0 3px 0 rgba(0,0,0,.35),0 0 14px rgba(201,166,255,.7)}
+#pad #emoBar .emo{box-shadow:0 3px 0 rgba(0,0,0,.35),0 0 10px -3px var(--c)}
+/* 배치: 오른쪽 아래에 P·K, 그 위로 필살 → 태그 → 잡기. 단위는 큰 버튼 지름(--b) */
+#pad #bK{right:var(--mx);bottom:calc(var(--my) + var(--b)*.55)}
+#pad #bP{right:calc(var(--mx) + var(--b)*1.08);bottom:var(--my)}
+#pad #bS{width:calc(var(--b)*.8);height:calc(var(--b)*.8);right:calc(var(--mx) + var(--b)*1);bottom:calc(var(--my) + var(--b)*1.12);font-size:calc(var(--b)*.21)}
+#pad #bT{width:calc(var(--b)*.7);height:calc(var(--b)*.7);right:calc(var(--mx) + var(--b)*.1);bottom:calc(var(--my) + var(--b)*1.72);font-size:calc(var(--b)*.19)}
+#pad #bG{width:calc(var(--b)*.7);height:calc(var(--b)*.7);right:calc(var(--mx) + var(--b)*1.15);bottom:calc(var(--my) + var(--b)*2.02);font-size:calc(var(--b)*.19)}
+@media (orientation:landscape){#pad #bG{right:calc(var(--mx) + var(--b)*2);bottom:calc(var(--my) + var(--b)*.95)}}

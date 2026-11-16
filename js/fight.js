@@ -27,7 +27,8 @@ function dust(x){for(let i=0;i<8;i++)fx.push({k:'p',x:x+(Math.random()-.5)*80,y:
 
 let zone=null,flood=null;
 // 연속 피격 보호: 타수마다 피해 감소, 한도를 넘으면 맞던 쪽이 무적으로 튕겨 나감, 경직·다운이 풀린 직후 잠깐 무적
-const COMBO={step:.1,floor:.6,limit:.3,window:2,wake:.3};
+// unit: 연속 피해 감소를 맞은 횟수가 아니라 누적 피해로 셈. 기본 피해 unit만큼 맞을 때마다 한 단계(step)씩 줄어든다. 한 방이 약한 캐릭터가 여러 번 때려도 손해가 커지지 않게 함
+const COMBO={step:.1,floor:.6,limit:.3,window:2,wake:.3,unit:0};
 // 필살기·태그기 피해 전체 배율 (1이면 예전 그대로)
 const SPECIAL_POWER=.8;
 function breakAway(f,o){
@@ -43,7 +44,7 @@ function applyHit(f,o,a){
   if(o.st==='guard'&&o.y<=0&&o.face===-f.face&&!a.ub){
     o.hp=Math.max(1,o.hp-damage*(a.sp?.28:.1)*CH[o.ch].guard);o.vx=f.face*a.push*.45;o.t=Math.min(o.t,.05);o.stun=.14;
     block(hx,hy,f.face);spark(hx,hy,'#bff8ff',8,220);sfx.guard(a.sp||damage>=10?1.3:1);f.meter=Math.min(100,f.meter+(a.sp||a.fin?0:a.dmg*.3));o.meter=Math.min(100,o.meter+a.dmg*.6);hitstop=.04;o.pr=0;return}
-  const cn=o.cn||0,scale=a.sp?1:Math.max(COMBO.floor,1-COMBO.step*cn);damage*=scale;if(!a.sp)o.cn=cn+1;f.pr=0;
+  const cn=o.cn||0,scale=a.sp?1:Math.max(COMBO.floor,1-COMBO.step*cn);damage*=scale;if(!a.sp)o.cn=cn+(COMBO.unit?a.dmg/COMBO.unit:1);f.pr=0;
   o.hp=Math.max(0,o.hp-damage);if(practice&&o.hp<=0){o.hp=CH[o.ch].hp;fx.push({k:'d',x:o.x,y:GROUND-o.y-300,t:0,d:1,txt:'회복'})}o.vx=f.face*a.push;if(a.lift){o.vy=a.lift;o.y=Math.max(o.y,.01)}
   setSt(o,'hit');o.stun=a.stun*(a.chain||a.fin||a.sp||a.cmd?1:scale);o.face=-f.face;o.airAtk=false;
   if(a.kd&&o.hp>0){setSt(o,'kd');o.stun=.8;o.down=false;o.vy=260;o.y=Math.max(o.y,.01)}
