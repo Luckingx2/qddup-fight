@@ -3,6 +3,13 @@
 let pick=null,opp=null,stage=null,streak=0,best=0,lastOpp=null,resultOnline=false;
 try{best=+(localStorage.getItem('wqre_best')||0)}catch(e){}
 const titleVideo=$('ttl'), titleVoice=$('titleVoice');
+// 첫 화면 표지: 들어올 때마다 4장 중 하나를 무작위로 (직전과 같은 그림은 피함)
+const COVERS=[1,2,3,4].map(n=>'assets/ui/covers/cover'+n+'.jpg');let coverNow=-1;
+function pickCover(){
+  let n=Math.floor(Math.random()*COVERS.length);if(n===coverNow)n=(n+1)%COVERS.length;coverNow=n;
+  const url=new URL(av(COVERS[n]),location.href).href;
+  titleVideo.poster=url;$('sTitle').style.setProperty('--cover','url("'+url+'")');
+}
 function startTitleVideo(withVoice){
   titleVideo.muted=!withVoice;
   titleVideo.loop=!withVoice;
@@ -17,7 +24,7 @@ titleVideo.addEventListener('ended',()=>{
 function show(id){
   const b=$('snd');if(id){b.classList.remove('in');document.body.appendChild(b)}else{b.classList.add('in');$('stage').appendChild(b)}
   ['sTitle','sMenu','sSel','sVs','sRes'].forEach(s=>$(s).classList.toggle('show',s===id));
-  if(id==='sTitle')startTitleVideo(false);
+  if(id==='sTitle'){pickCover();startTitleVideo(false)}
   else if(!titleVideo.paused){titleVideo.muted=true;titleVideo.pause()}
   if(typeof syncBack==='function')syncBack();
 }

@@ -27,7 +27,7 @@
 }
 .select-header {padding-top:1.25%;align-items:start}
 .select-logo {text-align:center;align-self:center;display:grid;gap:.1em}
-.select-logo img {height:6.2cqw;width:auto;justify-self:center}
+.select-logo img {height:9.6cqw;width:auto;justify-self:center;margin:-.9cqw 0 -1.1cqw}
 .select-logo h1 {transform:skew(-7deg)}
 .select-logo span {
   font:400 7.1cqw/.93 'Black Han Sans',sans-serif;
@@ -142,7 +142,7 @@
   .select-header {grid-template-columns:21% 58% 21%;align-items:end;padding-bottom:2%}
   .select-body,.select-footer {grid-template-columns:16% 68% 16%}
   .select-logo span {font-size:10cqw}
-  .select-logo img {height:10.5cqw}
+  .select-logo img {height:13cqw}
   .select-logo h1 {font-size:2.7cqw}
   .preview-caption,.opponent-caption {font-size:2.8cqw}
   #sSel #pvN,.opponent-caption strong {font-size:3.5cqw}
