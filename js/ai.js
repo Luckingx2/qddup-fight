@@ -7,7 +7,7 @@ function think(f,o,dt){
     if(d<=THROW.reach&&o.st==='guard'&&o.y<=0&&Math.random()<(BASE_CHARACTER[f.ch]==='R'?.4:.22))I.g=1;
     else if(threat&&(o.st==='punch'||o.st==='kick')&&canCrouch(f)&&Math.random()<Math.min(.3,.06+level*.05)){A.crouch=1;A.t=.3}
     else if(threat&&Math.random()<gp){A.down=1;A.t=.34}
-    else if(f.meter>=100&&d>100&&d<({W:640,R:640,E:300,G:250,B:210,Qb:640,Wb:640,Eb:270,Rb:520,Rc:260,Qc:560,Wc:640,Ec:250,Rd:640}[f.ch]||420)&&Math.random()<.55){if(TAG[f.ch]&&!f.tagUsed&&Math.random()<.35)I.t=1;else I.s=1}
+    else if(f.meter>=100&&d>100&&d<({W:640,R:640,E:300,G:250,B:210,Qb:640,Wb:640,Eb:340,Rb:520,Rc:260,Qc:560,Wc:640,Ec:250,Rd:640}[f.ch]||420)&&Math.random()<.55){if(TAG[f.ch]&&!f.tagUsed&&Math.random()<.35)I.t=1;else I.s=1}
     else if(CMD[BASE_CHARACTER[f.ch]]&&(BASE_CHARACTER[f.ch]==='R'?d>240&&d<620:BASE_CHARACTER[f.ch]==='E'?d<170&&o.y>40:d<150)&&Math.random()<.1+level*.025)I.q=1;
     else if(d>155){A.mv=tw;if(Math.random()<.06)A.up=1;if(Math.random()<.16*(1-ag))A.mv=0}
     else if(canCrouch(f)&&Math.random()<Math.min(.26,.08+level*.04)){A.crouch=1;I.k=1;A.t=.2}

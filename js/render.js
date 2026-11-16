@@ -114,10 +114,9 @@ function drawCmdProp(f,sx,y){
   cx.restore()}
 function drawFirePunch(e,x,a){
   cx.translate(x,e.y);
-  if(e.vertical)cx.rotate(-Math.PI/2);
-  else cx.scale(e.dir,1);
+  cx.scale(e.dir,1);if(e.ang!=null)cx.rotate(e.ang);
   cx.globalCompositeOperation='lighter';cx.globalAlpha=a;
-  const w=157+78*(1-a),h=e.vertical?94:73;
+  const w=157+78*(1-a),h=e.ang!=null?94:73;
   const flame=cx.createLinearGradient(-w*.7,0,w*.45,0);
   flame.addColorStop(0,'transparent');flame.addColorStop(.43,e.col);flame.addColorStop(1,'#fff6d9');
   cx.fillStyle=flame;

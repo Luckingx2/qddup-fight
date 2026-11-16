@@ -95,12 +95,13 @@ function stepCloseSpecial(f,o,move){
 }
 const FIRE_FISTS={
   E:{color:'#ff833e',speed:590,reach:140,damage:26,push:550,lift:250},
-  Eb:{color:'#729dff',speed:430,reach:117,damage:25,push:270,lift:620},
+  // Eb: 대각선으로 날아오르는 홍염 어퍼컷. 떠오르는 동안 계속 전진하고 그동안 타격 판정이 살아 있다
+  Eb:{color:'#ff3b2e',speed:520,reach:128,damage:25,push:300,lift:680,rise:900},
   Ec:{color:'#ff443c',speed:500,reach:134,damage:19,push:500,lift:320}
 };
 function fireFistBurst(f,move,last){
   const x=f.x+f.face*101,y=GROUND-f.y-157;
-  fx.push({k:'firePunch',x,y,t:0,d:.29,dir:f.face,vertical:f.ch==='Eb',col:move.color});
+  fx.push({k:'firePunch',x,y,t:0,d:.29,dir:f.face,ang:f.ch==='Eb'?-.95:null,col:move.color});
   spark(x-f.face*28,y+18,move.color,9,245);
   spark(x,y,move.color,last?19:8,last?420:220);
   if(last)ring(x,y,move.color,76);
@@ -110,17 +111,20 @@ function stepFireFist(f,o,move){
   const double=f.ch==='Ec',follow=f.spN===1;
   const startup=follow?.26:.10,end=follow?.36:.20;
   const last=!double||follow;
-  if(f.spN<2&&f.t<end)f.vx=f.face*(follow?250:move.speed);
+  const rising=move.rise&&f.y>0&&f.vy>0;
+  if(f.spN<2&&f.t<end)f.vx=f.face*(follow?250:move.rise?180:move.speed);
   else f.vx=0;
-  if(f.spN<2&&f.t>=startup&&f.t<end){
+  if(rising){f.vx=f.face*move.speed*(f.spN===2?.4:1);
+    if(f.t>(f.spF||0)){f.spF=f.t+.07;fx.push({k:'firePunch',x:f.x+f.face*70,y:GROUND-f.y-150,t:0,d:.22,dir:f.face,ang:-.95,col:move.color})}}
+  if(f.spN<2&&f.t>=startup&&(f.t<end||rising)){
     if(!f.spT){
       f.spT=1;
-      if(f.ch==='Eb'){f.vy=510;f.y=.01}
+      if(move.rise){f.vy=move.rise;f.y=.01;f.spF=0}
       fireFistBurst(f,move,last);
     }
     const guarding=o.st==='guard'&&o.y<=0&&o.face===-f.face;
     if(tryHit(f,o,{reach:move.reach,dmg:last?move.damage:8,stun:last?.58:.37,
-      push:last?move.push:65,lift:last?move.lift:0,sp:1,vr:f.ch==='Eb'?210:125,hy:f.ch==='Eb'?175:147})){
+      push:last?move.push:65,lift:last?move.lift:0,sp:1,vr:move.rise?300:125,hy:move.rise?175:147})){
       f.spN=last||guarding?2:1;
       f.spT=0;
       f.hitDone=f.spN===2;
@@ -286,7 +290,7 @@ function stepCmd(f,o,dt){
   const b=f.cm,K=CH[f.ch],d=CMD[b];f.vx*=Math.pow(.004,dt);
   if(b==='R'){if(f.t>.2&&!f.spN){f.spN=1;proj.push({o:f,kind:'mega',cmd:1,x:f.x+f.face*80,y:GROUND-125,vx:f.face*560,vy:0,g:0,t:0,hit:false,dmg:K.pd+3,stun:.34,push:230,lift:0,top:80});sfx.whoosh(1.2)}}
   else if(b==='W'){if(f.t>.26&&f.t<.4)tryHit(f,o,{reach:150,dmg:K.kd*1.15,stun:.5,push:200,hy:215,kd:1,kind:'k',cmd:1})}
-  else if(b==='E'){if(f.t>.1&&f.t<.26)tryHit(f,o,{reach:135,dmg:K.kd,stun:.6,push:160,lift:600,vr:330,hy:190,kind:'k',cmd:1})}
+  else if(b==='E'){if(f.t>.1&&f.t<.26)tryHit(f,o,{reach:160,dmg:K.kd,stun:.6,push:160,lift:600,vr:330,hy:190,kind:'k',cmd:1})}
   else{const n=Math.floor((f.t-.02)/.1);if(n>=1&&n<=4&&f.spN<n){f.spN=n;f.hitDone=false;const last=n===4;
       if(!tryHit(f,o,{reach:118,dmg:K.pd*(last?.6:.4),stun:last?.45:.3,push:last?320:30,hy:232,kind:'p',cmd:1}))sfx.whoosh(.6)}}
   if(f.t>d.end)setSt(f,'idle')}
