@@ -24,7 +24,7 @@ setup('Q','E',105);motion();let hits=0,lh=C.hp;step(50,()=>{if(C.hp<lh-1e-9){hit
 // 3) 메가폰
 for(const a of ['R','Rb','Rc','Rd']){setup(a,'Q',500);const h0=C.hp;motion();let seen=0;step(90,()=>{if(proj.some(p=>p.kind==='mega'))seen=1});ok('메가폰 명중 '+a,seen&&C.hp<h0,(h0-C.hp).toFixed(1))}
 setup('R','Q',500);motion();C.script=J=>J.gd=1;const hg=C.hp;step(90);ok('메가폰 가드',hg-C.hp>0&&hg-C.hp<2,(hg-C.hp).toFixed(2));
-for(const d of ['G','Q','R']){let best=0;for(let delay=10;delay<50;delay+=2){setup('R',d,500);motion();const h=C.hp;step(delay);C.script=J=>J.up=1;step(3);C.script=null;step(90);if(C.hp===h)best++}ok('메가폰 점프 회피 '+d,best>=3,'회피 가능 타이밍 '+best+'/20')}
+for(const d of ['E','Q','R']){let best=0;for(let delay=10;delay<50;delay+=2){setup('R',d,500);motion();const h=C.hp;step(delay);C.script=J=>J.up=1;step(3);C.script=null;step(90);if(C.hp===h)best++}ok('메가폰 점프 회피 '+d,best>=3,'회피 가능 타이밍 '+best+'/20')}
 // 메가폰끼리 상쇄
 setup('R','Rb',600);let q=1;C.script=J=>{if(q){J.q=1;q=0}};motion();const hp0=P.hp,hc0=C.hp;step(120);ok('메가폰 상쇄',P.hp===hp0&&C.hp===hc0&&!proj.length,P.hp+'/'+C.hp);
 // 화면에 1발만
@@ -39,7 +39,7 @@ step(60*12,()=>{if(phase!=='fight')return;const d=C.x-P.x;held.l=held.r=0;if(Mat
 ok('탈출 발동',fx.length>=0&&esc>0,esc);
 // 5) CPU 대전 전 조합 일부
 let errs=0,cm=0,n=0;delete C.script;
-for(const a of ORDER)for(const b of ['Q','W','E','R','G','Rc']){T.boot(a,b,4);think=T.think0;P.cpu=true;const realP=P;
+for(const a of ORDER)for(const b of ['Q','W','E','R','Qc','Rc']){T.boot(a,b,4);think=T.think0;P.cpu=true;const realP=P;
   try{for(let i=0;i<60*70&&phase==='fight';i++){think(P,C,DT);const s=Object.assign({},P.inp);update(DT);if(P.st==='cmd'||C.st==='cmd')cm++}n++}catch(e){errs++;console.log(a,b,e.message)}}
 ok('CPU 대전 '+n+'판 오류 없음',errs===0,'커맨드 사용 프레임 '+cm);
 console.log(res.join('\n'));console.log(res.filter(r=>r.startsWith('FAIL')).length+' fail / '+res.length)})();
