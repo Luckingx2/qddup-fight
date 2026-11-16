@@ -9,7 +9,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.s
   const fontsP=Promise.all(["20px 'Pretendard'","20px 'Bungee'","20px 'IBM Plex Sans KR'","600 20px 'IBM Plex Sans KR'"].map(f=>document.fonts.load(f,'가A'))).catch(()=>{});
   loadTotal+=250000;fontsP.then(()=>{loadDone+=250000;loadProgress()});
   const jobs=ORDER.map(k=>loadImg(k+'_face',av('assets/faces/'+k+'_face.webp')));
-  jobs.push(loadImg('D_face',av('assets/faces/D_face.webp')));
+  jobs.push(loadImg('D_face',av('assets/faces/D_face.webp')));jobs.push(loadImg('mega',av('assets/ui/mega.webp')));
   await Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,90000))]);
   await Promise.race([fontsP,new Promise(r=>setTimeout(r,3000))]);
   loadDone=loadTotal;loadProgress();for(let i=0;i<80&&loadShown<99.9;i++)await new Promise(r=>setTimeout(r,25));await new Promise(r=>setTimeout(r,150));
