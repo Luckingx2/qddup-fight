@@ -15,13 +15,15 @@ function playCeremony(ch){
   box.classList.add('on');box.onclick=skip;v.onended=done;v.onerror=done;addEventListener('keydown',key,true);
   const p=v.play();if(p&&p.catch)p.catch(done);
 }
+// 영상 요소는 아주 작은 빈 영상으로 만들어 두고(첫 터치 때 재생 허용만 받아 둠), 실제 영상은 그 판에 쓸 것만 받아서 갈아 끼운다
+const BLANK_VID=av('assets/videos/blank.mp4');
 const VID={};let cut=null,usedSp={},vUn=false;
-function mkVids(){for(const sk of SVK)for(const c of ORDER){if(sk==='2'&&SPN[c]<2)continue;if(sk!=='T'&&SPN[c]>1&&(sk==='2')!==(SPV[c]===1))continue;if(sk==='T'&&!TAG[c])continue;const k=c+sk,v=document.createElement('video');v.preload='metadata';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.src=av('assets/videos/sp_'+(FIRE_CUTINS[k]||VAL[k]||k)+'.mp4');$('cut').insertBefore(v,$('cutH'));VID[k]=v}
+function mkVids(){for(const sk of SVK)for(const c of ORDER){if(sk==='2'&&SPN[c]<2)continue;if(sk!=='T'&&SPN[c]>1&&(sk==='2')!==(SPV[c]===1))continue;if(sk==='T'&&!TAG[c])continue;const k=c+sk,v=document.createElement('video');v.preload='auto';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.dataset.src=av('assets/videos/sp_'+(FIRE_CUTINS[k]||VAL[k]||k)+'.mp4');v.src=BLANK_VID;$('cut').insertBefore(v,$('cutH'));VID[k]=v}
   $('cut').addEventListener('pointerdown',e=>{e.preventDefault();if(cut&&cut.t>.5&&!net)endCut()})}
 function unlockVids(){if(vUn)return;vUn=true;for(const k in VID){const v=VID[k];try{v.muted=true;const p=v.play();if(p&&p.then)p.then(()=>{if(cut?.v===v)return;v.pause();try{v.currentTime=0}catch(e){}}).catch(()=>{})}catch(e){}}}
 // 영상 없이 필살기 이름만 크게 띄움 (한 경기에서 같은 필살기를 두 번째부터 쓸 때, 영상이 준비되지 않았을 때)
 function specialCall(f,vk){voice(f,'sp-'+(f.sv===2?'T':vk));fx.push({k:'call',x:f.x,y:GROUND-f.y-330,t:0,d:1.15,txt:(SPECIAL_NAMES[vk]||CH[f.ch].name+' 태그기')+'!',col:CH[f.ch].col,dir:f.face})}
-function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none':'';const vk=f.ch+SVK[f.sv||0],v=VID[vk],own=!net||net.host;if(!v||v.error||(!VBLOB[vk]&&v.readyState<3)){if(v&&!v.error)warmVid(v);if(own){specialCall(f,vk);sfx.charge()}return}
+function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none':'';const vk=f.ch+SVK[f.sv||0],v=VID[vk],own=!net||net.host;if(!v||!VBLOB[vk]||v.error){if(v&&!VBLOB[vk])fetchCut(vk,()=>{});if(own){specialCall(f,vk);sfx.charge()}return}
   if(own&&usedSp[vk+(f.cpu?'c':'p')]){specialCall(f,vk);sfx.charge();return}
   $('cut').setAttribute('aria-label',SPECIAL_NAMES[vk]||CH[f.ch].name+' 태그기');
   const key=vk+(f.cpu?'c':'p'),rate=1;usedSp[key]=1;
