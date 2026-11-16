@@ -1125,7 +1125,7 @@ function openOnlineRoom(role){
       }else{
         connectionTimeout=timeout();
         for(const label of ['control','frame'])
-          attachRoomChannel(link,peer.connect(roomPrefix+code,{label,serialization:'none',reliable:label==='control'}));
+          attachRoomChannel(link,peer.connect(roomPrefix+code,{label,reliable:label==='control'}));
       }
     });
     peer.on('connection',connection=>{
