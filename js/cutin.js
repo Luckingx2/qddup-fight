@@ -19,9 +19,12 @@ const VID={};let cut=null,usedSp={},vUn=false;
 function mkVids(){for(const sk of SVK)for(const c of ORDER){if(sk==='2'&&SPN[c]<2)continue;if(sk!=='T'&&SPN[c]>1&&(sk==='2')!==(SPV[c]===1))continue;if(sk==='T'&&!TAG[c])continue;const k=c+sk,v=document.createElement('video');v.preload=sk||!IS_PC?'metadata':'auto';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.src=av('assets/videos/sp_'+(FIRE_CUTINS[k]||VAL[k]||k)+'.mp4');$('cut').insertBefore(v,$('cutH'));VID[k]=v}
   $('cut').addEventListener('pointerdown',e=>{e.preventDefault();if(cut&&cut.t>.5&&!net)endCut()})}
 function unlockVids(){if(vUn)return;vUn=true;for(const k in VID){const v=VID[k];try{v.muted=true;const p=v.play();if(p&&p.then)p.then(()=>{if(cut?.v===v)return;v.pause();try{v.currentTime=0}catch(e){}}).catch(()=>{})}catch(e){}}}
-function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none':'';const vk=f.ch+SVK[f.sv||0],v=VID[vk];if(!v||v.error||(!VBLOB[vk]&&v.readyState<3)){if(v&&!v.error)warmVid(v);if(!net||net.host)sfx.charge();return}
+// 영상 없이 필살기 이름만 크게 띄움 (한 경기에서 같은 필살기를 두 번째부터 쓸 때, 영상이 준비되지 않았을 때)
+function specialCall(f,vk){fx.push({k:'call',x:f.x,y:GROUND-f.y-330,t:0,d:1.15,txt:(SPECIAL_NAMES[vk]||CH[f.ch].name+' 태그기')+'!',col:CH[f.ch].col,dir:f.face})}
+function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none':'';const vk=f.ch+SVK[f.sv||0],v=VID[vk],own=!net||net.host;if(!v||v.error||(!VBLOB[vk]&&v.readyState<3)){if(v&&!v.error)warmVid(v);if(own){specialCall(f,vk);sfx.charge()}return}
+  if(own&&usedSp[vk+(f.cpu?'c':'p')]){specialCall(f,vk);sfx.charge();return}
   $('cut').setAttribute('aria-label',SPECIAL_NAMES[vk]||CH[f.ch].name+' 태그기');
-  const key=vk+(f.cpu?'c':'p'),rate=usedSp[key]&&!FIRE_CUTINS[vk]?1.9:1;usedSp[key]=1;
+  const key=vk+(f.cpu?'c':'p'),rate=1;usedSp[key]=1;
   cut={f,v,vk,t:0,max:((v.duration||5)/rate)+1.5};try{v.currentTime=0}catch(e){}
   v.playbackRate=rate;setVideoVolume(v);v.classList.toggle('flip',f.face<0);v.classList.add('on');$('cut').classList.add('on');setMusicGain(.08);
   const current=cut;

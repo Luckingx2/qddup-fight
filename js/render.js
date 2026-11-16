@@ -328,6 +328,12 @@ function render(tm){
     else if(e.k==='geyserCharge'||e.k==='geyser')drawBassGeyser(e,sx,a);
     else if(e.k==='beam'){cx.globalCompositeOperation='lighter';cx.lineCap='round';const w=Math.sin(Math.min(1,e.t/e.d)*3.1416);for(let q=0;q<2;q++){cx.strokeStyle=e.gold?(q?'#fff3b0':'#ffc93c'):e.pur?(q?'#e0b8ff':'#8b5cf6'):(q?'#5ef2ff':'#ff6fb5');cx.lineWidth=16*w+2;cx.beginPath();for(let x=0;x<=1000;x+=14){const yy=Math.sin(x*.03-tm*34+q*3.1416)*18;cx.lineTo(sx+e.dir*x,e.y+yy)}cx.stroke()}cx.strokeStyle='#fff';cx.lineWidth=7*w;cx.beginPath();cx.moveTo(sx,e.y);cx.lineTo(sx+e.dir*1000,e.y);cx.stroke()}
     else if(e.k==='bolt'){cx.globalCompositeOperation='lighter';cx.globalAlpha=Math.min(1,a*2);cx.lineJoin='round';for(let q=0;q<2;q++){cx.strokeStyle=q?'#fff':'#6fd0ff';cx.lineWidth=q?5:16;cx.beginPath();cx.moveTo(sx+Math.sin(e.seed)*60,-10);for(let i=1;i<=8;i++){const yy=e.y*i/8;cx.lineTo(sx+(i===8?0:Math.sin(e.seed*i*1.7+Math.floor(e.t*30))*46),yy)}cx.stroke()}cx.fillStyle='rgba(180,230,255,.8)';cx.beginPath();cx.ellipse(sx,e.y,70*a,16*a,0,0,6.283);cx.fill()}
+    else if(e.k==='call'){const p=Math.min(1,e.t/.14),out=Math.max(0,(e.t-(e.d-.25))/.25),X=Math.max(190,Math.min(VW-190,sx)),Y=Math.max(135,e.y);
+      cx.save();cx.translate(X,Y);cx.transform(1,0,-.2,1,0,0);cx.scale(1.6-.6*p,1.6-.6*p);cx.globalAlpha=(1-out)*.85;
+      cx.font="46px 'Black Han Sans','Pretendard',sans-serif";const tw=cx.measureText(e.txt).width+70;
+      const g=cx.createLinearGradient(-tw/2,0,tw/2,0);g.addColorStop(0,'rgba(11,10,28,0)');g.addColorStop(.18,'rgba(11,10,28,.86)');g.addColorStop(.82,'rgba(11,10,28,.86)');g.addColorStop(1,'rgba(11,10,28,0)');cx.fillStyle=g;cx.fillRect(-tw/2-40,-36,tw+80,72);
+      cx.fillStyle=e.col;cx.fillRect(-tw/2,-38,tw,4);cx.fillRect(-tw/2,34,tw,4);cx.globalAlpha=1-out;
+      txt(e.txt,0,2,46,'#fff','center',"'Black Han Sans'",9);cx.lineWidth=2;cx.strokeStyle=e.col;cx.strokeText(e.txt,0,2);cx.restore()}
     else if(e.k==='d'){cx.globalAlpha=Math.min(1,a*2);txt(String(e.txt),sx,e.y-(1-a)*46,24,'#fff','center',0,5)}
     cx.restore()}
   cx.restore();
