@@ -65,6 +65,17 @@ function checkSheets(){
 function srcRect(im,fr){const s=im.sheetScale||1;return[fr[0]*s,fr[1]*s,fr[2]*s,fr[3]*s]}
 function loadImg(k,src,ms=15000,scale){const w=assetSize(src);loadTotal+=w;const pb=pullBytes(src,w,ms,true);return new Promise(r=>{let fin=false,bu=null,tried=false;const done=ok=>{if(fin)return;fin=true;if(!ok&&!IMG[k])MISSING.push([k,src,scale]);pb.fin();r()};const i=new Image();i.onload=()=>{if(bu)setTimeout(()=>URL.revokeObjectURL(bu),5000);if(scale)i.sheetScale=scale;IMG[k]=i;done(true)};i.onerror=()=>{if(bu&&!tried){tried=true;bu=null;i.src=src;return}done(false)};setTimeout(()=>done(false),ms);pb.p.then(b=>{if(fin)return;if(b&&b.size){bu=URL.createObjectURL(b);i.src=bu}else{tried=true;i.src=src}})})}
 function loadFile(url,ms=30000){const w=assetSize(url);loadTotal+=w;const pb=pullBytes(url,w,ms);return pb.p.then(()=>pb.fin())}
+// 캐릭터 동작 그림은 처음에 받지 않고, 고르거나 대전이 정해질 때 그 판에 쓸 것만 받는다
+const SHEET_WANT={};
+function needSheet(k){
+  if(IMG[k])return Promise.resolve();
+  if(!SHEET_WANT[k])SHEET_WANT[k]=(k==='ostrichR'?loadImg(k,av('assets/characters/ostrich-r.webp'),45000):loadImg(k,av('assets/characters/'+k+'.webp'),45000,SHEET_SCALE)).then(()=>{delete SHEET_WANT[k];if(IMG[k])checkSheets()});
+  return SHEET_WANT[k];
+}
+// 그 판에 필요한 그림: 두 캐릭터, 태그 상대, R의 타조
+function sheetKeys(chs){const s=new Set();for(const c of chs){if(!c||!META[c])continue;s.add(c);if(TAG[c]&&META[TAG[c]])s.add(TAG[c]);if(c==='R')s.add('ostrichR')}return[...s]}
+function sheetsReady(chs){return sheetKeys(chs).every(k=>IMG[k])}
+async function needSheets(chs){for(let n=0;n<3&&!sheetsReady(chs);n++){await Promise.all(sheetKeys(chs).map(needSheet));if(!sheetsReady(chs))await new Promise(r=>setTimeout(r,1200))}}
 const BG_WANT={};
 function needBg(s){if(!s||IMG['bg_'+s.id]||BG_WANT[s.id])return;BG_WANT[s.id]=1;loadImg('bg_'+s.id,av('assets/backgrounds/bg_'+s.id+'.webp'),30000).then(()=>{if(!IMG['bg_'+s.id])setTimeout(()=>{BG_WANT[s.id]=0},3000)})}
 async function retryMissing(){for(let n=0;n<3&&MISSING.length;n++){await new Promise(r=>setTimeout(r,4000));const list=MISSING.splice(0).filter(([k])=>!IMG[k]);await Promise.all(list.map(([k,src,scale])=>loadImg(k,src+(src.includes('?')?'&':'?')+'r='+Date.now(),30000,scale)))}}

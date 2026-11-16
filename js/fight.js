@@ -4,7 +4,7 @@ let mode='menu',P=null,C=null,phase='',pt=0,round=1,timer=60,camX=150,shake=0,hi
 function mkF(ch,x,face,cpu){return{ch,x,y:0,vx:0,vy:0,face,cpu,hp:CH[ch].hp,dhp:CH[ch].hp,meter:0,st:'idle',t:0,walkD:0,hitDone:false,airAtk:false,atkT:0,stun:0,down:false,spN:0,spT:0,trail:[],wins:0,tagUsed:false,inp:{l:0,r:0,up:0,down:0,p:0,k:0,s:0,t:0,g:0},ai:{t:0,mv:0,down:0,up:0}}}
 function setSt(f,s){f.st=s;f.t=0;f.hitDone=false;f.thrown=false}
 function startMatch(){
-  needBg(stage);show(null);level=Math.min(6,streak);usedSp={};
+  needBg(stage);needSheets([pick,opp]);show(null);level=Math.min(6,streak);usedSp={};
   P=mkF(pick,WW/2-190,1,false);C=mkF(opp,WW/2+190,-1,true);P.buf=buf;if(net)C.buf=rbuf;round=1;amb=[];loadVoices(BASE_CHARACTER[pick]);loadVoices(BASE_CHARACTER[opp]);warmCeremony(pick);warmCeremony(opp);
   for(let i=0;i<26;i++)amb.push({x:Math.random()*VW,y:Math.random()*VH,s:.5+Math.random(),p:Math.random()*6.28});
   $('bG').hidden=$('throwKey').hidden=$('pkG').hidden=false;

@@ -33,7 +33,7 @@ function canPickCharacter(id,kind=net?.match?.kind){
 }
 function chooseCharacter(id,fromVariant=false){
   if(net?.pk||!canPickCharacter(id))return;
-  pick=id;
+  pick=id;needSheet(id);
   sayVoice(BASE_CHARACTER[id],'select');
   syncCharacterPicker();
   if(fromVariant)$('selectVariants').querySelector('[aria-pressed="true"]')?.focus();
@@ -123,7 +123,7 @@ function stageSpin(){
   const n=16, start=(fin-n+N)%N; let t=0;
   for(let i=0;i<=n;i++){ const last=i===n; t+=35+Math.pow(i/n,2.4)*120;
     later(()=>{ const j=(start+i)%N; els.forEach((e,q)=>e.classList.toggle('on',q===j)); last?sfx.lock():sfx.tick();
-      if(last){stage=STAGES[fin];$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(()=>beginWhenReady([pick,opp],startMatch),550)} },t) }
+      if(last){stage=STAGES[fin];needBg(stage);$('dice').classList.remove('roll');$('vsMsg').textContent=CH[pick].name+' vs '+CH[opp].name+' · '+stage.name;later(()=>beginWhenReady([pick,opp],startMatch),550)} },t) }
 }
 function result(win){
   const mine=net?ME():P;playCeremony((win?mine:(mine===P?C:P)).ch);

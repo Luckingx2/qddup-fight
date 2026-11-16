@@ -1,6 +1,18 @@
 'use strict';
 /* ---------- online ---------- */
 let net=null,dropResult=false;const rh={l:0,r:0,up:0,down:0},rbuf={p:0,k:0,s:0,t:0,g:0},NQ=new URLSearchParams(location.search);
+// 방장 입력 지연: 상대는 입력이 왕복 통신만큼 늦게 반영되므로, 방장 자신의 입력도 같은 만큼(최대 0.15초) 늦춰 적용한다
+const hh={l:0,r:0,up:0,down:0},hbuf={p:0,k:0,s:0,t:0,g:0},HOST_DELAY_MAX=.15;let hq=[];
+function hostDelay(){return net&&net.host&&net.ok&&net.rtt>0?Math.min(HOST_DELAY_MAX,net.rtt):0}
+function hostInputReset(){hq=[];hh.l=hh.r=hh.up=hh.down=0;hbuf.p=hbuf.k=hbuf.s=hbuf.t=hbuf.g=0;if(net)net.hl=''}
+function hostInput(){
+  const now=performance.now()/1000,D=hostDelay();
+  if(now-(net.pgT||0)>1){net.pgT=now;netSend({t:'pg',n:now})}
+  let pr='';for(const k of 'pkstg')if(buf[k]>0){pr+=k;buf[k]=0}
+  const h=''+held.l+held.r+held.up+held.down;
+  if(pr||h!==net.hl){net.hl=h;hq.push([now+D,held.l,held.r,held.up,held.down,pr])}
+  while(hq.length&&hq[0][0]<=now){const e=hq.shift();hh.l=e[1];hh.r=e[2];hh.up=e[3];hh.down=e[4];for(const k of e[5])hbuf[k]=k==='s'||k==='t'?.7:.16}
+}
 const ME=()=>net&&!net.host?C:P;
 const IS_PC=matchMedia('(hover:hover) and (pointer:fine)').matches;
 for(const k in sfx){const o=sfx[k];sfx[k]=(...a)=>{if(net&&net.host&&mode==='fight'&&net.ev.length<40)net.ev.push([k,...a]);return o(...a)}}
@@ -264,10 +276,12 @@ function netPrep(){if(!net||!net.pk||!net.rpk||net.vrp)return;net.vrp=1;const n=
   const ov=$('vload');if(!cutsReady([net.pk,net.rpk])){ov.classList.add('on');$('vloadFill').style.width='0%';$('vloadPct').textContent='0%'}
   ensureCuts([net.pk,net.rpk],p=>{if(net!==n)return;$('vloadFill').style.width=p.toFixed(1)+'%';$('vloadPct').textContent=Math.floor(p)+'%'}).then(()=>{if(net!==n){ov.classList.remove('on');return}n.vr=1;netSend({t:'vr'});setTimeout(()=>{if(net===n&&!n.rvr){n.rvr=1;netTry()}},15000);netTry()})}
 function netTry(){netPrep();if(!net||!net.host||!net.vr||!net.rvr||net.rpc===undefined||!canPickCharacter(net.pk)||!canPickCharacter(net.rpk)||mode!=='menu'||!$('sSel').classList.contains('show'))return;const si=window.__stg!==undefined?window.__stg:Math.floor(Math.random()*STAGES.length),m={t:'start',p:net.pk,c:net.rpk,stg:si};netSend(m);netBegin(m)}
-function netBegin(m){$('vload').classList.remove('on');shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.vrp=net.vr=net.rvr=0;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(net.host)C.buf=rbuf;pick=net.my}
+function netBegin(m){$('vload').classList.remove('on');shareEmotes();net.begin=m;net.t0=performance.now();net.lost=0;net.my=net.host?m.p:m.c;net.pk=net.rpk=null;net.vrp=net.vr=net.rvr=0;net.ev=[];net.cn=0;net.snap=null;rh.l=rh.r=rh.up=rh.down=0;rbuf.p=rbuf.k=rbuf.s=rbuf.t=rbuf.g=0;const sk=streak;streak=0;pick=m.p;opp=m.c;stage=STAGES[m.stg];rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;hostInputReset();if(net.host){C.buf=rbuf;P.buf=hbuf}pick=net.my}
 function netRecv(m){if(!net)return;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return}}if(!m||typeof m!=='object')return;
   if(m.t==='s'){if(!net.host&&mode==='fight'&&!(m.q<=net.rq)){net.rq=m.q;if(net.snap){m.fx=(net.snap.fx||[]).concat(m.fx||[]);m.ev=(net.snap.ev||[]).concat(m.ev||[])}net.snap=m}}
   else if(m.t==='i'){if(net.host&&Array.isArray(m.h)&&m.h.length===4){[rh.l,rh.r,rh.up,rh.down]=m.h.map(v=>v===1?1:0);if(typeof m.p==='string')for(const k of m.p.slice(0,5))if('pkstg'.includes(k))rbuf[k]=k==='s'||k==='t'?.7:.16}}
+  else if(m.t==='pg'){if(!net.host&&typeof m.n==='number')netSend({t:'po',n:m.n})}
+  else if(m.t==='po'){if(net.host&&typeof m.n==='number'){const s=performance.now()/1000-m.n;if(s>=0&&s<2)net.rtt=net.rtt?net.rtt*.7+s*.3:s}}
   else if(m.t==='hi'&&!net.t0){net.rpc=!!m.pc;net.host=IS_PC!==net.rpc?IS_PC:net.lead;netTry()}
   else if(m.t==='vr'){net.rvr=1;netTry()}
   else if(m.t==='pick'&&canPickCharacter(m.c)){net.rpk=m.c;if(mode==='menu'&&$('sSel').classList.contains('show'))netLobby();netTry()}
@@ -345,7 +359,7 @@ function netRejoin(){
       if(net!==st||st.ok)return;
       st.ok=true;st.lost=performance.now();
       const m=d.begin;pick=m.p;opp=m.c;stage=STAGES[m.stg];
-      const sk=streak;streak=0;rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;if(st.host)C.buf=rbuf;pick=st.my;
+      const sk=streak;streak=0;rtm.forEach(clearTimeout);rtm=[];startMatch();streak=sk;level=0;C.cpu=false;hostInputReset();if(st.host){C.buf=rbuf;P.buf=hbuf}pick=st.my;
       st.t0=performance.now()-d.el;
       if(st.host&&d.snap){try{const sn=JSON.parse(d.snap);netApply(sn);st.sq=(sn.q||0)+50}catch(e){}}
       if(st.pst){const s=st.pst;st.pst=null;netState(s)}

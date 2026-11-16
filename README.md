@@ -77,9 +77,6 @@ R·R2·R3·R4의 잡아 던지기는 키보드 G 또는 모바일 잡기 버튼�
 | `assets/faces/<키>_face.webp` | 캐릭터 얼굴 15개 |
 | `assets/backgrounds/bg_*.jpg` · `assets/thumbnails/th_*.jpg` | 스테이지 배경 13종과 미리보기 |
 | `assets/videos/sp_<키>.mp4` | 필살기 영상. 뒤에 `2`가 붙으면 두 번째 필살기, `T`가 붙으면 태그기 |
-| `assets/ui/qddup-busan-title.mp4` | 좌우 영상이 합성된 첫 화면 오프닝 |
-| `assets/ui/qddup-busan-cover.jpg` | 첫 화면 정지 이미지 |
-| `assets/ui/qddup-busan-share.jpg` | 링크 공유 썸네일 |
 | `assets/lib/peerjs.min.js` | 온라인 대전용 접속 라이브러리 |
 | `.nojekyll` | GitHub Pages가 파일을 그대로 서빙하게 하는 빈 파일 |
 

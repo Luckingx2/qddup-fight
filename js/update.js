@@ -5,7 +5,7 @@ function syncPadReady(){
 }
 function update(dt){
   if(mode!=='fight')return;
-  for(const k in buf)buf[k]=Math.max(0,buf[k]-dt);for(const k in rbuf)rbuf[k]=Math.max(0,rbuf[k]-dt);
+  for(const k in buf)buf[k]=Math.max(0,buf[k]-dt);for(const k in rbuf)rbuf[k]=Math.max(0,rbuf[k]-dt);for(const k in hbuf)hbuf[k]=Math.max(0,hbuf[k]-dt);
   // fx always advance
   for(const e of fx){e.t+=dt;if(e.vx!==undefined){e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.k==='p')e.vy+=600*dt}} fx=fx.filter(e=>e.t<e.d);
   shake*=Math.pow(.002,dt);flash=Math.max(0,flash-dt);if(msg){msg.t+=dt;if(msg.t>msg.dur)msg=null}
@@ -28,7 +28,9 @@ function update(dt){
     if(pt>1.5&&pt-dt<=1.5){for(const f of[P,C])if(f.winner&&f.st!=='ko'){setSt(f,'win');if(!(f.wins>=2&&WIN_CEREMONY.includes(f.ch)))voice(f,'win');f.vx=0;if(f.hp>=CH[f.ch].hp)say('PERFECT',1.2)}}
     if(pt>3.3){ setMusicGain(.5); if(P.wins>=2||C.wins>=2){result(P.wins>C.wins);return} round++;startRound();return } }
   // inputs
-  const I=P.inp;I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;I.g=buf.g>0?1:0;
+  const I=P.inp;
+  if(net&&net.host){hostInput();I.l=hh.l;I.r=hh.r;I.up=hh.up;I.down=hh.down;I.p=hbuf.p>0?1:0;I.k=hbuf.k>0?1:0;I.s=hbuf.s>0?1:0;I.t=hbuf.t>0?1:0;I.g=hbuf.g>0?1:0}
+  else{I.l=held.l;I.r=held.r;I.up=held.up;I.down=held.down;I.p=buf.p>0?1:0;I.k=buf.k>0?1:0;I.s=buf.s>0?1:0;I.t=buf.t>0?1:0;I.g=buf.g>0?1:0}
   if(net){const J=C.inp;J.l=rh.l;J.r=rh.r;J.up=rh.up;J.down=rh.down;J.p=rbuf.p>0?1:0;J.k=rbuf.k>0?1:0;J.s=rbuf.s>0?1:0;J.t=rbuf.t>0?1:0;J.g=rbuf.g>0?1:0}
   else if(phase==='fight'&&!practice)think(C,P,sdt);else{const J=C.inp;J.l=J.r=J.up=J.down=J.gd=J.p=J.k=J.s=J.t=J.g=J.q=0}
   stepF(P,C,sdt);stepF(C,P,sdt);

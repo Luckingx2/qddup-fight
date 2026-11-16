@@ -183,11 +183,3 @@
 @media (max-width:650px) and (orientation:portrait) {
   #sVs .stages {grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-/* 가로로 눕힌 휴대폰: 예전 선택 화면용 규칙(style.css)이 남아 새 틀이 접히던 문제 */
-@media (orientation:landscape) and (max-height:500px) {
-  #sSel.show {display:flex}
-  #sSel {flex-flow:column nowrap;align-content:normal;justify-content:center;gap:0}
-  #sSel .select-shell {flex:0 0 auto;width:min(100vw,calc(100dvh * 16 / 9))}
-  #sSel .cards {grid-area:auto;align-self:auto;width:100%;max-width:none;gap:var(--gap)}
-  #sSel #best {grid-area:auto}
-}

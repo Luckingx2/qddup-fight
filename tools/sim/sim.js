@@ -1,4 +1,4 @@
-// 브라우저 없이 전투 로직만 돌리는 도구: node sim.js <게임폴더> <시험파일>
+// 브라우저 없이 전투 로직만 돌리는 도구: node sim.js <게임폴더> <시험파일...>  (보통은 저장소 루트에서 npm test)
 const fs=require('fs'),vm=require('vm'),root=process.argv[2];
 const any=()=>new Proxy(function(){},{get:(t,k)=>k===Symbol.toPrimitive?()=>0:k==='then'?undefined:k==='length'?0:any(),apply:()=>any(),construct:()=>any(),set:()=>true});
 const base={console,Math,JSON,Object,Array,String,Number,Boolean,Date,Map,Set,WeakSet,WeakMap,Promise,Symbol,Error,parseInt,parseFloat,isNaN,Infinity,NaN,URLSearchParams,process,
@@ -9,5 +9,5 @@ const ctx=new Proxy(base,{has:()=>true,get:(t,k)=>k in t?t[k]:(k===Symbol.unscop
 base.window=ctx;base.globalThis=ctx;base.document=any();
 vm.createContext(ctx);
 let src='';for(const f of['data','fight','ai','update'])src+=fs.readFileSync(root+'/js/'+f+'.js','utf8').replace("'use strict';",'')+'\n;';
-src+=fs.readFileSync(process.argv[3],'utf8');
+for(const f of process.argv.slice(3))src+=fs.readFileSync(f,'utf8')+'\n;';
 vm.runInContext(src,ctx,{filename:'game'});

@@ -1,1 +1,6 @@
-{"scripts":{"dev":"node dev-server.cjs"}}
+{
+  "scripts": {
+    "dev": "node dev-server.cjs",
+    "test": "node tools/sim/sim.js . tools/sim/base.js tools/sim/test_cmd.js"
+  }
+}

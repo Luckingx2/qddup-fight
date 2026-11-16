@@ -5,16 +5,11 @@ addEventListener('resize',fit);
 let last=0,acc=0;
 function loop(ts){const tm=ts/1000;let dt=Math.min(.1,tm-last);last=tm;acc+=dt;let n=0;while(acc>=1/120&&n<12){update(1/120);acc-=1/120;n++}if(net&&net.host&&net.ok&&mode==='fight'&&P){net.acc=(net.acc||0)+dt;if(net.acc>=1/30){net.acc=0;netSnap()}}render(tm);requestAnimationFrame(loop)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(AC)AC.suspend();if(bgm)bgA.pause()}else{if(AC)AC.resume();if(bgm)resumeBgm();last=performance.now()/1000;acc=0}});
-window.__bg=()=>bgA?{t:bgA.currentTime,paused:bgA.paused,err:!!bgA.error,routed:!!bgSrc,gain:musG?musG.gain.value:null}:null;
-window.__g={get net(){return net},get s(){return{mode,phase,P,C,stage,pick,opp,streak,timer,round}},update,held,buf,set level(v){level=v}};
 (async function(){
   const fontsP=Promise.all(["20px 'Pretendard'","20px 'Bungee'","20px 'IBM Plex Sans KR'","600 20px 'IBM Plex Sans KR'"].map(f=>document.fonts.load(f,'가A'))).catch(()=>{});
   loadTotal+=250000;fontsP.then(()=>{loadDone+=250000;loadProgress()});
   const jobs=ORDER.map(k=>loadImg(k+'_face',av('assets/faces/'+k+'_face.webp')));
-  for(const k of [...Object.keys(FAMILIES),...ORDER.filter(k=>!FAMILIES[k])])jobs.push(loadImg(k,av('assets/characters/'+k+'.webp'),45000,SHEET_SCALE));
-  jobs.push(loadImg('D',av('assets/characters/D.webp'),45000,SHEET_SCALE),loadImg('D_face',av('assets/faces/D_face.webp')));
-  jobs.push(loadImg('ostrichR',av('assets/characters/ostrich-r.webp'),45000));
-  for(const s of STAGES){BG_WANT[s.id]=1;jobs.push(loadImg('bg_'+s.id,av('assets/backgrounds/bg_'+s.id+'.webp'),45000))}
+  jobs.push(loadImg('D_face',av('assets/faces/D_face.webp')));
   await Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,90000))]);
   await Promise.race([fontsP,new Promise(r=>setTimeout(r,3000))]);
   loadDone=loadTotal;loadProgress();for(let i=0;i<80&&loadShown<99.9;i++)await new Promise(r=>setTimeout(r,25));await new Promise(r=>setTimeout(r,150));
