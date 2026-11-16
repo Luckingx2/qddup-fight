@@ -28,6 +28,8 @@ function dust(x){for(let i=0;i<8;i++)fx.push({k:'p',x:x+(Math.random()-.5)*80,y:
 let zone=null,flood=null;
 // 연속 피격 보호: 타수마다 피해 감소, 한도를 넘으면 맞던 쪽이 무적으로 튕겨 나감, 경직·다운이 풀린 직후 잠깐 무적
 const COMBO={step:.1,floor:.6,limit:.3,window:2,wake:.3};
+// 필살기·태그기 피해 전체 배율 (1이면 예전 그대로)
+const SPECIAL_POWER=.8;
 function breakAway(f,o){
   o.pr=0;o.brk=0;if(o.hp<=0||o.st==='ko')return;
   setSt(o,'kd');o.stun=.7;o.down=false;o.vy=430;o.y=Math.max(o.y,.01);o.vx=(o.x>=f.x?1:-1)*620;o.lock=1;o.inv=1.3;
@@ -36,7 +38,7 @@ function breakAway(f,o){
   fx.push({k:'d',x:o.x,y:GROUND-o.y-330,t:0,d:1,txt:'탈출!'});shake=Math.max(shake,10)}
 function applyHit(f,o,a){
   if(o.lock===1&&!a.pj||o.st==='charge'||o.inv>0)return;
-  let damage=a.dmg*(a.sp?CH[f.ch].special:1);
+  let damage=a.dmg*(a.sp?CH[f.ch].special*SPECIAL_POWER:1);
   const hx=(f.x+o.x)/2+f.face*20,hy=GROUND-o.y-(a.hy||130);
   if(o.st==='guard'&&o.y<=0&&o.face===-f.face&&!a.ub){
     o.hp=Math.max(1,o.hp-damage*(a.sp?.28:.1)*CH[o.ch].guard);o.vx=f.face*a.push*.45;o.t=Math.min(o.t,.05);o.stun=.14;
