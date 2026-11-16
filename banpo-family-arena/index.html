@@ -21,23 +21,28 @@ canvas{width:100%;height:100%;display:block}
 @media (pointer:coarse){#pad{display:block}#keys{display:none}}
 .pb{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bungee',sans-serif;color:#fff;border:2px solid rgba(255,255,255,.75);background:rgba(20,18,50,.55);box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 0 18px rgba(255,255,255,.12);touch-action:none}
 .pb.on{background:rgba(255,255,255,.85);color:#15132e;transform:scale(.94)}
-#dpad{width:var(--d);height:var(--d);left:var(--mx);bottom:var(--my)}
-#dpad i{position:absolute;font-style:normal;font-size:calc(var(--d)*.17);opacity:.9}
-#dpad .u{top:6%}#dpad .dn{bottom:6%}#dpad .l{left:8%}#dpad .r{right:8%}
-#dpad .dn,#dpad .u{font-family:'Black Han Sans',sans-serif;font-size:calc(var(--d)*.12)}
-#knob{position:absolute;width:38%;height:38%;border-radius:50%;background:var(--holo);opacity:.9;left:31%;top:31%;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+#dpad{width:var(--d);height:var(--d);left:var(--mx);bottom:var(--my);pointer-events:auto;color:#faf9ff;border-color:#faf9ffe0;background:radial-gradient(circle at 50% 45%,#201a34 0%,#151324 53%,#0c0b18 100%);box-shadow:inset 0 0 17px #a9a0e52b,0 3px 10px #0006}
+#dpad .direction{position:absolute;width:12%;height:10%;background:currentColor;clip-path:polygon(50% 0,100% 100%,0 100%);pointer-events:none}
+#dpad .direction.active{color:#a9efff;filter:drop-shadow(0 0 3px #92e8ff)}
+#dpad [data-dir="up"]{left:44%;top:8%}
+#dpad [data-dir="down"]{left:44%;bottom:8%;transform:rotate(180deg)}
+#dpad [data-dir="l"]{left:8%;top:45%;transform:rotate(-90deg)}
+#dpad [data-dir="r"]{right:8%;top:45%;transform:rotate(90deg)}
+#knob{position:absolute;width:37%;height:37%;left:31.5%;top:31.5%;border-radius:50%;background:linear-gradient(105deg,#8edcf0,#bba3ed 35%,#e2a7cb 60%,#f4e0a1 86%,#a7e9cb);pointer-events:none;box-shadow:0 2px 9px #090712a8;transform:translate(var(--stick-x,0px),var(--stick-y,0px));transition:transform .1s ease-out}
+#dpad.dragging #knob{transition:none}
+@media (prefers-reduced-motion:reduce){#knob{transition:none}}
 #bP{width:var(--b);height:var(--b);right:calc(var(--mx) + var(--b)*1.08);bottom:var(--my);font-size:calc(var(--b)*.36)}
 #bK{width:var(--b);height:var(--b);right:var(--mx);bottom:calc(var(--my) + var(--b)*.62);font-size:calc(var(--b)*.36)}
-#bS{width:calc(var(--b)*.9);height:calc(var(--b)*.9);right:calc(var(--mx) + var(--b)*.75);bottom:calc(var(--my) + var(--b)*1.2);font-size:calc(var(--b)*.2);font-family:'Black Han Sans',sans-serif;opacity:.45}
+#bS{width:calc(var(--b)*.9);height:calc(var(--b)*.9);right:calc(var(--mx) + var(--b)*.75);bottom:calc(var(--my) + var(--b)*1.42);font-size:calc(var(--b)*.2);font-family:'Black Han Sans',sans-serif;opacity:.45}
 #bS.rdy{opacity:1;border-color:#fff;background:var(--holo);color:#15132e;animation:pulse .7s infinite alternate}
 @keyframes pulse{to{box-shadow:0 0 26px #ffb3e1,0 0 8px #8ef6ff}}
 #hint{position:absolute;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--dim);line-height:1.6;pointer-events:none}
 @media (orientation:portrait){
   #app{justify-content:flex-start;padding-top:env(safe-area-inset-top)}
-  #pad{position:relative;flex:1;width:100%;--d:min(42vw,190px);--b:min(21vw,96px);--mx:5vw;--my:max(26%,90px)}
+  #pad{position:relative;flex:1;width:100%;--d:min(42vw,190px,34dvh);--b:min(21vw,96px,17dvh);--mx:5vw;--my:clamp(58px,25%,140px)}
 }
 @media (orientation:landscape){
-  #pad{position:absolute;inset:0;pointer-events:none;--d:min(30vh,150px);--b:min(17vh,84px);--mx:max(14px,env(safe-area-inset-left));--my:14px}
+  #pad{position:absolute;inset:0;pointer-events:none;--d:clamp(102px,30dvh,150px);--b:min(17vh,84px);--mx:max(14px,env(safe-area-inset-left));--my:14px}
   #pad .pb{pointer-events:auto;opacity:.72}#pad #bS{opacity:.4}#pad #bS.rdy{opacity:1}
   #hint{display:none}
 }
@@ -145,15 +150,6 @@ canvas{width:100%;height:100%;display:block}
 @media(max-height:530px) and (min-width:641px){#sSel{padding-top:48px}.fighter-stage{min-height:265px}#fighterName{font-size:64px}}
 
 @media (any-pointer:coarse){#pad{display:block}#keys{display:none}}
-#dpad{position:absolute;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;pointer-events:none}
-#dpad .pb{position:static;min-width:35px;min-height:35px;border-radius:10px;font:700 clamp(10px,2.65vw,15px) system-ui;white-space:nowrap;padding:0 2px}
-#dpad .pb{pointer-events:auto}
-#dpad [data-dir="l"]{grid-area:2/1}
-#dpad [data-dir="r"]{grid-area:2/3}
-#dpad [data-dir="up"]{grid-area:1/2}
-#dpad [data-dir="down"]{grid-area:3/2}
-@media (orientation:landscape){#dpad{width:max(114px,var(--d));height:max(114px,var(--d))}}
-
 .title-actions .ghost{background:#151726d9;color:#fff2d7;border-color:#f0c998}
 .online-panel{width:min(100%,420px);padding:25px;border:1px solid #726686;border-radius:18px;background:#1a1c31;box-shadow:0 18px 56px #060612a8}
 .online-panel h1{margin:0 0 22px;font-size:clamp(31px,7vw,48px);color:#ffedc7;letter-spacing:-.06em}
@@ -177,16 +173,17 @@ body.online-match #practice{display:none}
 <div id="app">
   <div id="stage"><canvas id="cv" width="960" height="540"></canvas><div id="cut"><span id="cutH">공격 버튼 = 건너뛰기</span></div><div id="keys">이동 ←→ / A D · 점프 ↑ / W · 앉기 ↓ / S (＋펀치/킥으로 앉아 공격) · 펀치 Z / J · 킥 X / K · 필살기 C / L · 커맨드 펀치 → 펀치 → 킥</div></div>
   <div id="pad">
-    <div id="dpad" role="group" aria-label="이동, 점프, 앉기">
-      <button type="button" class="pb" data-dir="l" aria-label="왼쪽 이동">◀</button>
-      <button type="button" class="pb" data-dir="r" aria-label="오른쪽 이동">▶</button>
-      <button type="button" class="pb" data-dir="up" aria-label="점프">↑ 점프</button>
-      <button type="button" class="pb" data-dir="down" aria-label="앉기 및 가드">↓ 앉기</button>
+    <div id="dpad" class="pb" role="group" aria-label="조이스틱. 좌우 이동, 위로 점프, 아래로 앉기">
+      <i class="direction" data-dir="l" aria-hidden="true"></i>
+      <i class="direction" data-dir="r" aria-hidden="true"></i>
+      <i class="direction" data-dir="up" aria-hidden="true"></i>
+      <i class="direction" data-dir="down" aria-hidden="true"></i>
+      <span id="knob" aria-hidden="true"></span>
     </div>
     <div id="bP" class="pb" data-k="p">P</div>
     <div id="bK" class="pb" data-k="k">K</div>
     <div id="bS" class="pb" data-k="s">필살</div>
-    <div id="hint">왼쪽 버튼으로 이동 · 점프 · 앉기<br>앉기 + P/K · 앉아 공격<br>P → P → K · 고유 기술</div>
+    <div id="hint">왼쪽 조이스틱으로 이동 · 점프 · 앉기<br>앉기 + P/K · 앉아 공격<br>P → P → K · 고유 기술</div>
   </div>
 </div>
 <button id="snd" aria-label="소리 켜기/끄기">♪ON</button>
@@ -502,23 +499,56 @@ document.querySelectorAll('.pb[data-k]').forEach(b=>{
   addEventListener('blur',()=>{pointers.clear();b.classList.remove('on')});
 });
 const touchHeld={l:0,r:0,up:0,down:0};
-document.querySelectorAll('#dpad [data-dir]').forEach(button=>{
-  const direction=button.dataset.dir,pointers=new Set();
-  button.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='mouse'&&e.button!==0)return;
-    e.preventDefault();initAudio();
-    pointers.add(e.pointerId);
-    try{button.setPointerCapture(e.pointerId)}catch(_){}
-    touchHeld[direction]=1;
-    bufferDirection(direction);
-    button.classList.add('on');
-  });
-  for(const event of pointerEndEvents)button.addEventListener(event,e=>{
-    pointers.delete(e.pointerId);
-    if(!pointers.size){touchHeld[direction]=0;button.classList.remove('on')}
-  });
-  addEventListener('blur',()=>{pointers.clear();touchHeld[direction]=0;button.classList.remove('on')});
+const stick=$('dpad'),stickKnob=$('knob');
+const directionArrows=stick.querySelectorAll('[data-dir]');
+let stickPointer=null;
+
+function updateStick(event){
+  const rect=stick.getBoundingClientRect(),radius=rect.width/2;
+  if(radius<=0)return;
+  const x=event.clientX-rect.left-radius,y=event.clientY-rect.top-radius;
+  const distance=Math.hypot(x,y),travel=radius*.29;
+  const scale=distance===0?0:Math.min(distance/radius,travel/distance);
+  stickKnob.style.setProperty('--stick-x',x*scale+'px');
+  stickKnob.style.setProperty('--stick-y',y*scale+'px');
+  const deadZone=radius*.18;
+  // Allow diagonals only when both axes contribute meaningfully.
+  const horizontal=Math.abs(x)>Math.max(deadZone,Math.abs(y)*.55);
+  const vertical=Math.abs(y)>Math.max(deadZone,Math.abs(x)*.55);
+  const next={l:horizontal&&x<0,r:horizontal&&x>0,up:vertical&&y<0,down:vertical&&y>0};
+  for(const direction of Object.keys(touchHeld)){
+    if((direction==='up'||direction==='down')&&next[direction]&&!touchHeld[direction])bufferDirection(direction);
+    touchHeld[direction]=+next[direction];
+  }
+  for(const arrow of directionArrows)arrow.classList.toggle('active',!!touchHeld[arrow.dataset.dir]);
+}
+
+function resetStick(){
+  stickPointer=null;
+  stick.classList.remove('dragging');
+  stickKnob.style.setProperty('--stick-x','0px');
+  stickKnob.style.setProperty('--stick-y','0px');
+  for(const direction of Object.keys(touchHeld))touchHeld[direction]=0;
+  for(const arrow of directionArrows)arrow.classList.remove('active');
+}
+
+stick.addEventListener('pointerdown',event=>{
+  if(stickPointer!==null||(event.pointerType==='mouse'&&event.button!==0))return;
+  event.preventDefault();
+  initAudio();
+  stickPointer=event.pointerId;
+  stick.classList.add('dragging');
+  try{stick.setPointerCapture(stickPointer)}catch(_){}
+  updateStick(event);
 });
+stick.addEventListener('pointermove',event=>{
+  if(event.pointerId===stickPointer)updateStick(event);
+});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])window.addEventListener(type,event=>{
+  if(event.pointerId===stickPointer)resetStick();
+});
+addEventListener('blur',resetStick);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetStick()});
 addEventListener('blur',()=>{for(const k in held)held[k]=0;for(const k in buf)buf[k]=0;punchCount=commandTime=0});
 addEventListener('contextmenu',e=>e.preventDefault());
 
