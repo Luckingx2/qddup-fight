@@ -37,7 +37,7 @@ function syncCharacterPicker(){
   if(!canPickCharacter(pick))pick=null;
   document.querySelectorAll('#cards [data-c]').forEach(card=>{
     card.classList.toggle('roster-slot-hidden',!canPickCharacter(card.dataset.c));
-    const selected=card.dataset.c===BASE_CHARACTER[pick];
+    const selected=card.dataset.c===pick;
     card.classList.toggle('sel',selected);
     card.setAttribute('aria-pressed',String(selected));
   });
@@ -67,7 +67,8 @@ function syncCharacterPicker(){
   if(opponent)portrait.src=av('assets/ui/roster/'+opponent+'.webp');
   const variants=$('selectVariants');
   const family=FAMILIES[BASE_CHARACTER[pick]]||[];
-  variants.hidden=family.length<2;
+  variants.hidden=true;
+  if(variants.hidden)return;
   variants.replaceChildren();
   for(const id of family){
     const button=document.createElement('button');
@@ -80,7 +81,7 @@ function syncCharacterPicker(){
   }
 }
 function buildSelect(){
-  $('cards').innerHTML=Object.keys(FAMILIES).map(k=>`<button type="button" class="card" data-c="${k}" aria-pressed="false" style="--fighter-color:${CH[k].col}"><img src="${av(`assets/faces/${k}_face.webp`)}" alt=""><b>${CH[k].name}</b></button>`).join('');
+  $('cards').innerHTML=ORDER.map((k,i)=>`${i&&i%4===0&&i<12?'<i class="card-break" aria-hidden="true"></i>':''}<button type="button" class="card" data-c="${k}" aria-pressed="false" style="--fighter-color:${CH[k].col}"><img src="${av(`assets/faces/${k}_face.webp`)}" alt=""><b>${CH[k].name}</b></button>`).join('');
   $('cards').querySelectorAll('.card').forEach(card=>card.onclick=()=>{initAudio();playBgm('menu');sfx.sel();chooseCharacter(card.dataset.c)});
   $('stages').innerHTML=STAGES.map(s=>`<div class="stg" data-s="${s.id}"><img src="${av(`assets/thumbnails/th_${s.id}.jpg`)}" alt=""><span>${s.name}</span></div>`).join('');
   $('go').onclick=()=>{initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else if(practice)startPractice();else roulette()};

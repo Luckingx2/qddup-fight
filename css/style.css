@@ -349,3 +349,4 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 @media (orientation:portrait){#menuArt::before{inset:0;animation:menuPan 32s ease-in-out infinite alternate}}
 @keyframes menuPan{from{background-position:6% 50%}to{background-position:94% 50%}}
 @media (prefers-reduced-motion:reduce){#menuArt::before{animation:none}}
+.logo .qofa-logo{display:block;height:1.55em;width:auto;max-width:92vw;margin:0 auto;object-fit:contain}

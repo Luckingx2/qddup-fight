@@ -26,7 +26,9 @@
   min-height:0;
 }
 .select-header {padding-top:1.25%;align-items:start}
-.select-logo {text-align:center;align-self:center;transform:skew(-7deg);display:grid;gap:.1em}
+.select-logo {text-align:center;align-self:center;display:grid;gap:.1em}
+.select-logo img {height:6.2cqw;width:auto;justify-self:center}
+.select-logo h1 {transform:skew(-7deg)}
 .select-logo span {
   font:400 7.1cqw/.93 'Black Han Sans',sans-serif;
   letter-spacing:-.075em;
@@ -36,7 +38,7 @@
 .select-logo h1 {
   font:700 1.83cqw/1.12 'IBM Plex Sans KR',sans-serif;
   letter-spacing:.18em;
-  margin:.55em 0 0;
+  margin:.2em 0 0;
   color:#e7edff;
 }
 .preview-caption,.opponent-caption {
@@ -79,17 +81,19 @@
   width:100%;height:100%;max-width:none;gap:var(--gap);
 }
 #sSel .card {
-  flex:0 0 calc((100% - var(--gap) * 3) / 4);height:72%;
+  flex:0 0 calc((100% - var(--gap) * 4) / 5);height:calc((100% - var(--gap) * 2) / 3);
   position:relative;min-width:0;min-height:0;isolation:isolate;
   border:1px solid #6b9bcc;border-radius:.55cqw;
   background:linear-gradient(0deg,#0b1d44,#1e5591);
   box-shadow:inset 0 0 .6cqw #52d9ff53,0 .14cqw .38cqw #0009;
 }
+#sSel .card-break {flex:0 0 100%;height:0;margin-top:calc(var(--gap) * -1)}
 #sSel .card:nth-child(n+5) {
   border-color:#d07591;background:linear-gradient(0deg,#36112b,#8f3053);
   box-shadow:inset 0 0 .6cqw #ff689a59,0 .14cqw .38cqw #0009;
 }
 #sSel .card img {
+  position:absolute;inset:0;
   width:100%;height:100%;object-fit:cover;object-position:50% 36%!important;aspect-ratio:auto!important;
 }
 #sSel .card b {
@@ -138,6 +142,7 @@
   .select-header {grid-template-columns:21% 58% 21%;align-items:end;padding-bottom:2%}
   .select-body,.select-footer {grid-template-columns:16% 68% 16%}
   .select-logo span {font-size:10cqw}
+  .select-logo img {height:10.5cqw}
   .select-logo h1 {font-size:2.7cqw}
   .preview-caption,.opponent-caption {font-size:2.8cqw}
   #sSel #pvN,.opponent-caption strong {font-size:3.5cqw}
@@ -177,4 +182,12 @@
 #sVs .stg span {font-size:clamp(8px,1.5vmin,11px)}
 @media (max-width:650px) and (orientation:portrait) {
   #sVs .stages {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+/* 가로로 눕힌 휴대폰: 예전 선택 화면용 규칙(style.css)이 남아 새 틀이 접히던 문제 */
+@media (orientation:landscape) and (max-height:500px) {
+  #sSel.show {display:flex}
+  #sSel {flex-flow:column nowrap;align-content:normal;justify-content:center;gap:0}
+  #sSel .select-shell {flex:0 0 auto;width:min(100vw,calc(100dvh * 16 / 9))}
+  #sSel .cards {grid-area:auto;align-self:auto;width:100%;max-width:none;gap:var(--gap)}
+  #sSel #best {grid-area:auto}
 }

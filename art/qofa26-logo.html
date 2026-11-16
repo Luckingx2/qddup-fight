@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:BHS;src:url(../qddup-fight/assets/fonts/BlackHanSans.woff2)}
+@font-face{font-family:BNG;src:url(../qddup-fight/assets/fonts/Bungee.woff2)}
+html,body{margin:0;background:transparent}svg{display:block}
+</style></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="520" viewBox="-50 0 1280 520">
+<defs>
+ <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6b0"/><stop offset=".32" stop-color="#ffd23a"/><stop offset=".62" stop-color="#ff8a1e"/><stop offset="1" stop-color="#e5261f"/></linearGradient>
+ <linearGradient id="ice" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9fbff"/><stop offset=".5" stop-color="#6fd6ff"/><stop offset="1" stop-color="#2a6bff"/></linearGradient>
+ <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a6bff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#e5261f"/></linearGradient>
+ <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14" result="b"/><feColorMatrix in="b" values="1 0 0 0 1  0 .5 0 0 .35  0 0 .2 0 .05  0 0 0 .75 0"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <clipPath id="top"><rect x="0" y="0" width="1200" height="236"/></clipPath>
+</defs>
+<g transform="translate(600 0) skewX(-10) translate(-600 0)" filter="url(#glow)">
+ <!-- 번개 모양 밑줄 -->
+ <path d="M70 392 L770 392 L748 420 L1010 420 L986 452 L250 452 L272 424 L48 424 Z" fill="#10112e" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M84 400 L752 400 L742 414 L88 414 Z" fill="url(#bar)"/>
+ <!-- 큐오파 -->
+ <g font-family="BHS" font-size="330" text-anchor="middle" letter-spacing="-6">
+  <text x="470" y="352" fill="none" stroke="#fff" stroke-width="40" stroke-linejoin="round">큐오파</text>
+  <text x="470" y="352" fill="none" stroke="#12102e" stroke-width="26" stroke-linejoin="round">큐오파</text>
+  <text x="470" y="352" fill="url(#fire)">큐오파</text>
+  <text x="470" y="352" fill="#fff" opacity=".28" clip-path="url(#top)">큐오파</text>
+ </g>
+ <!-- '26 -->
+ <g transform="translate(990 300) rotate(-8)">
+  <path d="M-150 -92 L150 -92 L128 92 L-172 92 Z" fill="#12102e" stroke="#fff" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M-134 -76 L132 -76 L114 76 L-152 76 Z" fill="#e5261f"/>
+  <text x="-12" y="52" font-family="BNG" font-size="150" text-anchor="middle" fill="#12102e" transform="translate(6 6)">'26</text>
+  <text x="-12" y="52" font-family="BNG" font-size="150" text-anchor="middle" fill="url(#ice)" stroke="#fff" stroke-width="3">'26</text>
+ </g>
+</g>
+</svg></body></html>
