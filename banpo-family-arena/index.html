@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>반포 가족대전</title>
-<meta name="description" content="반포 클레이 캐릭터 다섯 명의 1인용 아케이드 대전.">
+<meta name="description" content="반포 클레이 캐릭터 네 명의 아케이드 대전.">
 
 
 <style>
@@ -18,7 +18,9 @@ canvas{width:100%;height:100%;display:block}
 #cut{position:absolute;inset:0;display:none;background:#000;z-index:5}#cut.on{display:block}#cut video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}#cut video.on{display:block}#cut video.flip{transform:scaleX(-1)}
 #cutH{position:absolute;right:10px;bottom:8px;z-index:2;font-size:11px;color:#fff;opacity:.8;text-shadow:0 1px 3px #000;pointer-events:none}
 #keys{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:#fff;opacity:.75;text-shadow:0 1px 3px #000;pointer-events:none}
-@media (pointer:coarse){#pad{display:block}#keys{display:none}}
+@media (any-pointer:coarse), (max-width:740px){#pad{display:block}#keys{display:none}}
+:root.touch-controls #pad{display:block}
+:root.touch-controls #keys{display:none}
 .pb{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bungee',sans-serif;color:#fff;border:2px solid rgba(255,255,255,.75);background:rgba(20,18,50,.55);box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 0 18px rgba(255,255,255,.12);touch-action:none}
 .pb.on{background:rgba(255,255,255,.85);color:#15132e;transform:scale(.94)}
 #dpad{width:var(--d);height:var(--d);left:var(--mx);bottom:var(--my);pointer-events:auto;color:#faf9ff;border-color:#faf9ffe0;background:radial-gradient(circle at 50% 45%,#201a34 0%,#151324 53%,#0c0b18 100%);box-shadow:inset 0 0 17px #a9a0e52b,0 3px 10px #0006}
@@ -149,7 +151,6 @@ canvas{width:100%;height:100%;display:block}
 }
 @media(max-height:530px) and (min-width:641px){#sSel{padding-top:48px}.fighter-stage{min-height:265px}#fighterName{font-size:64px}}
 
-@media (any-pointer:coarse){#pad{display:block}#keys{display:none}}
 .title-actions .ghost{background:#151726d9;color:#fff2d7;border-color:#f0c998}
 .online-panel{width:min(100%,420px);padding:25px;border:1px solid #726686;border-radius:18px;background:#1a1c31;box-shadow:0 18px 56px #060612a8}
 .online-panel h1{margin:0 0 22px;font-size:clamp(31px,7vw,48px);color:#ffedc7;letter-spacing:-.06em}
@@ -482,6 +483,9 @@ addEventListener('keydown',e=>{const k=KM[e.code];if(!k||mode!=='fight')return;e
 addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k in held)held[k]=0});
 // Consume Safari's browser tap on the pad separately from the game pointer input.
 const pad=$('pad');
+if(new URLSearchParams(location.search).get('controls')==='touch'||navigator.maxTouchPoints>0){
+  document.documentElement.classList.add('touch-controls');
+}
 function cancelPadGesture(e){if(e.cancelable&&e.target.closest('.pb'))e.preventDefault()}
 for(const event of ['touchend','gesturestart','dblclick'])pad.addEventListener(event,cancelPadGesture,{passive:false});
 const pointerEndEvents=['pointerup','pointercancel','lostpointercapture','pointerleave'];
