@@ -12,7 +12,7 @@ function frameOf(f){
   if(s==='held')return'hit';
   if(s==='ko'||s==='kd')return f.down?'ko':'hit';
   if(s==='rec')return'idle';
-  if(s==='cmd'){const b=f.cm;if(cmdArt(f))return b==='R'?(f.t<.2?'cmd0':'cmd1'):b==='W'?(f.t<.26?'cmd0':'cmd1'):b==='E'?(f.t<.1?'cmd0':'cmd1'):(f.t<.04?'cmd0':f.t>.54?'idle':Math.floor((f.t-.04)/.05)%2?'cmd0':'cmd1');return b==='R'?(f.t<.2?'charge':'punch'):b==='W'?(f.t<.26?'charge':'punch'):b==='E'?(f.t<.1?'charge':'punch'):(f.t<.04||f.t>.5?'idle':Math.floor(f.t/.05)%2?'idle':'punch')}
+  if(s==='cmd'){const b=f.cm;if(cmdArt(f)){const t=f.t,m=(a,z)=>t<a?'cmd0':t<z?'cmd2':'cmd1';if(b==='R')return m(.12,.2);if(b==='W')return m(.18,.26);if(b==='E')return m(.06,.12);const p=((t-.02)/.1)%1;return t<.08?'cmd0':t<.12?'cmd2':t>.56?'idle':p<.35?'cmd1':p<.55?'cmd2':p<.8?'cmd0':'cmd2'}return b==='R'?(f.t<.2?'charge':'punch'):b==='W'?(f.t<.26?'charge':'punch'):b==='E'?(f.t<.1?'charge':'punch'):(f.t<.04||f.t>.5?'idle':Math.floor(f.t/.05)%2?'idle':'punch')}
   if(s==='fin')return finFrame(f)||finisherOf(f).frame;
   if(s==='crouch')return'crouch';
   if(s==='cpunch')return f.t<.04?'crouch':'cpunch';
