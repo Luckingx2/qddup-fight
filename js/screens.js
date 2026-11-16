@@ -82,12 +82,6 @@ function syncCharacterPicker(){
 function buildSelect(){
   $('cards').innerHTML=Object.keys(FAMILIES).map(k=>`<button type="button" class="card" data-c="${k}" aria-pressed="false" style="--fighter-color:${CH[k].col}"><img src="${av(`assets/faces/${k}_face.webp`)}" alt=""><b>${CH[k].name}</b></button>`).join('');
   $('cards').querySelectorAll('.card').forEach(card=>card.onclick=()=>{initAudio();playBgm('menu');sfx.sel();chooseCharacter(card.dataset.c)});
-  const random=document.createElement('button');
-  random.type='button';
-  random.className='card random-card';
-  random.innerHTML='<span aria-hidden="true">?</span><b>랜덤</b>';
-  random.onclick=()=>{const bases=Object.keys(FAMILIES).filter(id=>canPickCharacter(id));sfx.sel();chooseCharacter(bases[Math.floor(Math.random()*bases.length)])};
-  $('cards').appendChild(random);
   $('stages').innerHTML=STAGES.map(s=>`<div class="stg" data-s="${s.id}"><img src="${av(`assets/thumbnails/th_${s.id}.jpg`)}" alt=""><span>${s.name}</span></div>`).join('');
   $('go').onclick=()=>{initAudio();unlockVids();streak=0;if(net){if(!net.ok||!canPickCharacter(pick))return;net.pk=pick;syncCharacterPicker();netSend({t:'pick',c:pick});$('go').disabled=true;$('go').textContent='상대를 기다리는 중';netTry()}else if(practice)startPractice();else roulette()};
   $('best').textContent=best?('최고 연승 '+best):'상대와 스테이지는 주사위로 정해집니다';
