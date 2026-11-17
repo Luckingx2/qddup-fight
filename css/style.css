@@ -12,8 +12,6 @@ canvas{width:100%;height:100%;display:block}
 .btn,.card,#snd{touch-action:manipulation}
 #pad{display:none}
 #cut{position:absolute;inset:0;display:none;background:#000;z-index:5}#cut.on{display:block}#cut video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}#cut video.on{display:block}#cut video.flip{transform:scaleX(-1)}
-#cutT{position:absolute;left:0;right:0;top:50%;z-index:3;text-align:center;font-family:'Pretendard',sans-serif;font-size:min(15vw,26dvh);line-height:1;color:#fff;-webkit-text-stroke:.05em #ff2d55;text-shadow:0 .06em 0 #7a0020,0 0 .3em rgba(255,45,85,.8);opacity:0;transform:translateY(-50%) rotate(-6deg) scale(.2);transition:transform .2s cubic-bezier(.2,2.2,.4,1),opacity .1s;pointer-events:none}
-#cutT.on{opacity:1;transform:translateY(-50%) rotate(-6deg) scale(1)}
 #cutH{position:absolute;right:10px;bottom:8px;z-index:2;font-size:11px;color:#fff;opacity:.8;text-shadow:0 1px 3px #000;pointer-events:none}
 #keys{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:#fff;opacity:.75;text-shadow:0 1px 3px #000;pointer-events:none}
 @media (pointer:coarse){#pad{display:block}#keys{display:none}}
@@ -190,7 +188,6 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 .emoFace img{width:78%;height:78%;object-fit:contain}
 @media (orientation:portrait){#emoBar{left:5vw;top:14px;flex-direction:row}}
 @media (orientation:landscape){#emoBar{left:var(--mx);top:calc(12% + 6px);flex-direction:column}#emoBar .emo{width:42px;height:42px;font-size:21px}}
-.emoHelp{margin:-4px 0 0;font-size:12px;color:var(--dim)}
 .emoSlots{display:flex;gap:10px;justify-content:center}
 .emoSlot{position:relative;width:58px;height:58px;border-radius:50%;border:2px solid var(--line);background:rgba(21,19,46,.8);font-size:28px;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;cursor:pointer;padding:0}
 .emoSlot.on{border-color:#fff;box-shadow:0 0 0 3px rgba(201,166,255,.5)}
@@ -214,7 +211,6 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 #settingsPanel .emoPick{padding:5px 0 4px;font-size:22px}
 #settingsPanel .emoPick .emoFace{width:30px;height:30px}
 #settingsPanel .emoSlot{width:48px;height:48px;font-size:24px}
-#settingsPanel .emoHelp{font-size:11px}
 }
 .emoPop{position:absolute;top:17%;left:3.8%;width:14%;aspect-ratio:1;z-index:4;pointer-events:none;opacity:0;transform-origin:50% 100%;filter:drop-shadow(0 4px 8px rgba(0,0,0,.45))}
 .emoPop.right{left:auto;right:3.8%}
@@ -247,7 +243,6 @@ button,.btn,.card,.menuBtn{touch-action:manipulation;-webkit-tap-highlight-color
 #emoBar .emo:hover{opacity:1}
 }
 
-#netNotice{position:fixed;z-index:15;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);width:max-content;max-width:min(90vw,400px);border:1px solid #9865b9;background:#1d1635;color:#fff;padding:9px 12px;border-radius:10px;text-align:center;font-size:14px;pointer-events:none}
 
 .title-tools{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px}
 #titleVoice{font:inherit;font-size:.82rem;color:var(--txt);background:var(--pan);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}

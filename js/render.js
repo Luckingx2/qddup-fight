@@ -12,7 +12,7 @@ function frameOf(f){
   if(s==='held')return'hit';
   if(s==='ko'||s==='kd')return f.down?'ko':'hit';
   if(s==='rec')return'idle';
-  if(s==='cmd'){const b=f.cm;if(cmdArt(f)){const t=f.t,m=(a,z)=>t<a?'cmd0':t<z?'cmd2':'cmd1';if(b==='R')return m(.12,.2);if(b==='W')return m(.18,.26);if(b==='E')return m(.06,.12);const p=((t-.02)/.1)%1;return t<.08?'cmd0':t<.12?'cmd2':t>.56?'idle':p<.35?'cmd1':p<.55?'cmd2':p<.8?'cmd0':'cmd2'}return b==='R'?(f.t<.2?'charge':'punch'):b==='W'?(f.t<.26?'charge':'punch'):b==='E'?(f.t<.1?'charge':'punch'):(f.t<.04||f.t>.5?'idle':Math.floor(f.t/.05)%2?'idle':'punch')}
+  if(s==='cmd'){const b=f.cm,t=f.t,m=(a,z)=>t<a?'cmd0':t<z?'cmd2':'cmd1';if(b==='R')return m(.12,.2);if(b==='W')return m(.18,.26);if(b==='E')return m(.06,.12);const p=((t-.02)/.1)%1;return t<.08?'cmd0':t<.12?'cmd2':t>.56?'idle':p<.35?'cmd1':p<.55?'cmd2':p<.8?'cmd0':'cmd2'}
   if(s==='fin')return finFrame(f)||finisherOf(f).frame;
   if(s==='crouch')return'crouch';
   if(s==='cpunch')return f.t<.04?'crouch':'cpunch';
@@ -32,7 +32,7 @@ function frameOf(f){
     if(c==='Wb'&&v===0)return f.t<.22?'guard':'special';
     if(c==='Rd'&&v===0&&f.y>0)return f.vy>0?'jump':'kick';
     if(v===0)return c==='R'?(Math.floor(f.t/.1)%2?'charge':'special'):'special';
-    if(v===1)return'special2';if(c==='G')return'idle';if(c==='B')return'charge';if(c==='W')return'special';if(c==='E')return Math.floor(f.t/.08)%2?'punch':'kick';return'special2'}
+    if(v===1)return'special2';if(c==='W')return'special';if(c==='E')return Math.floor(f.t/.08)%2?'punch':'kick';return'special2'}
   return s;
 }
 function drawSprite(ch,name,x,y,face,alpha,sc,rotation=0){
@@ -45,7 +45,7 @@ function drawF(f,tm){
   if(f.st==='idle')bob=Math.sin(tm*5+(f.cpu?1.5:0))*2.2;
   const sh=Math.max(.35,1-f.y/420);cx.fillStyle='rgba(10,8,30,.34)';cx.beginPath();cx.ellipse(sx,GROUND+4,(name==='ko'?120:62)*sh,13*sh,0,0,6.283);cx.fill();
   if(f.st==='fin'||f.st==='special'&&Math.abs(f.vx)>200)f.trail.forEach((t,i)=>drawSprite(f.ch,name,t.x-camX,GROUND-t.y,f.face,.08+i*.05));
-  if(f.st==='special'&&f.assist){const a=f.assist.ch;drawSprite(a,a==='R'?(Math.floor(f.t/.1)%2?'charge':'special'):a==='B'?'charge':a==='G'?'idle':'punch',sx+f.face*(f.assist.front?80:-95),GROUND,f.face,Math.min(1,f.t*8))}
+  if(f.st==='special'&&f.assist){const a=f.assist.ch;drawSprite(a,a==='R'?(Math.floor(f.t/.1)%2?'charge':'special'):'punch',sx+f.face*(f.assist.front?80:-95),GROUND,f.face,Math.min(1,f.t*8))}
   if(f.st==='charge'){const a=Math.min(1,f.t/.3);cx.save();cx.globalCompositeOperation='lighter';const g=cx.createRadialGradient(sx,y-120,10,sx,y-120,190);g.addColorStop(0,CH[f.ch].col);g.addColorStop(1,'rgba(0,0,0,0)');cx.globalAlpha=.55+.3*Math.sin(tm*40);cx.fillStyle=g;cx.fillRect(sx-200,y-320,400,400);
     cx.globalAlpha=1-a;cx.strokeStyle='#fff';cx.lineWidth=5;cx.beginPath();cx.ellipse(sx,GROUND,180*(1-a)+30,(180*(1-a)+30)*.25,0,0,6.283);cx.stroke();cx.restore()}
   let jx=0;if(f.st==='hit'&&f.t<.12)jx=Math.sin(f.t*120)*4;
@@ -57,7 +57,6 @@ function drawF(f,tm){
   }else{
     drawSprite(f.ch,name,sx+jx,y+(name==='ko'?6:bob),f.face,f.inv>0&&f.st!=='kd'&&Math.floor(tm*22)%2?.45:undefined,1,f.thrown?-f.t*9:f.st==='held'?-.35:f.st==='fin'&&!finFrame(f)?(finisherOf(f).spin?f.t*finisherOf(f).spin:finisherOf(f).tilt||0):0);
   }
-  if(f.st==='cmd'&&!cmdArt(f))drawCmdProp(f,sx,y);
   if(f.st==='special'&&f.ch==='Wc'&&!f.sv)drawPaintRoller(f,sx,y);
   if(f.st==='special'&&f.ch==='Rc'&&!f.sv)drawTears(f,sx,y);
 }
@@ -84,34 +83,12 @@ function drawTears(f,x,y){
   }
   cx.restore();
 }
-// 커맨드 기술 소품 (캔버스로 그림. 전용 동작 그림이 생기면 대체)
+// 날아가는 메가폰 그림을 못 받았을 때만 쓰는 대체 모양
 function megaShape(){
   cx.fillStyle='#f4f4f8';cx.strokeStyle='#2a2440';cx.lineWidth=3;cx.lineJoin='round';
   cx.beginPath();cx.moveTo(-22,-7);cx.lineTo(14,-20);cx.lineTo(14,20);cx.lineTo(-22,7);cx.closePath();cx.fill();cx.stroke();
   cx.fillStyle='#ff5c8a';cx.beginPath();cx.ellipse(16,0,6,21,0,0,6.283);cx.fill();cx.stroke();
   cx.fillStyle='#2a2440';cx.fillRect(-30,-6,9,12);cx.fillRect(-12,7,6,15)}
-function guitarShape(body,neck,len){
-  cx.strokeStyle='#2a2440';cx.lineWidth=3;cx.lineJoin='round';
-  cx.fillStyle='#5a3a22';cx.fillRect(0,-5,len,10);cx.strokeRect(0,-5,len,10);
-  cx.fillStyle='#e9e2d0';cx.fillRect(len,-8,20,16);cx.strokeRect(len,-8,20,16);
-  cx.fillStyle=body;cx.beginPath();cx.ellipse(-26,0,34,25,0,0,6.283);cx.fill();cx.stroke();
-  cx.beginPath();cx.ellipse(-52,0,22,29,0,0,6.283);cx.fill();cx.stroke();
-  cx.fillStyle=neck;cx.fillRect(-48,-9,34,18);cx.strokeStyle='rgba(255,255,255,.7)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(-50,-3);cx.lineTo(len+16,-3);cx.moveTo(-50,3);cx.lineTo(len+16,3);cx.stroke()}
-// 커맨드 기술 전용 그림(cmd0 준비, cmd1 휘두름)이 있는 캐릭터인지. 없으면 기존 그림에 악기를 덧그린다
-function cmdArt(f){return !!META[f.ch]?.frames?.cmd0}
-function drawCmdProp(f,sx,y){
-  const b=f.cm,t=f.t,ease=(a,z)=>Math.max(0,Math.min(1,(t-a)/(z-a)));
-  cx.save();cx.translate(sx,y);cx.scale(f.face,1);
-  if(b==='R'){if(t<.2){cx.translate(-18+60*ease(0,.2),-210+40*ease(.1,.2));cx.rotate(-1.1+1.1*ease(.05,.2));megaShape()}}
-  else if(b==='W'||b==='E'){
-    const up=b==='E',k=up?ease(.08,.24):ease(.2,.36),a0=up?1.25:-2.2,a1=up?-1.9:.55,ang=a0+(a1-a0)*k*k*(3-2*k),col=CH[f.ch].col;
-    if(k>0&&k<1||t<(up?.34:.46)&&k>=1){cx.save();cx.globalCompositeOperation='lighter';cx.strokeStyle=col;cx.lineCap='round';
-      for(let i=0;i<4;i++){const q=Math.max(0,k-i*.09);if(q<=0)continue;const g=a0+(a1-a0)*q*q*(3-2*q);cx.globalAlpha=(.5-i*.11)*(k>=1?Math.max(0,1-(t-(up?.24:.36))*9):1);cx.lineWidth=20-i*4;cx.beginPath();cx.arc(34,-150,118,g-.34,g+.02);cx.stroke()}cx.restore()}
-    cx.translate(34,-150);cx.rotate(ang);cx.translate(42,0);cx.scale(-1,1);cx.translate(-70,0);guitarShape(up?'#e23b4e':'#f2a22e',up?'#fff':'#2a2440',up?74:92)}
-  else{const n=Math.floor((t-.02)/.1),p=((t-.02)/.1)%1;if(t>.04&&n<5){
-      for(const s of[-1,1]){const sw=Math.sin((p+(s>0?.5:0))*6.283);cx.save();cx.translate(58+s*12,-212+sw*20);cx.rotate(.5+sw*.75);cx.fillStyle='#e8c68a';cx.strokeStyle='#2a2440';cx.lineWidth=2.5;cx.beginPath();cx.roundRect(-6,-4,74,8,4);cx.fill();cx.stroke();cx.beginPath();cx.ellipse(70,0,7,5.5,0,0,6.283);cx.fill();cx.stroke();cx.restore()}
-      cx.globalCompositeOperation='lighter';cx.strokeStyle='#fff';cx.lineWidth=3;for(let i=0;i<3;i++){cx.globalAlpha=.7*(1-p);cx.beginPath();cx.arc(118,-235,10+p*26+i*8,-2.4,-.7);cx.stroke()}}}
-  cx.restore()}
 function drawFirePunch(e,x,a){
   cx.translate(x,e.y);
   cx.scale(e.dir,1);if(e.ang!=null)cx.rotate(e.ang);
@@ -222,7 +199,20 @@ function drawBassGeyser(e,x,a){
 }
 function holo(x0,x1){const g=cx.createLinearGradient(x0,0,x1,0);g.addColorStop(0,'#8ef6ff');g.addColorStop(.35,'#c9a6ff');g.addColorStop(.65,'#ffb3e1');g.addColorStop(1,'#fff3b0');return g}
 function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
-function txt(s,x,y,size,col,al,font,stroke){cx.font=size+'px '+(font||"'Bungee'")+",'Pretendard',sans-serif";cx.textAlign=al||'center';cx.textBaseline='middle';if(stroke){cx.lineJoin='round';cx.lineWidth=stroke;cx.strokeStyle='#0b0a1c';cx.strokeText(s,x,y)}cx.fillStyle=col;cx.fillText(s,x,y)}
+// 글자: 한 번 그린 것을 작은 그림으로 보관했다가 다시 쓴다. 테두리 있는 글자를 매 프레임 새로 그리는 비용이 커서 넣음.
+// 색이 그라데이션이거나 아주 큰 글자(확대 연출)는 보관하지 않고 바로 그린다. 글꼴이 늦게 도착하면 보관분을 비운다
+const TXT=new Map();
+if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',()=>TXT.clear());
+function txt(s,x,y,size,col,al,font,stroke){
+  const fnt=size+'px '+(font||"'Bungee'")+",'Pretendard',sans-serif";cx.font=fnt;cx.textAlign=al||'center';cx.textBaseline='middle';
+  if(typeof col!=='string'||size>60){if(stroke){cx.lineJoin='round';cx.lineWidth=stroke;cx.strokeStyle='#0b0a1c';cx.strokeText(s,x,y)}cx.fillStyle=col;cx.fillText(s,x,y);return}
+  const S=cv.width/VW,key=s+'\n'+fnt+col+(stroke||0)+'@'+S;let c=TXT.get(key);
+  if(!c){if(TXT.size>240)TXT.clear();
+    const tw=cx.measureText(s).width,pad=(stroke||0)+4,lw=tw+pad*2,lh=size*1.6+pad*2;
+    c=document.createElement('canvas');c.width=Math.ceil(lw*S);c.height=Math.ceil(lh*S);const g=c.getContext('2d');g.scale(S,S);g.font=fnt;g.textAlign='left';g.textBaseline='middle';
+    if(stroke){g.lineJoin='round';g.lineWidth=stroke;g.strokeStyle='#0b0a1c';g.strokeText(s,pad,lh/2)}g.fillStyle=col;g.fillText(s,pad,lh/2);
+    c.tw=tw;c.pad=pad;c.lw=c.width/S;c.lh=c.height/S;c.mid=lh/2;TXT.set(key,c)}
+  const al2=al||'center',ox=al2==='left'?0:al2==='right'?c.tw:c.tw/2;cx.drawImage(c,x-ox-c.pad,y-c.mid,c.lw,c.lh)}
 function hud(tm){
   const bar=(f,left)=>{const x=left?92:VW-92-340,w=340,y=22,h=20,nl=CH[f.ch].name.length>1,no=nl?CH[f.ch].name.length*15-8:0;
     cx.fillStyle='rgba(11,10,28,.78)';rr(x-3,y-3,w+6,h+6,8);cx.fill();
@@ -267,13 +257,13 @@ function drawAmb(tm){
     else if(id==='hanok'||id==='rooftop'){const y=VH*.85-((a.y+tm*14*a.s)%(VH*.7)),x=(a.x+Math.sin(tm*.7+a.p)*30-camX*.2+VW*4)%VW;cx.globalAlpha=.4+.4*Math.sin(tm*2.5+a.p);cx.fillStyle='#ffd98a';cx.beginPath();cx.arc(x,y,2.2*a.s,0,6.283);cx.fill()}
     else{const y=(a.y+Math.sin(tm*.5+a.p)*20+VH)%VH*.7,x=(a.x+tm*8*a.s-camX*.2+VW*4)%VW;cx.globalAlpha=.25+.2*Math.sin(tm*2+a.p);cx.fillStyle=id==='gym'?'#fff2c2':'#fff';cx.beginPath();cx.arc(x,y,1.8*a.s,0,6.283);cx.fill()} }
   cx.restore();
-  if((id==='band'||id==='concert')&&bgm&&AC){const b=Math.max(0,1-(AC.currentTime-bgm.beat)*5);cx.fillStyle='rgba(190,110,255,'+(b*.1)+')';cx.fillRect(0,0,VW,VH)}
+  if((id==='band'||id==='concert')&&bgm&&AC){const b=Math.max(0,1-(AC.currentTime-bgm.beat)*5);if(b>.02){cx.fillStyle='rgba(190,110,255,'+(b*.1)+')';cx.fillRect(0,0,VW,VH)}}
 }
 function render(tm){
   cx.setTransform(cv.width/VW,0,0,cv.height/VH,0,0);
   if((mode!=='fight'&&mode!=='paused')||!P){cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);return}
   cx.save();const sk=shake>.5?shake:0;cx.translate((Math.random()-.5)*sk,(Math.random()-.5)*sk);
-  const bg=IMG['bg_'+stage.id];cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);if(!bg)needBg(stage);if(bg){const r=bg.width/WW;cx.drawImage(bg,camX*r,0,VW*r,bg.height,-8,-8,VW+16,VH+16)}
+  const bg=IMG['bg_'+stage.id];cx.fillStyle='#07060f';cx.fillRect(0,0,VW,VH);if(!bg)needBg(stage);if(bg){const r=bg.width/WW;cx.drawImage(bg,Math.round(camX*r),0,VW*r,bg.height,-8,-8,VW+16,VH+16)}
   drawAmb(tm);
   const dim=freeze?.5:0;if(dim>0){cx.fillStyle='rgba(8,6,26,'+dim+')';cx.fillRect(-10,-10,VW+20,VH+20)}
   const order=(P.st==='ko'||C.st==='hit'||(freeze&&freeze.f===P))?[C,P]:[P,C];if(freeze&&freeze.f===C){order[0]=P;order[1]=C}

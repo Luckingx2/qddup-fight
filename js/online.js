@@ -313,7 +313,7 @@ function netApply(m){const A=(f,o)=>{for(const k in o)f[k]=o[k]},R=i=>i?C:P;A(P,
   }else if(m.cu<0&&cut)endCut()
 }
 function netGuest(dt){if(net.snap){netApply(net.snap);net.snap=null}
-  if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>3.0&&cut.v.currentTime<4.7);if(cut.t>cut.max)endCut()}
+  if(cut){cut.t+=dt;if(cut.t>cut.max)endCut()}
   else if(!(hitstop>0)&&!freeze&&P){const k=slow>0?.28:1;for(const f of[P,C]){f.t+=dt*k;f.x+=f.vx*dt*k;if(f.y>0||f.vy>0){f.vy-=G*dt*k;f.y=Math.max(0,f.y+f.vy*dt*k)}}for(const p of proj){p.t+=dt*k;p.x+=p.vx*dt*k;p.vy-=p.g*dt*k;p.y-=p.vy*dt*k}pt+=dt}
   let pr='';for(const k of 'pkstg')if(buf[k]>0){pr+=k;buf[k]=0}const h=''+held.l+held.r+held.up+held.down;net.it+=dt;
   if(pr||h!==net.lh||net.it>.2){net.lh=h;net.it=0;netSend({t:'i',h:[held.l,held.r,held.up,held.down],p:pr})}}

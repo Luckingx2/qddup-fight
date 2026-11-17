@@ -13,7 +13,7 @@ function update(dt){
   syncPadReady();
   if(net&&(net.lost||net.resumeAt))return;
   if(net&&!net.host){netGuest(dt);return}
-  if(cut){cut.t+=dt;$('cutT').classList.toggle('on',cut.vk==='G'&&cut.v.currentTime>(window.__cutT0||3.0)&&cut.v.currentTime<4.7);if(!net&&cut.t>.5&&(buf.p>0||buf.k>0||buf.s>0||buf.t>0)){buf.p=buf.k=buf.s=buf.t=0;endCut()}else if(cut.t>cut.max)endCut();return}
+  if(cut){cut.t+=dt;if(!net&&cut.t>.5&&(buf.p>0||buf.k>0||buf.s>0||buf.t>0)){buf.p=buf.k=buf.s=buf.t=0;endCut()}else if(cut.t>cut.max)endCut();return}
   if(hitstop>0){hitstop-=dt;chainQueue(P);chainQueue(C);return}
   if(freeze){freeze.t-=dt;freeze.f.t+=dt;if(freeze.t<=0){const f=freeze.f;freeze=null;fire(f);setMusicGain(.5);}return}
   let sdt=dt;if(slow>0){slow-=dt;sdt=dt*.28}

@@ -29,7 +29,7 @@ function show(id){
   if(typeof syncBack==='function')syncBack();
 }
 function canPickCharacter(id,kind=net?.match?.kind){
-  return ORDER.includes(id)&&(kind!=='ranked'||!['G','B'].includes(BASE_CHARACTER[id]));
+  return ORDER.includes(id);
 }
 function chooseCharacter(id,fromVariant=false){
   if(net?.pk||!canPickCharacter(id))return;
@@ -119,7 +119,7 @@ function roulette(){
       if(last){opp=fin;lastOpp=fin;ensureCuts([pick,fin]);$('vsMsg').textContent='스테이지를 뽑는 중';later(stageSpin,210)} },t) }
 }
 function stageSpin(){
-  const els=[...document.querySelectorAll('.stg')]; const N=STAGES.length,fin=STAGES[window.__stg]?window.__stg:Math.floor(Math.random()*N);
+  const els=[...document.querySelectorAll('.stg')]; const N=STAGES.length,fin=Math.floor(Math.random()*N);
   const n=16, start=(fin-n+N)%N; let t=0;
   for(let i=0;i<=n;i++){ const last=i===n; t+=35+Math.pow(i/n,2.4)*120;
     later(()=>{ const j=(start+i)%N; els.forEach((e,q)=>e.classList.toggle('on',q===j)); last?sfx.lock():sfx.tick();

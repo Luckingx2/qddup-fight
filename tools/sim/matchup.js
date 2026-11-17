@@ -4,7 +4,7 @@
 const fs=process.mainModule?process.mainModule.require('fs'):require('fs');
 const DT=T.DT,N=+(process.env.N||30),LV=+(process.env.LV||4),res={};
 if(process.env.TUNE){const t=JSON.parse(fs.readFileSync(process.env.TUNE,'utf8'));for(const k in t)Object.assign(CH[k],t[k])}
-if(process.env.UNIT!==undefined)COMBO.unit=+process.env.UNIT;
+
 const rows=process.env.ROWS?process.env.ROWS.split(','):ORDER;
 function round(a,b){
   T.boot(a,b,LV);P.cpu=true;P.buf=null;

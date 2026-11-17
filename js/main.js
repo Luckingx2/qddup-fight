@@ -1,6 +1,6 @@
 'use strict';
 /* ---------- loop ---------- */
-function fit(){const r=cv.getBoundingClientRect(),d=Math.min(2.5,window.devicePixelRatio||1),w=Math.max(480,Math.min(2400,Math.round(r.width*d)));if(cv.width!==w){cv.width=w;cv.height=Math.round(w*9/16)}}
+function fit(){const r=cv.getBoundingClientRect(),d=Math.min(2.5,window.devicePixelRatio||1),w=Math.max(480,Math.min(1680,Math.round(r.width*d)));if(cv.width!==w){cv.width=w;cv.height=Math.round(w*9/16);fitBgs()}}
 addEventListener('resize',fit);
 let last=0,acc=0;
 function loop(ts){const tm=ts/1000;let dt=Math.min(.1,tm-last);last=tm;acc+=dt;let n=0;while(acc>=1/120&&n<12){update(1/120);acc-=1/120;n++}if(net&&net.host&&net.ok&&mode==='fight'&&P){net.acc=(net.acc||0)+dt;if(net.acc>=1/30){net.acc=0;netSnap()}}render(tm);requestAnimationFrame(loop)}

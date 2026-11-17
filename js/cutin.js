@@ -34,8 +34,7 @@ function startCut(f){if(net&&net.host)net.cn++;$('cutH').style.display=net?'none
   const failed=()=>{if(cut===current)endCut()};
   setTimeout(()=>{if(cut===current&&v.currentTime<.05)failed()},1200);
   try{const p=v.play();if(p&&p.catch)p.catch(()=>{if(cut!==current)return;v.muted=true;try{v.play()?.catch(failed)}catch(e){failed()}})}catch(e){failed()}}
-function endCut(){if(!cut)return;const f=cut.f,v=cut.v;cut=null;v.onended=null;try{v.pause()}catch(e){}v.classList.remove('on');$('cut').classList.remove('on');$('cutT').classList.remove('on');if(!net||net.host)f.t=.22;setMusicGain(.5)}
-function warmVid(v){if(v.readyState>=3||v.dataset.warm)return;v.dataset.warm=1;v.preload='auto';try{v.load()}catch(e){}}
+function endCut(){if(!cut)return;const f=cut.f,v=cut.v;cut=null;v.onended=null;try{v.pause()}catch(e){}v.classList.remove('on');$('cut').classList.remove('on');if(!net||net.host)f.t=.22;setMusicGain(.5)}
 const VBLOB={},VPROM={};
 const cutKeys=chs=>[...new Set(chs.filter(Boolean).flatMap(c=>SVK.map(sk=>c+sk)))].filter(k=>VID[k]);
 const vidSrc=k=>{const v=VID[k];if(!v.dataset.src)v.dataset.src=v.src;return v.dataset.src};

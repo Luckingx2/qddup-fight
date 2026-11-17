@@ -108,10 +108,6 @@
   border-color:#dcffff;z-index:2;box-shadow:0 0 1.1cqw #68e9ff;
 }
 #sSel .card:focus-visible,.select-controls button:focus-visible,#sSel #go:focus-visible {outline:2px solid #fff;outline-offset:-2px}
-#sSel .random-card span {
-  display:grid;place-items:center;height:100%;color:#fff;text-shadow:0 0 1cqw #ff5d9c;
-  font:400 5cqw/1 'Bungee',sans-serif;padding:0 0 .3em;
-}
 .select-footer {align-items:center;padding:0 .9cqw;gap:0}
 .select-controls {display:flex;align-items:center;gap:.45cqw;min-width:0}
 .select-controls span {color:#c4e0ff;font-size:1.1cqw;white-space:nowrap}

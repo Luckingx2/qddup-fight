@@ -27,8 +27,7 @@ function dust(x){for(let i=0;i<8;i++)fx.push({k:'p',x:x+(Math.random()-.5)*80,y:
 
 let zone=null,flood=null;
 // 연속 피격 보호: 타수마다 피해 감소, 한도를 넘으면 맞던 쪽이 무적으로 튕겨 나감, 경직·다운이 풀린 직후 잠깐 무적
-// unit: 연속 피해 감소를 맞은 횟수가 아니라 누적 피해로 셈. 기본 피해 unit만큼 맞을 때마다 한 단계(step)씩 줄어든다. 한 방이 약한 캐릭터가 여러 번 때려도 손해가 커지지 않게 함
-const COMBO={step:.1,floor:.6,limit:.3,window:2,wake:.3,unit:0};
+const COMBO={step:.1,floor:.6,limit:.3,window:2,wake:.3};
 // 필살기·태그기 피해 전체 배율 (1이면 예전 그대로)
 const SPECIAL_POWER=.8;
 function breakAway(f,o){
@@ -44,7 +43,7 @@ function applyHit(f,o,a){
   if(o.st==='guard'&&o.y<=0&&o.face===-f.face&&!a.ub){
     o.hp=Math.max(1,o.hp-damage*(a.sp?.28:.1)*CH[o.ch].guard);o.vx=f.face*a.push*.45;o.t=Math.min(o.t,.05);o.stun=.14;
     block(hx,hy,f.face);spark(hx,hy,'#bff8ff',8,220);sfx.guard(a.sp||damage>=10?1.3:1);f.meter=Math.min(100,f.meter+(a.sp||a.fin?0:a.dmg*.3));o.meter=Math.min(100,o.meter+a.dmg*.6);hitstop=.04;o.pr=0;return}
-  const cn=o.cn||0,scale=a.sp?1:Math.max(COMBO.floor,1-COMBO.step*cn);damage*=scale;if(!a.sp)o.cn=cn+(COMBO.unit?a.dmg/COMBO.unit:1);f.pr=0;
+  const cn=o.cn||0,scale=a.sp?1:Math.max(COMBO.floor,1-COMBO.step*cn);damage*=scale;if(!a.sp)o.cn=cn+1;f.pr=0;
   o.hp=Math.max(0,o.hp-damage);if(practice&&o.hp<=0){o.hp=CH[o.ch].hp;fx.push({k:'d',x:o.x,y:GROUND-o.y-300,t:0,d:1,txt:'회복'})}o.vx=f.face*a.push;if(a.lift){o.vy=a.lift;o.y=Math.max(o.y,.01)}
   setSt(o,'hit');o.stun=a.stun*(a.chain||a.fin||a.sp||a.cmd?1:scale);o.face=-f.face;o.airAtk=false;
   if(a.kd&&o.hp>0){setSt(o,'kd');o.stun=.8;o.down=false;o.vy=260;o.y=Math.max(o.y,.01)}
@@ -154,7 +153,7 @@ function fireAlt(f){const c=f.ch,v=f.sv;f.assist=null;
     else if(c==='W'){f.vx=f.face*640;hearts(f.x+f.face*70,GROUND-148,9)}
     else if(c==='E')f.vx=f.face*CLOSE_SPECIALS.E.speed;
     else{f.vx=f.face*900;dust(f.x)} }
-  else{ if(c==='G'||c==='B'||c.length===2){f.assist={ch:TAG[c],front:c==='B'};shake=14}
+  else{ if(c.length===2){f.assist={ch:TAG[c],front:false};shake=14}
     else if(c==='Q'){proj.push({o:f,kind:'body',ch:'R',frame:'jump',spin:1,x:f.x+f.face*100,y:GROUND-180,vx:f.face*1150,vy:0,g:0,t:0,hit:false,dmg:32,stun:.7,push:700,lift:500});f.vx=f.face*80}
     else if(c==='W'){f.assist={ch:'E'};shake=14}
     else if(c==='E'){f.assist={ch:'R'}}
@@ -165,7 +164,7 @@ function feathers(x,y,count){
 function emitTagEffect(f){
   const themes={Qb:'drum',Rb:'drum',Wb:'electric',Eb:'electric',Qc:'balloon',Rd:'balloon',Wc:'paint',Ec:'paint',Rc:'tide'};
   const theme=themes[f.ch];
-  fx.push({k:theme?'tagBurst':'beam',theme,x:f.x+f.face*110,y:GROUND-143,t:0,d:.5,dir:f.face,gold:f.ch==='G'||f.ch==='B'});
+  fx.push({k:theme?'tagBurst':'beam',theme,x:f.x+f.face*110,y:GROUND-143,t:0,d:.5,dir:f.face});
 }
 function spAlt(f,o,dt){const c=f.ch,v=f.sv,end=T=>{if(f.t>T&&f.y<=0){f.vx=0;f.assist=null;setSt(f,'rec')}};
   if(v===1){
@@ -182,15 +181,13 @@ function spAlt(f,o,dt){const c=f.ch,v=f.sv,end=T=>{if(f.t>T&&f.y<=0){f.vx=0;f.as
     }
   }else{
     if(c==='Q'){f.vx*=Math.pow(.01,dt);end(.6)}
-    else if(c==='W'||c==='G'||c==='B'||c.length===2){f.vx=0;if(!f.hitDone&&f.t>.12){f.hitDone=true;const dx=(o.x-f.x)*f.face;emitTagEffect(f);
+    else if(c==='W'||c.length===2){f.vx=0;if(!f.hitDone&&f.t>.12){f.hitDone=true;const dx=(o.x-f.x)*f.face;emitTagEffect(f);
       if(dx>0&&o.y<220&&o.st!=='ko')applyHit(f,o,{dmg:32,stun:.7,push:600,lift:300,sp:1,hy:130})}end(.75)}
     else if(c==='E'){f.vx=0;const n=Math.floor(f.t/.06);while(f.spN<=n&&f.spN<10){f.spN++;proj.push({o:f,kind:'donut',half:1,x:f.x+f.face*70,y:GROUND-110-Math.random()*110,vx:f.face*(760+Math.random()*200),vy:Math.random()*80,g:120,t:0,hit:false,dmg:3.2,stun:.28,push:120,lift:0,c:Math.floor(Math.random()*4),rot:Math.random()*6});if(f.spN%2)sfx.whoosh(.6)}end(.8)}
     else{if(f.t>.3){f.vx*=Math.pow(.001,dt);if(!f.spN){f.spN=1;hearts(f.x+f.face*70,GROUND-150,9);feathers(f.x,GROUND-85,7);proj.push({o:f,kind:'body',ch:'W',frame:'special2',heart:1,x:f.x+f.face*70,y:GROUND-150,vx:f.face*900,vy:160,g:500,t:0,hit:false,dmg:32,stun:.9,push:300,lift:0})}}end(.85)}
   }}
 function fire(f){ const c=f.ch;sfx.special(c);setSt(f,'special');f.spN=0;f.spT=0;f.trail=[];if(f.sv){fireAlt(f);return}
   if(FIRE_FISTS[c]){f.vx=0;say(SPECIAL_NAMES[c],.75);return}
-  if(c==='G'){f.vx=0;say('재뿌리기!!',1.0);for(let i=0;i<46;i++)fx.push({k:'p',x:f.x+f.face*70,y:GROUND-150+(Math.random()-.5)*40,vx:f.face*(160+Math.random()*560),vy:-180+Math.random()*260,t:0,d:.5+Math.random()*.5,col:'rgba(255,255,255,.9)',s:5+Math.random()*9});return}
-  if(c==='B'){f.vx=f.face*460;return}
   if(c.length===2){f.vx=0;f.carry=0;f.mash=0;
     if(c==='Rc'){say('뿌앵~!!',.9);flood={t:3.2,o:f}}
     if(c==='Qb'&&!f.cpu)say('연타!!',.8);
@@ -384,8 +381,6 @@ function stepF(f,o,dt){
         if(o.st!=='ko'){const d=Math.abs(o.x-f.x),sf=f.face;f.face=o.x>=f.x?1:-1;if(d<140&&o.y<200)applyHit(f,o,{dmg:28,stun:.8,push:420,lift:520,sp:1,ub:1,hy:150});else if(d<360&&o.y<40)applyHit(f,o,{dmg:13,stun:.5,push:300,lift:300,sp:1,ub:1,hy:60});f.face=sf}setSt(f,'rec')}}
     else if(c==='Wb')stepBassGeyser(f,o);
     else if(c==='Rc'){f.spT-=dt;if(Math.random()<.5)fx.push({k:'p',x:f.x+(Math.random()<.5?-1:1)*18,y:GROUND-150,vx:(Math.random()-.5)*700,vy:-260-Math.random()*220,t:0,d:.7,col:'rgba(150,215,255,.9)',s:4+Math.random()*5});if(Math.random()<.05)ring(f.x,GROUND-130,'#cfefff',260);if(f.spT<=0&&f.spN<5&&f.t>.1){f.spT=.14;f.spN++;if(Math.abs(o.x-f.x)<290&&o.y<230&&o.st!=='ko'){const sf=f.face;f.face=o.x>=f.x?1:-1;applyHit(f,o,{dmg:4,stun:.35,push:230,sp:1,hy:150});f.face=sf}}if(f.t>.95)setSt(f,'rec')}
-    else if(c==='G'){f.vx=0;if(f.t<.4&&Math.random()<.5)fx.push({k:'p',x:f.x+f.face*80,y:GROUND-150,vx:f.face*(200+Math.random()*500),vy:-160+Math.random()*240,t:0,d:.5+Math.random()*.4,col:'rgba(255,255,255,.85)',s:5+Math.random()*8});if(f.t>.08)tryHit(f,o,{reach:250,dmg:25,stun:.75,push:260,sp:1,vr:200,hy:150});if(f.t>.7)setSt(f,'rec')}
-    else if(c==='B'){f.vx*=Math.pow(.02,dt);if(f.t>.1&&f.t<.42&&tryHit(f,o,{reach:135,dmg:27,stun:.8,push:220,sp:1,vr:190,hy:210})){for(let i=0;i<7;i++)fx.push({k:'s',x:o.x+(Math.random()-.5)*90,y:GROUND-o.y-230+(Math.random()-.5)*50,t:0,d:.3+Math.random()*.3,r:16+Math.random()*14,rot:Math.random()*3})}if(f.t>.62){f.vx=0;setSt(f,'rec')}}
     else if(c==='W'){f.vx*=Math.pow(.01,dt);if(f.t>.75)setSt(f,'rec')}
     else if(c==='Q')stepCloseSpecial(f,o,CLOSE_SPECIALS.Q);
     else if(c==='R'){f.trail.length=0;const n=Math.floor((f.t-.04)/.1);while(f.spN<=n&&f.spN<7){const big=f.spN===6;f.spN++;sfx.whoosh(.7);
